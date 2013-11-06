@@ -1,0 +1,14 @@
+﻿1: support multiple selection and move.
+3: support Text object.
+4: support ArcTool.
+6: support ImageTool (support AVI or animation gif)
+7: support CameraTool.
+8: support BarcodeTool
+9: support MegastripeTool
+10: support Point/PointGroup tool.
+11: support dragging image and tool selection image.
+12: support property grid for individual tool.
+
+-------done------
+2: support Polygon object.
+5: Rectangle tool, dragging corner reversely support, same as circle.

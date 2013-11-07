@@ -11,6 +11,7 @@ namespace DesignerLibrary.DrawingTools
         public RectangleTool()
         {
             Rect = new Rectangle( 0, 0, 100, 100 );
+
             base.Tracker = new RectangleTracker( this );
         }
 
@@ -40,15 +41,14 @@ namespace DesignerLibrary.DrawingTools
         protected override void OnStartResize(Point pPoint)
         {
             Location = pPoint;
+            Adjust.MovingPointIndex = (int)RectTrackerAdjust.RectPointIndex.eBottomRight;
         }
 
         protected override void OnResize(Point pPoint)
         {
             Rectangle lRect = Rect;
 
-            lRect.Width = pPoint.X - Location.X;
-            lRect.Height = pPoint.Y - Location.Y;
-
+            Adjust.Resize( pPoint, ref lRect );
             Rect = lRect;
         }
 

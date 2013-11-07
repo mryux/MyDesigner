@@ -78,11 +78,14 @@
       <DependentUpon>ToolboxControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Trackers\ArcTracker.cs" />
+    <Compile Include="Trackers\ArcTrackerAdjust.cs" />
     <Compile Include="Trackers\DrawingTracker.cs" />
     <Compile Include="Trackers\EllipseTracker.cs" />
     <Compile Include="Trackers\LineTracker.cs" />
     <Compile Include="Trackers\PolygonTracker.cs" />
     <Compile Include="Trackers\RectangleTracker.cs" />
+    <Compile Include="Trackers\RectTrackerAdjust.cs" />
+    <Compile Include="Trackers\TrackerAdjust.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DesignerSurfaceView.resx">

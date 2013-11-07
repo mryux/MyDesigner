@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DesignerLibrary.DrawingTools;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using DesignerLibrary.DrawingTools;
 
 namespace DesignerLibrary.Trackers
 {
+    using ArcPointIndex = ArcTrackerAdjust.ArcPointIndex;
+    using HIndex = RectTrackerAdjust.HIndex;
+    using VIndex = RectTrackerAdjust.VIndex;
+
     class ArcTracker : RectangleTracker
     {
         public ArcTracker(DrawingTool pTool)
             : base( pTool )
         {
+            Adjust = new ArcTrackerAdjust();
         }
 
-        private enum ArcPointIndex { eNone, eStartAngle, eEndAngle }
+        private ArcTrackerAdjust ArcAdjust { get { return Adjust as ArcTrackerAdjust; } }
 
         protected override Dictionary<int, Point> TrackerPoints
         {
             get
             {
-                Dictionary<int, Point> lRet = new Dictionary<int,Point>();
+                Dictionary<int, Point> lRet = new Dictionary<int, Point>();
 
                 // take out center points to avoid tracker points overlapping Angle Points.
                 base.TrackerPoints.Where( p =>
@@ -29,7 +33,7 @@ namespace DesignerLibrary.Trackers
                     HIndex lHIndex;
                     VIndex lVIndex;
 
-                    GetIndex( (byte)p.Key, out lVIndex, out lHIndex );
+                    RectTrackerAdjust.GetIndex( (byte)p.Key, out lVIndex, out lHIndex );
 
                     return lVIndex != VIndex.eCenter
                         && lHIndex != HIndex.eCenter;
@@ -42,27 +46,13 @@ namespace DesignerLibrary.Trackers
                 // add startAnglePoint/endAnglePoint
                 ArcTool lTool = DrawingTool as ArcTool;
 
-                lRet.Add( (int)ArcPointIndex.eStartAngle, GetAnglePoint( lTool.Rect, lTool.StartAngle ) );
-                lRet.Add( (int)ArcPointIndex.eEndAngle, GetAnglePoint( lTool.Rect, lTool.StartAngle + lTool.SweepAngle ) );
+                lRet.Add( (int)ArcPointIndex.eStartAngle, GetPoint( lTool.Rect, lTool.StartAngle ) );
+                lRet.Add( (int)ArcPointIndex.eEndAngle, GetPoint( lTool.Rect, lTool.StartAngle + lTool.SweepAngle ) );
 
                 return lRet;
             }
         }
-
-        private Point GetAnglePoint(Rectangle pRect, double dAngle)
-        {
-            int lHalfWidth = pRect.Width / 2;
-            int lHalfHeight = pRect.Height / 2;
-            Point lOffset = new Point( lHalfWidth, lHalfHeight );
-
-            Point lOrigin = pRect.Location;
-            lOrigin.Offset( lOffset );
-            double lX = lOrigin.X + lHalfWidth * Math.Cos( dAngle * Math.PI / 180.0 );
-            double lY = lOrigin.Y + lHalfHeight * Math.Sin( dAngle * Math.PI / 180.0 );
-
-            return new Point( (int)lX, (int)lY );
-        }
-
+        
         protected override void OnResizePaint(PaintEventArgs pArgs)
         {
             ArcTool lTool = DrawingTool as ArcTool;
@@ -70,7 +60,7 @@ namespace DesignerLibrary.Trackers
             if (ResizingRect.Height > 0
                 && ResizingRect.Width > 0)
             {
-                pArgs.Graphics.DrawArc( Pen, ResizingRect, lTool.StartAngle, lTool.SweepAngle );
+                pArgs.Graphics.DrawArc( Pen, ResizingRect, ArcAdjust.StartAngle, ArcAdjust.SweepAngle );
             }
         }
 
@@ -86,12 +76,55 @@ namespace DesignerLibrary.Trackers
                 {
                     case ArcPointIndex.eStartAngle:
                     case ArcPointIndex.eEndAngle:
-                        lRet = Cursors.PanNorth;
+                        lRet = Cursors.Hand;
                         break;
                 }
             }
 
             return lRet;
+        }
+
+        protected override void OnStartResize(Point pPoint)
+        {
+            base.OnStartResize( pPoint );
+
+            ArcTool lTool = DrawingTool as ArcTool;
+
+            ArcAdjust.StartAngle = lTool.StartAngle;
+            ArcAdjust.SweepAngle = lTool.SweepAngle;
+        }
+
+        protected override void OnEndResize()
+        {
+            base.OnEndResize();
+
+            if (ArcAdjust.SweepAngle < 0)
+            {
+                ArcAdjust.StartAngle += ArcAdjust.SweepAngle;
+                ArcAdjust.SweepAngle = -ArcAdjust.SweepAngle;
+            }
+
+            ArcTool lTool = DrawingTool as ArcTool;
+
+            lTool.StartAngle = ArcAdjust.StartAngle;
+            lTool.SweepAngle = ArcAdjust.SweepAngle;
+        }
+
+        /// <summary>
+        /// get point with specific angle on ellipse around pRect
+        /// </summary>
+        /// <param name="pRect"></param>
+        /// <param name="dAngle"></param>
+        /// <returns></returns>
+        private Point GetPoint(Rectangle pRect, double dAngle)
+        {
+            Point lPoint = GetCenter( pRect );
+
+            double lX = pRect.Width / 2 * Math.Cos( dAngle * Math.PI / 180.0 );
+            double lY = pRect.Height / 2 * Math.Sin( dAngle * Math.PI / 180.0 );
+
+            lPoint.Offset( (int)lX, (int)lY );
+            return lPoint;
         }
     }
 }

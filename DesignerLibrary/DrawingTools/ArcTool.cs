@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DesignerLibrary.Trackers;
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using System.Drawing;
+using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {
@@ -28,6 +25,34 @@ namespace DesignerLibrary.DrawingTools
             {
                 pArgs.Graphics.DrawArc( Pen, Rect, StartAngle, SweepAngle );
             }
+        }
+
+        protected override bool OnHitTest(Point pPoint)
+        {
+            GraphicsPath lPath = new GraphicsPath();
+
+            lPath.AddArc( Rect, StartAngle, SweepAngle );
+            lPath.CloseFigure();
+
+            return new Region( lPath ).IsVisible( pPoint );
+        }
+
+        private ArcTrackerAdjust ArcAdjust { get { return Adjust as ArcTrackerAdjust; } }
+
+        protected override void OnStartResize(Point pPoint)
+        {
+            base.OnStartResize( pPoint );
+
+            ArcAdjust.StartAngle = StartAngle;
+            ArcAdjust.SweepAngle = SweepAngle;
+        }
+
+        protected override void OnResize(Point pPoint)
+        {
+            base.OnResize( pPoint );
+
+            StartAngle = ArcAdjust.StartAngle;
+            SweepAngle = ArcAdjust.SweepAngle;
         }
     }
 }

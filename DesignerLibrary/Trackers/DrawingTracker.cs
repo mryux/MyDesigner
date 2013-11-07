@@ -17,6 +17,7 @@ namespace DesignerLibrary.Trackers
         }
 
         public bool IsResizing { get; protected set; }
+        public TrackerAdjust Adjust { get; set; }
 
         protected DrawingTool DrawingTool { get; set; }
 
@@ -106,6 +107,14 @@ namespace DesignerLibrary.Trackers
 
             lRect.Inflate( Margin, Margin );
             return lRect;
+        }
+
+        public static Point GetCenter(Rectangle pRect)
+        {
+            Point lRet = pRect.Location;
+
+            lRet.Offset( pRect.Width / 2, pRect.Height / 2 );
+            return lRet;
         }
 
         protected int MovingPointIndex = 0;

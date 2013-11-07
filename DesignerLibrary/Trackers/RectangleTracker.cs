@@ -1,45 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using DesignerLibrary.DrawingTools;
 
 namespace DesignerLibrary.Trackers
 {
+    using RectPointIndex = RectTrackerAdjust.RectPointIndex;
+
     class RectangleTracker : DrawingTracker
     {
         public RectangleTracker(DrawingTool pTool)
             : base( pTool )
         {
-        }
-
-        private byte GetIndex(VIndex pVIndex, HIndex pHIndex)
-        {
-            return (byte)((byte)pHIndex | (byte)pVIndex << 4);
-        }
-
-        protected void GetIndex(byte pIndex, out VIndex pVIndex, out HIndex pHIndex)
-        {
-            pHIndex = (HIndex)(pIndex & 0x0f);
-            pVIndex = (VIndex)(pIndex >> 4 & 0x0f);
-        }
-
-        protected enum HIndex { eLeft = 1, eCenter, eRight }
-        protected enum VIndex { eTop = 1, eCenter, eBottom }
-
-        protected enum RectPointIndex 
-        { 
-            eNone,
-            eTopLeft = VIndex.eTop << 4 | HIndex.eLeft,
-            eTopCenter = VIndex.eTop << 4 | HIndex.eCenter,
-            eTopRight = VIndex.eTop << 4 | HIndex.eRight,
-            eMidLeft = VIndex.eCenter << 4 | HIndex.eLeft,
-            eMidRight = VIndex.eCenter << 4 | HIndex.eRight,
-            eBottomLeft = VIndex.eBottom << 4 | HIndex.eLeft,
-            eBottomCenter = VIndex.eBottom << 4 | HIndex.eCenter,
-            eBottomRight = VIndex.eBottom << 4 | HIndex.eRight,
+            Adjust = new RectTrackerAdjust();
         }
 
         protected Rectangle ResizingRect = Rectangle.Empty;
@@ -115,84 +90,12 @@ namespace DesignerLibrary.Trackers
         protected override void OnStartResize(Point pPoint)
         {
             ResizingRect = DrawingTool.SurroundingRect;
-        }
-
-        private void Rectify(Rectangle pRect, Point pPoint, ref Point pLocation, ref Size pSize, ref RectPointIndex pIndex)
-        {
-            VIndex lVIndex;
-            HIndex lHIndex;
-
-            GetIndex( (byte)pIndex, out lVIndex, out lHIndex );
-
-            if (pSize.Height < 0)
-            {
-                pLocation.Y = lVIndex == VIndex.eTop ? pRect.Bottom : pPoint.Y;
-
-                lVIndex = (lVIndex == VIndex.eTop) ? VIndex.eBottom : VIndex.eTop;
-                pSize.Height = -pSize.Height;
-            }
-
-            if (pSize.Width < 0)
-            {
-                pLocation.X = lHIndex == HIndex.eLeft ? pRect.Right : pPoint.X;
-
-                lHIndex = (lHIndex == HIndex.eLeft) ? HIndex.eRight : HIndex.eLeft;
-                pSize.Width = -pSize.Width;
-            }
-
-            pIndex = (RectPointIndex)GetIndex( lVIndex, lHIndex );
+            Adjust.MovingPointIndex = MovingPointIndex;
         }
 
         protected override void OnResize(Point pPoint)
         {
-            Rectangle lRect = ResizingRect;
-            Point lLocation = lRect.Location;
-            Size lSize = lRect.Size;
-            RectPointIndex lMovingPointIndex = (RectPointIndex)MovingPointIndex;
-
-            switch (lMovingPointIndex)
-            {
-                case RectPointIndex.eTopLeft:
-                    lLocation = pPoint;
-                    lSize = new Size( lRect.Right - pPoint.X, lRect.Bottom - pPoint.Y );
-                    break;
-
-                case RectPointIndex.eTopCenter:
-                    lLocation.Y = pPoint.Y;
-                    lSize.Height = lRect.Bottom - pPoint.Y;
-                    break;
-
-                case RectPointIndex.eTopRight:
-                    lLocation.Y = pPoint.Y;
-                    lSize = new Size( pPoint.X - lRect.Left, lRect.Bottom - pPoint.Y );
-                    break;
-
-                case RectPointIndex.eMidLeft:
-                    lLocation.X = pPoint.X;
-                    lSize.Width = lRect.Right - pPoint.X;
-                    break;
-
-                case RectPointIndex.eMidRight:
-                    lSize.Width = pPoint.X - lRect.Left;
-                    break;
-
-                case RectPointIndex.eBottomLeft:
-                    lLocation.X = pPoint.X;
-                    lSize = new Size( lRect.Right - pPoint.X, pPoint.Y - lRect.Top );
-                    break;
-
-                case RectPointIndex.eBottomCenter:
-                    lSize.Height = pPoint.Y - lRect.Top;
-                    break;
-
-                case RectPointIndex.eBottomRight:
-                    lSize = new Size( pPoint.X - lRect.Left, pPoint.Y - lRect.Top );
-                    break;
-            }
-
-            Rectify( lRect, pPoint, ref lLocation, ref lSize, ref lMovingPointIndex );
-            MovingPointIndex = (int)lMovingPointIndex;
-            ResizingRect = new Rectangle( lLocation, lSize );
+            Adjust.Resize( pPoint, ref ResizingRect );
         }
 
         protected override void OnEndResize()

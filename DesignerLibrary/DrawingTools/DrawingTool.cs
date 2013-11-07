@@ -17,6 +17,8 @@ namespace DesignerLibrary.DrawingTools
         public Pen Pen { get; private set; }
         public DrawingTracker Tracker { get; protected set; }
 
+        protected TrackerAdjust Adjust { get { return Tracker.Adjust; } }
+
         private Point _Location = Point.Empty;
         public Point Location
         {

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using DesignerLibrary.Constants;
+using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
-using DesignerLibrary.Consts;
 
-namespace DesignerLibrary
+namespace DesignerLibrary.Views
 {
     public partial class ToolboxControl : UserControl
     {

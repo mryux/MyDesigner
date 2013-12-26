@@ -7,7 +7,7 @@ using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {
-    class PolygonTool : DrawingTool
+    class PolygonTool : TwoDTool
     {
         public List<Point> Points { get; private set; }
         private Point _MovingPoint = Point.Empty;
@@ -45,7 +45,10 @@ namespace DesignerLibrary.DrawingTools
                 pArgs.Graphics.DrawLine( Tracker.Pen, _MovingPoint, Points.First() );
             }
             else if (lCount > 1)
+            {
+                pArgs.Graphics.FillRegion( Brush, GetRegion() );
                 pArgs.Graphics.DrawLine( Pen, Points.Last(), Points.First() );
+            }
         }
 
         protected override bool OnHitTest(Point pPoint)

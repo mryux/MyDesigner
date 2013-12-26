@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DesignerLibrary.Views;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
-namespace DesignerLibrary
+namespace DesignerLibrary.Views
 {
     // The following attribute associates the SampleRootDesigner designer 
     // with the SampleComponent component.
@@ -20,7 +21,7 @@ namespace DesignerLibrary
         // will be shown in the Forms designer view. This member is 
         // cached to reduce processing needed to recreate the 
         // view control on each call to GetView().
-        private RootDesignerView m_view;
+        private BaseView m_view;
 
         // This method returns an instance of the view for this root
         // designer. The "view" is the user interface that is presented
@@ -36,7 +37,7 @@ namespace DesignerLibrary
                 // for a root designer that overrides GetView(). In this 
                 // example, a Control of type RootDesignerView is used.
                 // Any class that inherits from Control will work.
-                m_view = new RootDesignerView( this );
+                m_view = new DesignTimeView(this);
             }
 
             return m_view;

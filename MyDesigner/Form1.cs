@@ -21,7 +21,7 @@ namespace MyDesigner
         {
             base.OnLoad( pArgs );
 
-            _DesignerView.LoadDesigner( null );
+            
         }
     }
 }

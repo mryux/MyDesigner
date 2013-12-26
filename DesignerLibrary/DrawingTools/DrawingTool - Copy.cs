@@ -1,67 +1,54 @@
-﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
-using DesignerLibrary.Converters;
-using DesignerLibrary.Helpers;
-using DesignerLibrary.Trackers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using SCF.SiPass.Explorer.Common.Converters;
+using SCF.SiPass.Explorer.Common.Helpers;
+using SCF.SiPass.SitePlan.Module.Attributes;
+using SCF.SiPass.SitePlan.Module.Constants;
+using SCF.SiPass.SitePlan.Module.Trackers;
 
-namespace DesignerLibrary.DrawingTools
+namespace SCF.SiPass.SitePlan.Module.DrawingTools
 {
-    abstract class DrawingTool : IComponent, ICustomTypeDescriptor, IDataErrorInfo
+    abstract class DrawingTool : ICustomTypeDescriptor, IComponent, IDataErrorInfo
     {
         protected DrawingTool()
         {
-            Pen = new Pen( PenColor, GetLineWidth( PenWidth ) );
+            Pen = new Pen( Color.Black, 2.0f );
         }
 
-        private Color _PenColor = Color.Black;
-        public Color PenColor
+        public Color ForeColor
         {
-            get { return _PenColor; }
+            get { return Pen.Color; }
+            set { Pen.Color = value; }
+        }
+
+        public enum LineWidth { eThin, eMedium, eThick }
+
+        private LineWidth _LineWidth = LineWidth.eThin;
+        public LineWidth Width
+        {
+            get { return _LineWidth; }
             set
             {
-                _PenColor = value;
-                Invalidate();
+                _LineWidth = value;
+                switch(_LineWidth)
+                {
+                    case DrawingTool.LineWidth.eThin:
+                        Pen.Width = 1.0f;
+                        break;
+
+                    case DrawingTool.LineWidth.eMedium:
+                        Pen.Width = 2.0f;
+                        break;
+
+                    case DrawingTool.LineWidth.eThick:
+                        Pen.Width = 3.0f;
+                        break;
+                }
             }
-        }
-
-        private LineWidthConverter.LineWidth _PenWidth = LineWidthConverter.LineWidth.Thin;
-        public LineWidthConverter.LineWidth PenWidth
-        {
-            get { return _PenWidth; }
-            set
-            {
-                _PenWidth = value;
-                Pen.Width = GetLineWidth( _PenWidth );
-                Invalidate();
-            }
-        }
-
-        private float GetLineWidth(LineWidthConverter.LineWidth pWidth)
-        {
-            float lRet = 1.0f;
-
-            switch (_PenWidth)
-            {
-                case LineWidthConverter.LineWidth.Thin:
-                    lRet = 1.0f;
-                    break;
-
-                case LineWidthConverter.LineWidth.Medium:
-                    lRet = 2.0f;
-                    break;
-
-                case LineWidthConverter.LineWidth.Thick:
-                    lRet = 3.0f;
-                    break;
-            }
-
-            return lRet;
         }
 
         public Pen Pen { get; private set; }
@@ -70,6 +57,7 @@ namespace DesignerLibrary.DrawingTools
         protected TrackerAdjust Adjust { get { return Tracker.Adjust; } }
 
         private Point _Location = Point.Empty;
+
         public Point Location
         {
             get { return _Location; }
@@ -77,10 +65,8 @@ namespace DesignerLibrary.DrawingTools
             {
                 Point lOffset = new Point( value.X - _Location.X, value.Y - _Location.Y );
 
-                Invalidate();   // invalidate old area
                 _Location = value;
                 OnLocationChanged( lOffset );
-                Invalidate();   // invalidate new area
             }
         }
 
@@ -91,7 +77,7 @@ namespace DesignerLibrary.DrawingTools
         protected abstract void OnStartResize(Point pPoint);
         protected abstract void OnResize(Point pPoint);
         protected abstract bool OnEndResize(Point pPoint);
-
+        
         public static Rectangle GetClipRect(Point[] pPoints)
         {
             Rectangle lRet = Rectangle.Empty;
@@ -111,7 +97,7 @@ namespace DesignerLibrary.DrawingTools
 
         public void Paint(PaintEventArgs pArgs)
         {
-            if (pArgs.Graphics.ClipBounds.IntersectsWith( SurroundingRect ))
+            if (pArgs.ClipRectangle.IntersectsWith( SurroundingRect ))
                 OnPaint( pArgs );
         }
 
@@ -132,13 +118,13 @@ namespace DesignerLibrary.DrawingTools
             set
             {
                 _Selected = value;
-                Pen.Color = _Selected ? Color.Red : _PenColor;
+                Pen.Color = _Selected ? Color.Red : Color.Black;
             }
         }
 
         public Rectangle SurroundingRect
         {
-            get
+            get 
             {
                 Rectangle lRect = GetSurroundingRect();
                 int lWidth = (int)(Pen.Width / 2) + 1;  // +1 for SmoothingMode.AntiAlias
@@ -174,45 +160,19 @@ namespace DesignerLibrary.DrawingTools
             return IsResizing;
         }
 
-        public event EventHandler RedrawEvent;
-
-        protected void Invalidate()
-        {
-            if (RedrawEvent != null)
-                RedrawEvent( this, EventArgs.Empty );
-        }
-
         protected virtual IList<PropertyDescriptor> GetPropertyDescriptors()
         {
             IList<PropertyDescriptor> lRet = new List<PropertyDescriptor>();
 
-            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.Location,
+            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.ForeColor, 
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "Location" ),
-                    new PropertyOrderAttribute( 1 )
+                    new LocalizedCategoryAttribute( "Category_Appearance" ),
+                    new LocalizedDisplayNameAttribute( "DisplayName_ForeColor" ) 
                 } ) );
-
-            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenColor,
-                new Attribute[] 
-                { 
-                    CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "LineColor" ),
-                    new PropertyOrderAttribute( 5 ),
-                } ) );
-
-            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenWidth,
-                new Attribute[]
-                {
-                    CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "LineWidth" ),
-                    new PropertyOrderAttribute( 7 ),
-                    new TypeConverterAttribute( typeof( LineWidthConverter ) ),
-                } ) );
+            // add Point property
+            //lRet.Add( GetPointPropertyDescriptor() );
 
             return lRet;
         }
@@ -233,6 +193,7 @@ namespace DesignerLibrary.DrawingTools
         #endregion
 
         #region ICustomTypeDescriptor Members
+
         AttributeCollection ICustomTypeDescriptor.GetAttributes()
         {
             return TypeDescriptor.GetAttributes( this, true );
@@ -293,6 +254,7 @@ namespace DesignerLibrary.DrawingTools
         {
             return new PropertyDescriptorCollection( GetPropertyDescriptors().ToArray() );
         }
+
         #endregion
 
         #region IDataErrorInfo Members

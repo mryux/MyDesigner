@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DesignerLibrary.Trackers;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {

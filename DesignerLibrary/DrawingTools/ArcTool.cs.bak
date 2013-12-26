@@ -1,7 +1,7 @@
-﻿using DesignerLibrary.Trackers;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {
@@ -20,28 +20,18 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void OnPaint(PaintEventArgs pArgs)
         {
-            if (Bounds.Height > 0
-                && Bounds.Width > 0)
+            if (Rect.Height > 0
+                && Rect.Width > 0)
             {
-                pArgs.Graphics.FillRegion( Brush, GetRegion() );
-                pArgs.Graphics.DrawArc( Pen, Bounds, StartAngle, SweepAngle );
+                pArgs.Graphics.DrawArc( Pen, Rect, StartAngle, SweepAngle );
             }
-        }
-
-        private Region GetRegion()
-        {
-            GraphicsPath lPath = new GraphicsPath();
-
-            lPath.AddArc( Bounds, StartAngle, SweepAngle );
-            lPath.CloseFigure();
-            return new Region( lPath );
         }
 
         protected override bool OnHitTest(Point pPoint)
         {
             GraphicsPath lPath = new GraphicsPath();
 
-            lPath.AddArc( Bounds, StartAngle, SweepAngle );
+            lPath.AddArc( Rect, StartAngle, SweepAngle );
             lPath.CloseFigure();
 
             return new Region( lPath ).IsVisible( pPoint );

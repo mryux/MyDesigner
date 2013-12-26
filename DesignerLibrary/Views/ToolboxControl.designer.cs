@@ -1,4 +1,4 @@
-﻿namespace DesignerLibrary
+﻿namespace DesignerLibrary.Views
 {
     partial class ToolboxControl
     {

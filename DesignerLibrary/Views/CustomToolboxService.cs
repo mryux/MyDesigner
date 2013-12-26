@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing.Design;
-using System.Windows.Forms;
+﻿using DesignerLibrary.Constants;
+using DesignerLibrary.Views;
+using System;
 using System.Collections;
-using DesignerLibrary.Consts;
+using System.Collections.Generic;
+using System.Drawing.Design;
+using System.Linq;
+using System.Windows.Forms;
 
-namespace DesignerLibrary
+namespace DesignerLibrary.Views
 {
     public class CustomToolboxService : ToolboxService
     {
-        ToolboxControl mToolboxControl = null;
-
         #region Properties
+        private ToolboxControl mToolboxControl = null;
         /// <summary>
         /// Gets and sets the Toolbox control which provides the list of
         /// ToolboxItems for this ToolboxService.

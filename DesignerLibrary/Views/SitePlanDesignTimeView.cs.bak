@@ -1,0 +1,93 @@
+﻿using System;
+using System.ComponentModel.Design;
+using System.Drawing;
+using System.Drawing.Design;
+using System.Windows.Forms;
+using Common.Logging;
+using SCF.SiPass.Explorer.Common.Services;
+using SCF.SiPass.Explorer.Common.Views;
+using SCF.SiPass.SitePlan.Module.DrawingTools;
+using Siemens.SiPass.DesignerLibrary.Consts;
+
+namespace SCF.SiPass.SitePlan.Module.Views
+{
+    public partial class SitePlanDesignTimeView : GeneralView
+    {
+        private static readonly ILog cLog = LogFactory.GetLogger( typeof( SitePlanDesignTimeView ) );
+        private DesignSurface _DesignSurface;
+        private IDesignerHost DesignerHost { get; set; }
+        private ISelectionService SelectionService { get; set; }
+
+        public SitePlanDesignTimeView()
+        {
+            InitializeComponent();
+        }
+
+        protected override void OnLoad(EventArgs pArgs)
+        {
+            base.OnLoad( pArgs );
+
+            _DesignSurface = new DesignSurface();
+            _DesignSurface.Loaded += new LoadedEventHandler( OnDesignSurfaceLoaded );
+
+            _ToolboxControl.AddToolboxItem( new ToolboxItem() { DisplayName = NameConsts.Pointer, Bitmap = new Bitmap( 1, 1 ) } );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( LineTool ) ) );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( RectangleTool ) ) );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( EllipseTool ) ) );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( PolygonTool ) ) );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ArcTool ) ) );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ImageTool ) ) );
+
+            DesignerHost = _DesignSurface.GetService( typeof( IDesignerHost ) ) as IDesignerHost;
+            DesignerHost.AddService( typeof( IToolboxService ), _ToolboxControl.ToolboxService );
+            DesignerHost.AddService( typeof( IPropertyValueUIService ), new GlyphService() );
+
+            SelectionService = _DesignSurface.GetService( typeof( ISelectionService ) ) as ISelectionService;
+            SelectionService.SelectionChanged += OnDesignerSurfaceView_SelectionChanged;
+
+            // Initialise the DesignSurface class
+            _DesignSurface.BeginLoad( typeof( RootDesignedComponent ) );
+        }
+
+        void OnDesignerSurfaceView_SelectionChanged(object sender, EventArgs pArgs)
+        {
+            object lObj = SelectionService.PrimarySelection;
+
+            _PropertyGrid.SelectedObject = lObj;
+        }
+
+        public Panel DesignerPanel
+        {
+            get { return this.panel1; }
+        }
+
+        void OnDesignSurfaceLoaded(object pSender, LoadedEventArgs pArgs)
+        {
+            if (pArgs.HasSucceeded)
+            {
+                Control lDesignView = _DesignSurface.View as Control;
+
+                lDesignView.Dock = DockStyle.Fill;
+                DesignerPanel.Controls.Add( lDesignView );
+
+                _PropertyGrid.Site = DesignerHost.RootComponent.Site;
+            }
+            else
+            {
+                // log errors
+                foreach (object lError in _DesignSurface.LoadErrors)
+                {
+                    Exception lExceptionError = lError as Exception;
+                    string lErrorString;
+
+                    if (lExceptionError != null)
+                        lErrorString = lExceptionError.Message;
+                    else
+                        lErrorString = lError.ToString();
+
+                    cLog.Error( lErrorString );
+                }
+            }
+        }
+    }
+}

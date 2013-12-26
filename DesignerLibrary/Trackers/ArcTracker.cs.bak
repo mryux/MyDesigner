@@ -46,8 +46,8 @@ namespace DesignerLibrary.Trackers
                 // add startAnglePoint/endAnglePoint
                 ArcTool lTool = DrawingTool as ArcTool;
 
-                lRet.Add( (int)ArcPointIndex.eStartAngle, GetPoint( lTool.Bounds, lTool.StartAngle ) );
-                lRet.Add( (int)ArcPointIndex.eEndAngle, GetPoint( lTool.Bounds, lTool.StartAngle + lTool.SweepAngle ) );
+                lRet.Add( (int)ArcPointIndex.eStartAngle, GetPoint( lTool.Rect, lTool.StartAngle ) );
+                lRet.Add( (int)ArcPointIndex.eEndAngle, GetPoint( lTool.Rect, lTool.StartAngle + lTool.SweepAngle ) );
 
                 return lRet;
             }

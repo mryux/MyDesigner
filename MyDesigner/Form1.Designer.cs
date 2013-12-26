@@ -29,19 +29,18 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this._DesignerView = new DesignerLibrary.DesignerSurfaceView();
+            this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
             this.SuspendLayout();
             // 
-            // _DesignerView
+            // rootDesignTimeView1
             // 
-            resources.ApplyResources(this._DesignerView, "_DesignerView");
-            this._DesignerView.Name = "_DesignerView";
+            resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
+            this.rootDesignTimeView1.Name = "rootDesignTimeView1";
             // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this._DesignerView);
+            this.Controls.Add(this.rootDesignTimeView1);
             this.Name = "Form1";
             this.ResumeLayout(false);
 
@@ -49,8 +48,7 @@
 
         #endregion
 
-        private DesignerLibrary.DesignerSurfaceView _DesignerView;
-
+        private DesignerLibrary.Views.RootDesignTimeView rootDesignTimeView1;
 
     }
 }

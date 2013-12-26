@@ -102,7 +102,7 @@ namespace DesignerLibrary.Trackers
         {
             RectangleTool lTool = DrawingTool as RectangleTool;
 
-            lTool.Bounds = ResizingRect;
+            lTool.Rect = ResizingRect;
         }
 
         protected override Rectangle GetSurroundingRect()

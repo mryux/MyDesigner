@@ -1,6 +1,7 @@
 ﻿using DesignerLibrary.Attributes;
 using DesignerLibrary.Constants;
 using DesignerLibrary.Helpers;
+using DesignerLibrary.Persistence;
 using DesignerLibrary.TypeEditors;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,12 @@ namespace DesignerLibrary.DrawingTools
         public ImageTool()
         {
         }
-        
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new ImageToolPersistence();
+        }
+
         protected override void OnPaint(PaintEventArgs pArgs)
         {
             pArgs.Graphics.DrawRectangle( Pen, Bounds );

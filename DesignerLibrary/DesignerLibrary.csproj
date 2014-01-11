@@ -54,7 +54,6 @@
     <Compile Include="Consts\PropertyNames.cs" />
     <Compile Include="Converters\LineWidthConverter.cs" />
     <Compile Include="DrawingTools\ArcTool.cs" />
-    <Compile Include="DrawingTools\BaseTool.cs" />
     <Compile Include="DrawingTools\EllipseTool.cs" />
     <Compile Include="DrawingTools\DrawingTool.cs" />
     <Compile Include="DrawingTools\ImageTool.cs" />
@@ -67,6 +66,13 @@
     </Compile>
     <Compile Include="Helpers\DragHelper.cs" />
     <Compile Include="Helpers\SiPropertyDescriptor.cs" />
+    <Compile Include="Persistence\EllipseToolPersistence.cs" />
+    <Compile Include="Persistence\ImageToolPersistence.cs" />
+    <Compile Include="Persistence\LineToolPersistence.cs" />
+    <Compile Include="Persistence\PolygonToolPersistence.cs" />
+    <Compile Include="Persistence\RectangleToolPersistence.cs" />
+    <Compile Include="Persistence\ToolPersistence.cs" />
+    <Compile Include="Persistence\TwoDToolPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

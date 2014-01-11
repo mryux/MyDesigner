@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.Views
@@ -87,6 +88,21 @@ namespace DesignerLibrary.Views
                     //cLog.Error( lErrorString );
                 }
             }
+        }
+
+        public void Open(string pFilePath)
+        {
+            GetDesignView().Open(pFilePath);
+        }
+
+        public void Save(string pFilePath)
+        {
+            GetDesignView().Save(pFilePath);
+        }
+
+        private DesignTimeView GetDesignView()
+        {
+            return DesignerPanel.Controls.OfType<DesignTimeView>().First();
         }
     }
 }

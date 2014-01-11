@@ -21,7 +21,29 @@ namespace MyDesigner
         {
             base.OnLoad( pArgs );
 
-            
+            toolStripMenuItemOpen.Click += OnOpen;
+            toolStripMenuItemSave.Click += OnSave;
+        }
+
+        void OnOpen(object sender, EventArgs e)
+        {
+            FileDialog lDialog = new OpenFileDialog();
+
+            lDialog.CheckFileExists = true;
+            if(lDialog.ShowDialog() == DialogResult.OK)
+            {
+                rootDesignTimeView1.Open(lDialog.FileName);
+            }
+        }
+
+        void OnSave(object sender, EventArgs e)
+        {
+            FileDialog lDialog = new SaveFileDialog();
+
+            if(lDialog.ShowDialog() == DialogResult.OK)
+            {
+                rootDesignTimeView1.Save(lDialog.FileName);
+            }
         }
     }
 }

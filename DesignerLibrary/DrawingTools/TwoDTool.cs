@@ -1,6 +1,7 @@
 ﻿using DesignerLibrary.Attributes;
 using DesignerLibrary.Constants;
 using DesignerLibrary.Helpers;
+using DesignerLibrary.Persistence;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,18 +13,22 @@ namespace DesignerLibrary.DrawingTools
     {
         protected TwoDTool()
         {
+        }
+
+        protected override void OnSetPersistence()
+        {
+            base.OnSetPersistence();
+
             Brush = new SolidBrush( FillColor );
         }
 
-        private Color _FillColor = Color.Transparent;
-
         public Color FillColor
         {
-            get { return _FillColor; }
+            get { return (Persistence as TwoDToolPersistence).FillColor; }
             set
             {
-                _FillColor = value;
-                Brush = new SolidBrush( FillColor );
+                (Persistence as TwoDToolPersistence).FillColor = value;
+                Brush = new SolidBrush( value );
                 Invalidate();
             }
         }

@@ -1,7 +1,8 @@
-﻿using System.Drawing;
+﻿using DesignerLibrary.Persistence;
+using DesignerLibrary.Trackers;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {
@@ -10,6 +11,11 @@ namespace DesignerLibrary.DrawingTools
         public EllipseTool()
         {
             base.Tracker = new EllipseTracker( this );
+        }
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new EllipseToolPersistence();
         }
 
         protected override void OnPaint(PaintEventArgs pArgs)

@@ -2,6 +2,7 @@
 using DesignerLibrary.Constants;
 using DesignerLibrary.Converters;
 using DesignerLibrary.Helpers;
+using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
 using System;
 using System.Collections.Generic;
@@ -16,47 +17,68 @@ namespace DesignerLibrary.DrawingTools
     {
         protected DrawingTool()
         {
-            Pen = new Pen( PenColor, GetLineWidth( PenWidth ) );
         }
 
-        private Color _PenColor = Color.Black;
+        private ToolPersistence _Persistence = null;
+        public ToolPersistence Persistence
+        {
+            get 
+            {
+                return _Persistence;
+            }
+
+            set
+            {
+                _Persistence = value;
+                OnSetPersistence();
+                Invalidate();
+            }
+        }
+
+        protected virtual void OnSetPersistence()
+        {
+            Pen = new Pen( _Persistence.PenColor, GetLineWidth( _Persistence.PenWidth ) );
+        }
+
         public Color PenColor
         {
-            get { return _PenColor; }
+            get { return _Persistence.PenColor; }
             set
             {
-                _PenColor = value;
+                _Persistence.PenColor = value;
+
+                Pen.Color = value;
                 Invalidate();
             }
         }
 
-        private LineWidthConverter.LineWidth _PenWidth = LineWidthConverter.LineWidth.Thin;
-        public LineWidthConverter.LineWidth PenWidth
+        public LineWidth PenWidth
         {
-            get { return _PenWidth; }
+            get { return _Persistence.PenWidth; }
             set
             {
-                _PenWidth = value;
-                Pen.Width = GetLineWidth( _PenWidth );
+                _Persistence.PenWidth = value;
+
+                Pen.Width = GetLineWidth( value );
                 Invalidate();
             }
         }
 
-        private float GetLineWidth(LineWidthConverter.LineWidth pWidth)
+        private float GetLineWidth(LineWidth pWidth)
         {
             float lRet = 1.0f;
 
-            switch (_PenWidth)
+            switch (pWidth)
             {
-                case LineWidthConverter.LineWidth.Thin:
+                case LineWidth.Thin:
                     lRet = 1.0f;
                     break;
 
-                case LineWidthConverter.LineWidth.Medium:
+                case LineWidth.Medium:
                     lRet = 2.0f;
                     break;
 
-                case LineWidthConverter.LineWidth.Thick:
+                case LineWidth.Thick:
                     lRet = 3.0f;
                     break;
             }
@@ -65,25 +87,31 @@ namespace DesignerLibrary.DrawingTools
         }
 
         public Pen Pen { get; private set; }
+
         public DrawingTracker Tracker { get; protected set; }
 
         protected TrackerAdjust Adjust { get { return Tracker.Adjust; } }
 
-        private Point _Location = Point.Empty;
         public Point Location
         {
-            get { return _Location; }
+            get { return _Persistence.Location; }
             set
             {
-                Point lOffset = new Point( value.X - _Location.X, value.Y - _Location.Y );
+                Point lOffset = new Point( value.X - Location.X, value.Y - Location.Y );
 
                 Invalidate();   // invalidate old area
-                _Location = value;
+                //_Persistence.Location = value;
                 OnLocationChanged( lOffset );
                 Invalidate();   // invalidate new area
             }
         }
 
+        public ToolPersistence CreatePersistence()
+        {
+            return NewPersistence();
+        }
+
+        protected abstract ToolPersistence NewPersistence();
         protected abstract void OnLocationChanged(Point pOffset);
         protected abstract void OnPaint(PaintEventArgs pArgs);
         protected abstract bool OnHitTest(Point pPoint);
@@ -132,7 +160,7 @@ namespace DesignerLibrary.DrawingTools
             set
             {
                 _Selected = value;
-                Pen.Color = _Selected ? Color.Red : _PenColor;
+                Pen.Color = _Selected ? Color.Red : _Persistence.PenColor;
             }
         }
 
@@ -157,6 +185,7 @@ namespace DesignerLibrary.DrawingTools
         }
 
         public bool IsResizing { get; protected set; }
+
         public void StartResize(Point pPoint)
         {
             IsResizing = true;
@@ -172,6 +201,16 @@ namespace DesignerLibrary.DrawingTools
         {
             IsResizing = OnEndResize( pPoint );
             return IsResizing;
+        }
+
+        protected virtual void OnEscape()
+        {
+        }
+
+        public void Escape()
+        {
+            OnEscape();
+            IsResizing = false;
         }
 
         public event EventHandler RedrawEvent;

@@ -1,21 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using DesignerLibrary.Persistence;
+using DesignerLibrary.Trackers;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using DesignerLibrary.Trackers;
 
 namespace DesignerLibrary.DrawingTools
 {
     class PolygonTool : TwoDTool
     {
-        public List<Point> Points { get; private set; }
+        public List<Point> Points
+        {
+            get { return (Persistence as PolygonToolPersistence).Points; }
+            set
+            {
+                (Persistence as PolygonToolPersistence).Points = value;
+            }
+        }
         private Point _MovingPoint = Point.Empty;
 
         public PolygonTool()
         {
-            Points = new List<Point>();
             base.Tracker = new PolygonTracker( this );
+        }
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new PolygonToolPersistence();
         }
 
         protected override void OnLocationChanged(Point pOffset)
@@ -106,6 +118,13 @@ namespace DesignerLibrary.DrawingTools
             }
 
             return lRet;
+        }
+
+        protected override void OnEscape()
+        {
+            Point lStartPoint = Points.First();
+
+            OnEndResize( lStartPoint );
         }
     }
 }

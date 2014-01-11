@@ -1,4 +1,5 @@
-﻿using DesignerLibrary.Trackers;
+﻿using DesignerLibrary.Persistence;
+using DesignerLibrary.Trackers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -9,20 +10,50 @@ namespace DesignerLibrary.DrawingTools
     {
         public LineTool()
         {
-            StartPos = new Point( 0, 0 );
-            EndPos = new Point( 100, 100 );
-
             base.Tracker = new LineTracker( this );
         }
 
-        public Point StartPos;
-        public Point EndPos;
+        public Point StartPos
+        {
+            get
+            {
+                return (Persistence as LineToolPersistence).StartPos;
+            }
+
+            set
+            {
+                (Persistence as LineToolPersistence).StartPos = value;
+            }
+        }
+
+        public Point EndPos
+        {
+            get
+            {
+                return (Persistence as LineToolPersistence).EndPos;
+            }
+
+            set
+            {
+                (Persistence as LineToolPersistence).EndPos = value;
+            }
+        }
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new LineToolPersistence();
+        }
 
         protected override void OnLocationChanged(Point pOffset)
         {
             // update StartPos/EndPos, so PointChanged event could be fired properly
-            StartPos.Offset( pOffset );
-            EndPos.Offset( pOffset );
+            Point lStartPos = StartPos;
+            lStartPos.Offset( pOffset );
+            StartPos = lStartPos;
+
+            Point lEndPos = EndPos;
+            lEndPos.Offset( pOffset );
+            EndPos = lEndPos;
         }
 
         protected override void OnPaint(PaintEventArgs pArgs)

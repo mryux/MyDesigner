@@ -201,7 +201,6 @@ namespace DesignerLibrary.Views
 
                 if (lTool != null)
                 {
-                    lTool.Persistence = lTool.CreatePersistence();
                     Point lLocation = GetScrollablePoint( PointToClient( new Point( pArgs.X, pArgs.Y ) ) );
                     Rectangle lRect = lTool.SurroundingRect;
 
@@ -335,7 +334,6 @@ namespace DesignerLibrary.Views
                             if (!DragBoxFromMouseDown.Contains( lLocation ))
                             {
                                 PickingTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
-                                PickingTool.Persistence = PickingTool.CreatePersistence();
                                 PickingTool.StartResize( lLocation );
                             }
                         }
@@ -379,20 +377,6 @@ namespace DesignerLibrary.Views
             DragBoxFromMouseDown = Rectangle.Empty;
             DraggingPoint = Point.Empty;
         }
-
-        protected override void OnMouseDoubleClick(MouseEventArgs pArgs)
-        {
-            System.Diagnostics.Debug.WriteLine( string.Format( "OnMouseDoubleClick, {0}", pArgs.Location ) );
-            base.OnMouseDoubleClick( pArgs );
-
-            if (PickingTool != null)
-            {
-                PickingTool.Escape();
-                AddTool( PickingTool );
-                InvalidateRect( PickingTool.SurroundingRect );
-                PickingTool = null;
-            }
-        }
         
         protected override void OnAddTool(DrawingTool pTool)
         {
@@ -412,7 +396,7 @@ namespace DesignerLibrary.Views
             typeof( RectangleToolPersistence ),
         };
 
-        public void Open(string pFilePath)
+        public void Load(string pFilePath)
         {
             using (TextReader reader = new StreamReader(pFilePath))
             {

@@ -1,6 +1,7 @@
 ﻿using DesignerLibrary.Attributes;
 using DesignerLibrary.Constants;
 using DesignerLibrary.Helpers;
+using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
 using System;
 using System.Collections.Generic;
@@ -12,23 +13,25 @@ namespace DesignerLibrary.DrawingTools
 {
     class RectangleTool : TwoDTool
     {
-        private Rectangle _Bounds = Rectangle.Empty;
         public Rectangle Bounds
         {
-            get { return _Bounds; }
+            get { return (Persistence as RectangleToolPersistence).Bounds; }
             set
             {
                 Invalidate();
-                _Bounds = value;
+                (Persistence as RectangleToolPersistence).Bounds = value;
                 Invalidate();
             }
         }
 
         public RectangleTool()
         {
-            Bounds = new Rectangle( 0, 0, 100, 100 );
-
             base.Tracker = new RectangleTracker( this );
+        }
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new RectangleToolPersistence();
         }
 
         protected override void OnLocationChanged(Point pOffset)

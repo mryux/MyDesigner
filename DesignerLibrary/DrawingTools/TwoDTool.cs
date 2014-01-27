@@ -1,5 +1,5 @@
 ﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
+using DesignerLibrary.Consts;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
 using System;
@@ -45,7 +45,7 @@ namespace DesignerLibrary.DrawingTools
                     CustomVisibleAttribute.Yes,
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "FillColor" ),
-                    new PropertyOrderAttribute( 6 )
+                    new PropertyOrderAttribute( (int)PropertyOrder.eFillColor )
                 } ) );
 
             return lDescriptors;

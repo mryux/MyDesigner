@@ -52,6 +52,8 @@
     <Compile Include="Attributes\CustomVisibleAttribute.cs" />
     <Compile Include="Attributes\PropertyOrderAttribute.cs" />
     <Compile Include="Consts\PropertyNames.cs" />
+    <Compile Include="Consts\WinMessages.cs" />
+    <Compile Include="Converters\EnumTypeConverter.cs" />
     <Compile Include="Converters\LineWidthConverter.cs" />
     <Compile Include="DrawingTools\ArcTool.cs" />
     <Compile Include="DrawingTools\EllipseTool.cs" />
@@ -65,6 +67,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Helpers\DragHelper.cs" />
+    <Compile Include="Helpers\EventArgs.cs" />
     <Compile Include="Helpers\SiPropertyDescriptor.cs" />
     <Compile Include="Persistence\EllipseToolPersistence.cs" />
     <Compile Include="Persistence\ImageToolPersistence.cs" />

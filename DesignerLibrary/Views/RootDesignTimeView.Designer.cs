@@ -18,6 +18,8 @@ namespace DesignerLibrary.Views
             {
                 components.Dispose();
             }
+
+            Application.RemoveMessageFilter(DesignView);
             base.Dispose( disposing );
         }
 

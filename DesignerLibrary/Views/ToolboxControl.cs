@@ -1,4 +1,4 @@
-﻿using DesignerLibrary.Constants;
+﻿using DesignerLibrary.Consts;
 using System;
 using System.ComponentModel;
 using System.Drawing.Design;

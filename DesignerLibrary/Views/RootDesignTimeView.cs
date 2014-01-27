@@ -1,4 +1,4 @@
-﻿using DesignerLibrary.Constants;
+﻿using DesignerLibrary.Consts;
 using DesignerLibrary.DrawingTools;
 using System;
 using System.ComponentModel.Design;
@@ -63,8 +63,10 @@ namespace DesignerLibrary.Views
         {
             if (pArgs.HasSucceeded)
             {
-                Control lDesignView = _DesignSurface.View as Control;
+                DesignTimeView lDesignView = _DesignSurface.View as DesignTimeView;
 
+                Application.AddMessageFilter(lDesignView);
+                lDesignView.DirtyEvent += OnDirtyEvent;
                 lDesignView.Dock = DockStyle.Fill;
                 DesignerPanel.Controls.Add( lDesignView );
 
@@ -90,19 +92,27 @@ namespace DesignerLibrary.Views
             }
         }
 
+        void OnDirtyEvent(object sender, Helpers.EventArgs<bool> pArgs)
+        {
+            bool lIsDirty = pArgs.Data;
+
+            if (lIsDirty)
+                Parent.Text += "*";
+        }
+
         public void Open(string pFilePath)
         {
-            GetDesignView().Open(pFilePath);
+            DesignView.Load(pFilePath);
         }
 
         public void Save(string pFilePath)
         {
-            GetDesignView().Save(pFilePath);
+            DesignView.Save(pFilePath);
         }
 
-        private DesignTimeView GetDesignView()
+        private DesignTimeView DesignView
         {
-            return DesignerPanel.Controls.OfType<DesignTimeView>().First();
+            get { return DesignerPanel.Controls.OfType<DesignTimeView>().First(); }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
+using DesignerLibrary.Consts;
 using DesignerLibrary.Converters;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -86,10 +87,29 @@ namespace DesignerLibrary.DrawingTools
             return lRet;
         }
 
+        protected Region Region 
+        {
+            get
+            {
+                GraphicsPath lPath = new GraphicsPath();
+
+                FillPath( lPath );
+                lPath.CloseFigure();
+
+                return new Region( lPath );
+            }
+        }
+
+        public bool IsOverlapped(DrawingTool pTool, Graphics pGraph)
+        {
+            Region lRegion = Region;
+            
+            lRegion.Intersect( pTool.Region );
+            return !lRegion.IsEmpty( pGraph );
+        }
+
         public Pen Pen { get; private set; }
-
         public DrawingTracker Tracker { get; protected set; }
-
         protected TrackerAdjust Adjust { get { return Tracker.Adjust; } }
 
         public Point Location
@@ -114,11 +134,11 @@ namespace DesignerLibrary.DrawingTools
         protected abstract ToolPersistence NewPersistence();
         protected abstract void OnLocationChanged(Point pOffset);
         protected abstract void OnPaint(PaintEventArgs pArgs);
-        protected abstract bool OnHitTest(Point pPoint);
         protected abstract Rectangle GetSurroundingRect();
         protected abstract void OnStartResize(Point pPoint);
         protected abstract void OnResize(Point pPoint);
         protected abstract bool OnEndResize(Point pPoint);
+        protected abstract void FillPath(GraphicsPath pPath);
 
         public static Rectangle GetClipRect(Point[] pPoints)
         {
@@ -151,6 +171,11 @@ namespace DesignerLibrary.DrawingTools
                 lRet = OnHitTest( pPoint );
 
             return lRet;
+        }
+
+        protected virtual bool OnHitTest(Point pPoint)
+        {
+            return Region.IsVisible( pPoint );
         }
 
         private bool _Selected = false;
@@ -213,12 +238,45 @@ namespace DesignerLibrary.DrawingTools
             IsResizing = false;
         }
 
+        protected virtual void OnRun(Control pControl)
+        {
+        }
+
+        public void Run(Control pControl)
+        {
+            OnRun( pControl );
+        }
+
         public event EventHandler RedrawEvent;
 
         protected void Invalidate()
         {
             if (RedrawEvent != null)
                 RedrawEvent( this, EventArgs.Empty );
+        }
+
+        protected ICollection<string> Fields = new List<string>();
+        public string Validate()
+        {
+            string lErrorMsg = string.Empty;
+
+            Fields.Any( field =>
+            {
+                lErrorMsg = (this as IDataErrorInfo)[field];
+                return !string.IsNullOrEmpty( lErrorMsg );
+            } );
+
+            return lErrorMsg;
+        }
+
+        private IList<PropertyDescriptor> GetProperties()
+        {
+            IList<PropertyDescriptor> lRet = GetPropertyDescriptors();
+
+            Fields = (from p in lRet
+                      select p.Name).ToList();
+
+            return lRet;
         }
 
         protected virtual IList<PropertyDescriptor> GetPropertyDescriptors()
@@ -231,7 +289,7 @@ namespace DesignerLibrary.DrawingTools
                     CustomVisibleAttribute.Yes,
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "Location" ),
-                    new PropertyOrderAttribute( 1 )
+                    new PropertyOrderAttribute( (int)PropertyOrder.eLocation )
                 } ) );
 
             lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenColor,
@@ -240,7 +298,7 @@ namespace DesignerLibrary.DrawingTools
                     CustomVisibleAttribute.Yes,
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "LineColor" ),
-                    new PropertyOrderAttribute( 5 ),
+                    new PropertyOrderAttribute( (int)PropertyOrder.eLineColor ),
                 } ) );
 
             lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenWidth,
@@ -249,14 +307,14 @@ namespace DesignerLibrary.DrawingTools
                     CustomVisibleAttribute.Yes,
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "LineWidth" ),
-                    new PropertyOrderAttribute( 7 ),
+                    new PropertyOrderAttribute( (int)PropertyOrder.eLineWidth ),
                     new TypeConverterAttribute( typeof( LineWidthConverter ) ),
                 } ) );
 
             return lRet;
         }
 
-        #region "IComponent implementation"
+        #region IComponent implementation
         private EventHandler _Disposed;
         event EventHandler IComponent.Disposed
         {
@@ -330,7 +388,7 @@ namespace DesignerLibrary.DrawingTools
 
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
         {
-            return new PropertyDescriptorCollection( GetPropertyDescriptors().ToArray() );
+            return new PropertyDescriptorCollection( GetProperties().ToArray() );
         }
         #endregion
 

@@ -23,28 +23,14 @@ namespace DesignerLibrary.DrawingTools
             if (Bounds.Height > 0
                 && Bounds.Width > 0)
             {
-                pArgs.Graphics.FillRegion( Brush, GetRegion() );
+                pArgs.Graphics.FillRegion( Brush, Region );
                 pArgs.Graphics.DrawArc( Pen, Bounds, StartAngle, SweepAngle );
             }
         }
 
-        private Region GetRegion()
+        protected override void FillPath(GraphicsPath pPath)
         {
-            GraphicsPath lPath = new GraphicsPath();
-
-            lPath.AddArc( Bounds, StartAngle, SweepAngle );
-            lPath.CloseFigure();
-            return new Region( lPath );
-        }
-
-        protected override bool OnHitTest(Point pPoint)
-        {
-            GraphicsPath lPath = new GraphicsPath();
-
-            lPath.AddArc( Bounds, StartAngle, SweepAngle );
-            lPath.CloseFigure();
-
-            return new Region( lPath ).IsVisible( pPoint );
+            pPath.AddArc( Bounds, StartAngle, SweepAngle );
         }
 
         private ArcTrackerAdjust ArcAdjust { get { return Adjust as ArcTrackerAdjust; } }

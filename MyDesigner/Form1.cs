@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using DesignerLibrary;
 
 namespace MyDesigner
 {
@@ -20,9 +13,6 @@ namespace MyDesigner
         protected override void OnLoad(EventArgs pArgs)
         {
             base.OnLoad( pArgs );
-
-            toolStripMenuItemOpen.Click += OnOpen;
-            toolStripMenuItemSave.Click += OnSave;
         }
 
         void OnOpen(object sender, EventArgs e)

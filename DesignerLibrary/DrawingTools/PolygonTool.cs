@@ -58,14 +58,9 @@ namespace DesignerLibrary.DrawingTools
             }
             else if (lCount > 1)
             {
-                pArgs.Graphics.FillRegion( Brush, GetRegion() );
+                pArgs.Graphics.FillRegion( Brush, Region );
                 pArgs.Graphics.DrawLine( Pen, Points.Last(), Points.First() );
             }
-        }
-
-        protected override bool OnHitTest(Point pPoint)
-        {
-            return GetRegion().IsVisible( pPoint );
         }
 
         protected override Rectangle GetSurroundingRect()
@@ -79,13 +74,9 @@ namespace DesignerLibrary.DrawingTools
             return DrawingTool.GetClipRect( lPoints.ToArray() );
         }
 
-        private Region GetRegion()
+        protected override void FillPath(GraphicsPath pPath)
         {
-            GraphicsPath lPath = new GraphicsPath();
-
-            lPath.AddLines( Points.ToArray() );
-            lPath.CloseFigure();
-            return new Region( lPath );
+            pPath.AddLines( Points.ToArray() );
         }
 
         protected override void OnStartResize(Point pPoint)

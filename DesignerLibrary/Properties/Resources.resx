@@ -117,8 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Caption_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="ContextMenu_BringToBack" xml:space="preserve">
+    <value>Bring to back</value>
+  </data>
+  <data name="ContextMenu_BringToFront" xml:space="preserve">
+    <value>Bring to front</value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="Error_InvalidFileLocation" xml:space="preserve">
     <value>Invalid image file location!</value>
+  </data>
+  <data name="Error_InvalidLayerName" xml:space="preserve">
+    <value>Invalid layer name!</value>
   </data>
   <data name="LayerDescription" xml:space="preserve">
     <value>&lt;Description&gt;</value>
@@ -152,5 +167,8 @@
   </data>
   <data name="Tool_Rectangle" xml:space="preserve">
     <value>Rectangle</value>
+  </data>
+  <data name="Warning_Delete" xml:space="preserve">
+    <value>Are you sure to delete this tool?</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-﻿using DesignerLibrary.Constants;
+﻿using DesignerLibrary.Consts;
 using DesignerLibrary.Views;
 using System;
 using System.Collections;

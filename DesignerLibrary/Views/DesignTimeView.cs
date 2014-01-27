@@ -1,10 +1,11 @@
 ﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
+using DesignerLibrary.Consts;
 using DesignerLibrary.DrawingTools;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -18,57 +19,45 @@ using System.Xml.Serialization;
 namespace DesignerLibrary.Views
 {
     [TypeConverter( typeof( BrowsablePropertiesConverter ) )]
-    class DesignTimeView : BaseView
+    class DesignTimeView : BaseView, IDataErrorInfo, IMessageFilter
     {
         private IServiceProvider ServiceProvider { get; set; }
         private ISelectionService SelectionService { get; set; }
 
         public DesignTimeView(RootDesigner pDesigner)
         {
+            InitializeComponent();
+
             AllowDrop = true;
 
             Site = pDesigner.Component.Site;
             ServiceProvider = Site.Container as IServiceProvider;
             SelectionService = GetService<ISelectionService>();
 
-            CaptionHeight = 30;
             LayerDescription = Properties.Resources.LayerDescription;
+
+            _deleteToolStripMenuItem.Click += OnDeleteTool;
+            _bringToFrontToolStripMenuItem.Click += OnBringToFront;
+            _bringToBackToolStripMenuItem.Click += OnBringToBack;
         }
 
-        private DrawingTool HitTest(Point pPoint)
+        public event EventHandler<EventArgs<bool>> DirtyEvent;
+
+        private bool _IsDirty = false;
+        private bool IsDirty
         {
-            return DrawingTools.FirstOrDefault( e =>
+            get { return _IsDirty; }
+            set
             {
-                bool lRet = e.HitTest( pPoint );
-
-                if (!lRet)
-                    lRet = e.Tracker.HitTest( pPoint ) > 0;
-
-                return lRet;
-            } );
+                _IsDirty = value;
+                if (DirtyEvent != null)
+                    DirtyEvent( this, new EventArgs<bool>( _IsDirty ) );
+            }
         }
-
-        private static readonly Color DesignTitleBaseColor = Color.FromArgb( 50, 50, 50 );
-        private static readonly Color DesignTitleLightingColor = Color.FromArgb( 200, 200, 200 );
-        private int CaptionHeight { get; set; }
 
         protected override void OnPaint(PaintEventArgs pArgs)
         {
             base.OnPaint( pArgs );
-
-            Graphics lGraph = pArgs.Graphics;
-
-            // paint title
-            Rectangle lRect = new Rectangle( Bounds.Left, Bounds.Top, AutoScrollMinSize.Width, CaptionHeight );
-
-            if (pArgs.ClipRectangle.IntersectsWith( lRect ))
-            {
-                Brush lBrush = new LinearGradientBrush( lRect, DesignTitleBaseColor, DesignTitleLightingColor, LinearGradientMode.Horizontal );
-
-                lGraph.FillRectangle( lBrush, lRect );
-                lRect.Inflate( -4, 0 );
-                lGraph.DrawString( LayerDescription, Font, Brushes.White, lRect );
-            }
 
             // paint selected tool.
             if (_SelectedTool != null)
@@ -91,18 +80,16 @@ namespace DesignerLibrary.Views
                 {
                     _SelectedTool.Selected = false;
                     InvalidateRect( _SelectedTool.Tracker.SurroundingRect );
-
-                    SelectionService.SetSelectedComponents( new object[] { _SelectedTool }, SelectionTypes.Remove );
                 }
+                SelectionService.SetSelectedComponents( new object[] { _SelectedTool ?? (object)this }, SelectionTypes.Remove );
 
                 _SelectedTool = value;
                 if (_SelectedTool != null)
                 {
                     _SelectedTool.Selected = true;
                     InvalidateRect( _SelectedTool.Tracker.SurroundingRect );
-
-                    SelectionService.SetSelectedComponents( new object[] { _SelectedTool }, SelectionTypes.Add );
                 }
+                SelectionService.SetSelectedComponents( new object[] { _SelectedTool ?? (object)this }, SelectionTypes.Add );
             }
         }
 
@@ -192,6 +179,8 @@ namespace DesignerLibrary.Views
 
                     return true;
                 } );
+
+                IsDirty = true;
             }
             else
             {
@@ -208,6 +197,7 @@ namespace DesignerLibrary.Views
                     lLocation.Offset( -lRect.Width / 2, -lRect.Height / 2 );
                     lTool.Location = lLocation;
                     AddTool( lTool );
+                    SelectedTool = lTool;
                     InvalidateRect( lTool.SurroundingRect );
                 }
             }
@@ -217,24 +207,21 @@ namespace DesignerLibrary.Views
 
         protected override void OnMouseDown(MouseEventArgs pArgs)
         {
-            Point lLocation = GetScrollablePoint( pArgs.Location );
-            DrawingTool lTool = HitTest( lLocation );
+            if (pArgs.Button == MouseButtons.Left)
+            {
+                Point lLocation = GetScrollablePoint( pArgs.Location );
+                DrawingTool lTool = HitTest( lLocation );
 
-            if (lTool != null)
-                lTool.Tracker.StartResize( lLocation );
+                if (lTool != null)
+                    lTool.Tracker.StartResize( lLocation );
 
-            if (lTool != null)
-                SelectionService.SetSelectedComponents( new object[] { this }, SelectionTypes.Remove );
-            SelectedTool = lTool;
-            if (lTool == null)
-                SelectionService.SetSelectedComponents( new object[] { this }, SelectionTypes.Add );
+                SelectedTool = lTool;
 
-            base.FullDragMode = (lTool == null && SelectedToolboxItem == null);
-            Size lDragSize = SystemInformation.DragSize;
+                base.FullDragMode = (lTool == null && SelectedToolboxItem == null);
 
-            lLocation.Offset( lDragSize.Width / 2, lDragSize.Height / 2 );
-            DragBoxFromMouseDown = new Rectangle( lLocation, lDragSize );
-            DraggingPoint = lLocation;
+                DragBoxFromMouseDown = new Rectangle( lLocation, SystemInformation.DragSize );
+                DraggingPoint = lLocation;
+            }
 
             base.OnMouseDown( pArgs );
         }
@@ -260,89 +247,102 @@ namespace DesignerLibrary.Views
         {
             base.OnMouseMove( pArgs );
 
-            if (FullDragMode)
-                return;
-
-            bool lRunDefault = true;
             Point lLocation = GetScrollablePoint( pArgs.Location );
 
-            if (SelectedTool != null)
+            switch (pArgs.Button)
             {
-                DrawingTracker lTracker = SelectedTool.Tracker;
+                case MouseButtons.Right:
+                    return;
 
-                lRunDefault = false;
-                // stretching on tracker.
-                if (lTracker.IsResizing)
-                {
-                    InvalidateRect( lTracker.SurroundingRect );
-                    lTracker.Resize( lLocation );
-                    InvalidateRect( lTracker.SurroundingRect );
-                }
-                else if (DragBoxFromMouseDown != Rectangle.Empty)
-                {
-                    // start DragDrop on selected tool object.
-                    if (!DragBoxFromMouseDown.Contains( lLocation ))
+                case MouseButtons.None:
+                    Cursor lCurrentCursor = Cursors.Hand;
+
+                    if (SelectedToolboxItem == null
+                        && PickingTool == null)
                     {
-                        int lIndex = DrawingTools.IndexOf( SelectedTool );
-
-                        DoDragDrop( lIndex.ToString(), DragDropEffects.All );
-                        DraggingPoint = Point.Empty;
-                        DragBoxFromMouseDown = Rectangle.Empty;
-                    }
-                }
-                else
-                    lRunDefault = true;
-            }
-
-            // update current Cursor.
-            if (lRunDefault)
-            {
-                if (PickingTool != null)
-                {
-                    InvalidateRect( PickingTool.SurroundingRect );
-                    PickingTool.Resize( lLocation );
-                    InvalidateRect( PickingTool.SurroundingRect );
-                }
-                else
-                {
-                    ToolboxItem lItem = SelectedToolboxItem;
-
-                    // update cursor by hitTest on each drawing tool.
-                    if (lItem == null)
-                    {
-                        var lHittedTool = DrawingTools.FirstOrDefault( e =>
+                        DrawingTools.Any( e =>
                         {
                             Cursor lCursor = e.Tracker.GetCursor( lLocation );
                             bool lRet = false;
 
                             if (lCursor != Cursors.Default)
                             {
-                                Cursor.Current = lCursor;
+                                lCurrentCursor = lCursor;
                                 lRet = true;
                             }
 
                             return lRet;
                         } );
-
-                        if (lHittedTool == null)
-                            Cursor.Current = Cursors.Hand;
                     }
                     else
+                        lCurrentCursor = Cursors.Cross;
+
+                    Cursor.Current = lCurrentCursor;
+                    break;
+
+                case MouseButtons.Left:
+                    if (FullDragMode)
+                        return;
+
+                    bool lRunDefault = true;
+
+                    if (SelectedTool != null)
                     {
-                        if (DragBoxFromMouseDown != Rectangle.Empty)
+                        DrawingTracker lTracker = SelectedTool.Tracker;
+
+                        lRunDefault = false;
+                        // stretching on tracker.
+                        if (lTracker.IsResizing)
                         {
-                            // create toolbox item
+                            InvalidateRect( lTracker.SurroundingRect );
+                            lTracker.Resize( lLocation );
+                            InvalidateRect( lTracker.SurroundingRect );
+                        }
+                        else if (DragBoxFromMouseDown != Rectangle.Empty)
+                        {
+                            // start DragDrop on selected tool object.
                             if (!DragBoxFromMouseDown.Contains( lLocation ))
                             {
-                                PickingTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
-                                PickingTool.Persistence = PickingTool.CreatePersistence();
-                                PickingTool.StartResize( lLocation );
+                                int lIndex = DrawingTools.IndexOf( SelectedTool );
+
+                                DoDragDrop( lIndex.ToString(), DragDropEffects.All );
+                                DraggingPoint = Point.Empty;
+                                DragBoxFromMouseDown = Rectangle.Empty;
                             }
                         }
                         else
-                            Cursor.Current = Cursors.Cross;
+                            lRunDefault = true;
                     }
-                }
+
+                    // update current Cursor.
+                    if (lRunDefault)
+                    {
+                        if (PickingTool == null)
+                        {
+                            ToolboxItem lItem = SelectedToolboxItem;
+
+                            // update cursor by hitTest on each drawing tool.
+                            if (lItem != null
+                                && DragBoxFromMouseDown != Rectangle.Empty)
+                            {
+                                // create toolbox item
+                                if (!DragBoxFromMouseDown.Contains( lLocation ))
+                                {
+                                    PickingTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
+                                    PickingTool.Persistence = PickingTool.CreatePersistence();
+                                    PickingTool.StartResize( lLocation );
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            if (PickingTool != null)
+            {
+                InvalidateRect( PickingTool.SurroundingRect );
+                PickingTool.Resize( lLocation );
+                InvalidateRect( PickingTool.SurroundingRect );
             }
         }
 
@@ -355,43 +355,64 @@ namespace DesignerLibrary.Views
 
             Point lLocation = GetScrollablePoint( pArgs.Location );
 
-            // End tracker resize operation.
-            if (SelectedTool != null
-                && SelectedTool.Tracker.IsResizing)
+            switch (pArgs.Button)
             {
-                Rectangle lRect = SelectedTool.SurroundingRect;
-                int lWidth = SelectedTool.Tracker.Margin + 1;     // +1 for SmoothingMode.AntiAlias
+                case MouseButtons.Right:
+                    SelectedTool = HitTest( lLocation );
+                    _contextMenuStrip.Show( this, pArgs.Location );
+                    break;
 
-                InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
-                SelectedTool.Tracker.EndResize( lLocation );
-                InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
-            }
-            else if (PickingTool != null)
-            {
-                if (PickingTool.EndResize( lLocation ))
-                {
-                    AddTool( PickingTool );
-                    InvalidateRect( PickingTool.SurroundingRect );
-                    PickingTool = null;
-                }
-            }
+                case MouseButtons.Left:
+                    // End tracker resize operation.
+                    if (SelectedTool != null
+                        && SelectedTool.Tracker.IsResizing)
+                    {
+                        Rectangle lRect = SelectedTool.SurroundingRect;
+                        int lWidth = SelectedTool.Tracker.Margin + 1;     // +1 for SmoothingMode.AntiAlias
 
+                        InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
+                        SelectedTool.Tracker.EndResize( lLocation );
+                        InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
+                        IsDirty = true;
+                    }
+                    else if (PickingTool != null)
+                    {
+                        if (PickingTool.EndResize( lLocation ))
+                        {
+                            AddTool( PickingTool );
+                            SelectedTool = PickingTool;
+                            InvalidateRect( PickingTool.SurroundingRect );
+                            PickingTool = null;
+                        }
+                    }
+                    break;
+            }
+            
             DragBoxFromMouseDown = Rectangle.Empty;
             DraggingPoint = Point.Empty;
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs pArgs)
         {
-            System.Diagnostics.Debug.WriteLine( string.Format( "OnMouseDoubleClick, {0}", pArgs.Location ) );
             base.OnMouseDoubleClick( pArgs );
 
             if (PickingTool != null)
             {
                 PickingTool.Escape();
                 AddTool( PickingTool );
+                SelectedTool = PickingTool;
                 InvalidateRect( PickingTool.SurroundingRect );
                 PickingTool = null;
             }
+        }
+
+        private void RemoveTool(DrawingTool pTool)
+        {
+            Rectangle lRect = pTool.Tracker.SurroundingRect;
+
+            DrawingTools.Remove( pTool );
+            InvalidateRect( lRect );
+            IsDirty = true;
         }
         
         protected override void OnAddTool(DrawingTool pTool)
@@ -401,131 +422,192 @@ namespace DesignerLibrary.Views
             {
                 InvalidateRect( (pSender as DrawingTool).Tracker.SurroundingRect );
             };
+            
+            IsDirty = true;
         }
 
-        private static readonly Type[] PersistenceTypes = new Type[]
+        protected override void OnLoadModel(string pPath)
         {
-            typeof( EllipseToolPersistence ),
-            typeof( ImageToolPersistence ),
-            typeof( LineToolPersistence ),
-            typeof( PolygonToolPersistence ),
-            typeof( RectangleToolPersistence ),
-        };
+            base.OnLoadModel( pPath );
 
-        public void Open(string pFilePath)
+            IsDirty = false;
+        }
+
+        public string Validate()
         {
-            using (TextReader reader = new StreamReader(pFilePath))
+            string lRet = (this as IDataErrorInfo)[PropertyNames.LayerName];
+
+            if (string.IsNullOrEmpty( lRet ))
             {
-                XmlSerializer lSerializer = new XmlSerializer(typeof(SitePlanTools), PersistenceTypes);
-                SitePlanTools lTools = lSerializer.Deserialize(reader) as SitePlanTools;
+                var lTools = from tool in DrawingTools
+                            let errorMsg = tool.Validate()
+                            where !string.IsNullOrEmpty( errorMsg )
+                            select new Tuple<DrawingTool, string>( tool, errorMsg );
 
-                LayerName = lTools.Name;
-                LayerDescription = lTools.Description;
-                lTools.Persistences.All(persistence =>
+                if (lTools.Count() > 0)
                 {
-                    DrawingTool lTool = persistence.CreateDrawingTool();
+                    SelectedTool = lTools.First().Item1;
 
-                    lTool.Persistence = persistence;
-                    AddTool(lTool);
-                    return true;
-                });
+                    var lErrorMsgs = from t in lTools
+                                     select t.Item2;
 
-                Invalidate();
+                    lRet = "-- " + string.Join( "\n-- ", lErrorMsgs );
+                }
             }
+
+            return lRet;
         }
 
-        public void Save(string pFilePath)
+        public void Save(string pPath)
         {
-            XmlSerializer lSerializer = new XmlSerializer(typeof(SitePlanTools), PersistenceTypes);
             SitePlanTools lTools = new SitePlanTools();
 
+            // DrawingTools
             lTools.Name = LayerName;
             lTools.Description = LayerDescription;
+            lTools.Width = Width;
+            lTools.Height = Height; 
+
+            XmlSerializer lSerializer = new XmlSerializer( typeof( SitePlanTools ), PersistenceTypes );
+
             lTools.Persistences = (from tool in DrawingTools
-                                   select tool.Persistence).ToArray();
-            using (TextWriter writer = new StreamWriter(pFilePath))
+                            select tool.Persistence).ToArray();
+            using (TextWriter writer = new StreamWriter(pPath))
             {
-                lSerializer.Serialize(writer, lTools);
+                lSerializer.Serialize( writer, lTools );
                 writer.Flush();
             }
         }
 
+        void OnDeleteTool(object sender, EventArgs pArgs)
+        {
+            if (MessageBox.Show( Properties.Resources.Warning_Delete, Properties.Resources.Caption_Warning, MessageBoxButtons.OKCancel ) == DialogResult.OK)
+            {
+                RemoveTool( SelectedTool );
+                SelectedTool = null;
+            }
+        }
+
+        void OnBringToFront(object sender, EventArgs pArgs)
+        {
+            OnBringTo( tools => 
+            {
+                // move SelectedTool next to last overlapped tool
+                int lIndex = tools.Max( t => DrawingTools.IndexOf( t ) );
+
+                return lIndex + 1;
+            } );
+        }
+
+        void OnBringToBack(object sender, EventArgs pArgs)
+        {
+            OnBringTo( tools =>
+            {
+                // move SelectedTool prior to first overlapped tool
+                int lIndex = tools.Min( t => DrawingTools.IndexOf( t ) );
+
+                return lIndex;
+            } );
+        }
+
+        private void OnBringTo(Func<IEnumerable<DrawingTool>, int> pGetPosition)
+        {
+            var lOverlappedTools = GetOverlappedTools( SelectedTool );
+
+            if (lOverlappedTools.Count() > 0)
+            {
+                DrawingTools.Remove( SelectedTool );
+                DrawingTools.Insert( pGetPosition( lOverlappedTools ), SelectedTool );
+                Invalidate();
+                IsDirty = true;
+            }
+        }
+
+        private IEnumerable<DrawingTool> GetOverlappedTools(DrawingTool pTool)
+        {
+            Graphics lGraph = Graphics.FromHwnd( Handle );
+
+            return from t in DrawingTools
+                   where t != pTool
+                        && t.IsOverlapped( pTool, lGraph )
+                   select t;
+        }
+
+        #region IDataErrorInfo Members
+        string IDataErrorInfo.Error
+        {
+            get { return null; }
+        }
+
+        string IDataErrorInfo.this[string pFieldName]
+        {
+            get
+            {
+                string lRet = string.Empty;
+
+                if (pFieldName == PropertyNames.LayerName)
+                {
+                    if (string.IsNullOrEmpty( LayerName ))
+                        lRet = Properties.Resources.Error_InvalidLayerName;
+                }
+
+                return lRet;
+            }
+        }
+        #endregion
+
+        private string _LayerName = string.Empty;
+
         [CustomVisible( true )]
         [Category( "Appearance" )]
         [DisplayName( "Name" )]
-        [PropertyOrder(1)]
-        public string LayerName
+        public string DesignerName
         {
-            get;
-            set;
+            get { return base.LayerName; }
+            set
+            {
+                base.LayerName = value;
+                IsDirty = true;
+            }
         }
 
-        private string _LayerDescription = string.Empty;
         [CustomVisible( true )]
         [Category( "Appearance" )]
         [DisplayName( "Description" )]
-        [PropertyOrder(2)]
-        public string LayerDescription
+        public string DesignerDescription
         {
-            get { return _LayerDescription; }
+            get { return base.LayerDescription; }
             set
             {
-                _LayerDescription = value;
-
-                Rectangle lRect = new Rectangle( Bounds.Left, Bounds.Top, Bounds.Width, CaptionHeight );
-                InvalidateRect( lRect );
+                base.LayerDescription = value;
+                IsDirty = true;
             }
         }
 
         [CustomVisible( true )]
         [Category( "Appearance" )]
         [DisplayName( "Width" )]
-        [PropertyOrder(5)]
-        public int LayerWidth
+        public int DesignerWidth
         {
-            get { return AutoScrollMinSize.Width; }
+            get { return base.LayerWidth; }
             set
             {
-                AutoScrollMinSize = new Size( value, AutoScrollMinSize.Height );
+                base.LayerWidth = value;
+                IsDirty = true;
             }
         }
 
         [CustomVisible( true )]
         [Category( "Appearance" )]
         [DisplayName( "Height" )]
-        [PropertyOrder(6)]
-        public int LayerHeight
+        public int DesignerHeight
         {
-            get { return AutoScrollMinSize.Height; }
+            get { return base.LayerHeight; }
             set
             {
-                AutoScrollMinSize = new Size( AutoScrollMinSize.Width, value );
+                base.LayerHeight = value;
+                IsDirty = true;
             }
-        }
-
-        /// <summary>
-        /// map pPoint to point in scroll control.
-        /// </summary>
-        /// <param name="pPoint"></param>
-        /// <returns></returns>
-        private Point GetScrollablePoint(Point pPoint)
-        {
-            Point lPoint = pPoint;
-
-            lPoint.Offset( -AutoScrollPosition.X, -AutoScrollPosition.Y );
-            return lPoint;
-        }
-        
-        /// <summary>
-        /// map pRect to rectangle in current view
-        /// </summary>
-        /// <param name="pRect">rect in scroll control</param>
-        private void InvalidateRect(Rectangle pRect)
-        {
-            Rectangle lRect = pRect;
-
-            lRect.Offset( AutoScrollPosition.X, AutoScrollPosition.Y );
-            Invalidate( lRect );
         }
         
         protected T GetService<T>()
@@ -533,12 +615,59 @@ namespace DesignerLibrary.Views
         {
             return ServiceProvider.GetService( typeof( T ) ) as T;
         }
-    }
 
-    public class SitePlanTools
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public ToolPersistence[] Persistences { get; set; }
+        private void InitializeComponent()
+        {
+            _deleteToolStripMenuItem = new ToolStripMenuItem()
+            {
+                Size = new Size( 145, 22 ),
+                Text = Properties.Resources.ContextMenu_Delete,
+            };
+            _bringToBackToolStripMenuItem = new ToolStripMenuItem()
+            {
+                Size = new Size( 145, 22 ),
+                Text = Properties.Resources.ContextMenu_BringToBack,
+            };
+            _bringToFrontToolStripMenuItem = new ToolStripMenuItem()
+            {
+                Size = new Size( 145, 22 ),
+                Text = Properties.Resources.ContextMenu_BringToFront,
+            };
+
+            _contextMenuStrip = new ContextMenuStrip();
+            _contextMenuStrip.Items.AddRange( new ToolStripItem[]
+            {
+                _deleteToolStripMenuItem,
+                _bringToBackToolStripMenuItem,
+                _bringToFrontToolStripMenuItem
+            } );
+            _contextMenuStrip.Size = new Size( 146, 70 );
+            Size = new Size( 623, 341 );
+        }
+
+        private ContextMenuStrip _contextMenuStrip;
+        private ToolStripMenuItem _deleteToolStripMenuItem;
+        private ToolStripMenuItem _bringToBackToolStripMenuItem;
+        private ToolStripMenuItem _bringToFrontToolStripMenuItem;
+
+        bool IMessageFilter.PreFilterMessage(ref Message pMsg)
+        {
+            bool lRet = false;
+
+            if (pMsg.Msg == WinMessages.WM_KEYUP)
+            {
+                Keys lKeyPressed = (Keys)pMsg.WParam.ToInt32() | Control.ModifierKeys;
+
+                switch (lKeyPressed)
+                {
+                    case Keys.Delete:
+                        _deleteToolStripMenuItem.PerformClick();
+                        lRet = true;
+                        break;
+                }
+            }
+
+            return lRet;
+        }
     }
 }

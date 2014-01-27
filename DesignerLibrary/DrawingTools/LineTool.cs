@@ -2,6 +2,7 @@
 using DesignerLibrary.Trackers;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.DrawingTools
@@ -56,36 +57,25 @@ namespace DesignerLibrary.DrawingTools
             EndPos = lEndPos;
         }
 
+        protected override void FillPath(System.Drawing.Drawing2D.GraphicsPath pPath)
+        {
+            Point lPoint1 = EndPos;
+            Point lPoint2 = StartPos;
+            int lMargin = (int)Pen.Width;
+
+            lPoint1.Offset( lMargin, lMargin );
+            lPoint2.Offset( lMargin, lMargin );
+            pPath.AddLines( new Point[]{ StartPos, EndPos, lPoint1, lPoint2 } );
+        }
+
         protected override void OnPaint(PaintEventArgs pArgs)
         {
             pArgs.Graphics.DrawLine( Pen, StartPos, EndPos );
         }
 
-        /// <summary>
-        /// test if specified pPoint is on this line tool.
-        /// </summary>
-        /// <param name="pPoint"></param>
-        /// <returns></returns>
-        protected override bool OnHitTest(Point pPoint)
-        {
-            double lDistanceStartEnd = GetDistance( StartPos, EndPos );
-            double lDistance1 = GetDistance( StartPos, pPoint );
-            double lDistance2 = GetDistance( pPoint, EndPos );
-
-            return Math.Abs( lDistance1 + lDistance2 - lDistanceStartEnd ) < Pen.Width;
-        }
-
         protected override Rectangle GetSurroundingRect()
         {
             return DrawingTool.GetClipRect( new Point[]{ StartPos, EndPos } );
-        }
-
-        private double GetDistance(Point pPoint1, Point pPoint2)
-        {
-            int lX = pPoint1.X - pPoint2.X;
-            int lY = pPoint1.Y - pPoint2.Y;
-
-            return Math.Sqrt( lX * lX + lY * lY );
         }
 
         protected override void OnStartResize(Point pPoint)

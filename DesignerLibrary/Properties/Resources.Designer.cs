@@ -61,11 +61,56 @@ namespace DesignerLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string Caption_Warning {
+            get {
+                return ResourceManager.GetString("Caption_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bring to back.
+        /// </summary>
+        internal static string ContextMenu_BringToBack {
+            get {
+                return ResourceManager.GetString("ContextMenu_BringToBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bring to front.
+        /// </summary>
+        internal static string ContextMenu_BringToFront {
+            get {
+                return ResourceManager.GetString("ContextMenu_BringToFront", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string ContextMenu_Delete {
+            get {
+                return ResourceManager.GetString("ContextMenu_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid image file location!.
         /// </summary>
         internal static string Error_InvalidFileLocation {
             get {
                 return ResourceManager.GetString("Error_InvalidFileLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid layer name!.
+        /// </summary>
+        internal static string Error_InvalidLayerName {
+            get {
+                return ResourceManager.GetString("Error_InvalidLayerName", resourceCulture);
             }
         }
         
@@ -165,6 +210,15 @@ namespace DesignerLibrary.Properties {
         internal static string Tool_Rectangle {
             get {
                 return ResourceManager.GetString("Tool_Rectangle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure to delete this tool?.
+        /// </summary>
+        internal static string Warning_Delete {
+            get {
+                return ResourceManager.GetString("Warning_Delete", resourceCulture);
             }
         }
     }

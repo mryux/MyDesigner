@@ -1,5 +1,5 @@
 ﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
+using DesignerLibrary.Consts;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.DrawingTools
@@ -44,8 +45,15 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void OnPaint(PaintEventArgs pArgs)
         {
-            pArgs.Graphics.FillRectangle( Brush, Bounds );
-            pArgs.Graphics.DrawRectangle( Pen, Bounds );
+            Graphics lGraph = pArgs.Graphics;
+
+            lGraph.FillRectangle( Brush, Bounds );
+            lGraph.DrawRectangle( Pen, Bounds );
+        }
+
+        protected override void FillPath(GraphicsPath pPath)
+        {
+            pPath.AddRectangle( Bounds );
         }
 
         protected override bool OnHitTest(Point pPoint)
@@ -88,7 +96,7 @@ namespace DesignerLibrary.DrawingTools
                     CustomVisibleAttribute.Yes,
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "Bounds" ),
-                    new PropertyOrderAttribute( 2 )
+                    new PropertyOrderAttribute( (int)PropertyOrder.eBounds )
                 } ) );
 
             return lDescriptors;

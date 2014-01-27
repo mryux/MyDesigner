@@ -1,5 +1,5 @@
 ﻿using DesignerLibrary.Attributes;
-using DesignerLibrary.Constants;
+using DesignerLibrary.Consts;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
 using DesignerLibrary.TypeEditors;
@@ -74,7 +74,7 @@ namespace DesignerLibrary.DrawingTools
                     new CategoryAttribute( "Appearance" ),
                     new DisplayNameAttribute( "FileLocation" ),
                     new EditorAttribute( typeof( ImageFileTypeEditor ), typeof( UITypeEditor ) ),
-                    new PropertyOrderAttribute( 10 )
+                    new PropertyOrderAttribute( (int)PropertyOrder.eFileLocation )
                 } ) );
 
             return lDescriptors;

@@ -24,14 +24,9 @@ namespace DesignerLibrary.DrawingTools
             pArgs.Graphics.DrawEllipse( Pen, Bounds );
         }
 
-        protected override bool OnHitTest(Point pPoint)
+        protected override void FillPath(GraphicsPath pPath)
         {
-            GraphicsPath lPath = new GraphicsPath();
-
-            lPath.AddEllipse( Bounds );
-            lPath.CloseFigure();
-            
-            return new Region( lPath ).IsVisible( pPoint );
+            pPath.AddEllipse( Bounds );
         }
     }
 }

@@ -3,8 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DesignerLibrary.Constants
+namespace DesignerLibrary.Consts
 {
+    public enum PropertyOrder
+    {
+        eNone,
+        eLocation = 1,
+        eBounds = 2,
+        eLineColor = 5,
+        eFillColor = 6,
+        eLineWidth = 7,
+        eFileLocation = 10,
+    }
+
     class NameConsts
     {
         public static readonly string Pointer = "Pointer";
@@ -12,6 +23,8 @@ namespace DesignerLibrary.Constants
 
     class PropertyNames
     {
+        public static readonly string LayerName = "LayerName";
+
         public static readonly string Location = "Location";
         public static readonly string Bounds = "Bounds";
         public static readonly string PenColor = "PenColor";

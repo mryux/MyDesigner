@@ -238,6 +238,27 @@ namespace DesignerLibrary.DrawingTools
             IsResizing = false;
         }
 
+        public Bitmap GetImage(int pWidth, int pHeight)
+        {
+            Size lSize = new Size(SurroundingRect.Size.Width + 1, SurroundingRect.Size.Height + 1);
+            Bitmap lRet = new Bitmap(lSize.Width, lSize.Height);
+
+            using(Bitmap tmpImage = new Bitmap(pWidth, pHeight))
+            {
+                using (Graphics lGraph = Graphics.FromImage(tmpImage))
+                {
+                    OnPaint(new PaintEventArgs(lGraph, Rectangle.Empty));
+                }
+
+                using(Graphics lGraph = Graphics.FromImage(lRet))
+                {
+                    lGraph.DrawImage(tmpImage, 0, 0, SurroundingRect, GraphicsUnit.Pixel);
+                }
+            }
+
+            return lRet;
+        }
+
         protected virtual void OnRun(Control pControl)
         {
         }

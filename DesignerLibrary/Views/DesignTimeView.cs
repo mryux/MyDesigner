@@ -304,10 +304,17 @@ namespace DesignerLibrary.Views
                             if (!DragBoxFromMouseDown.Contains( lLocation ))
                             {
                                 int lIndex = DrawingTools.IndexOf( SelectedTool );
+                                int dx = DraggingPoint.X - SelectedTool.SurroundingRect.Left;
+                                int dy = DraggingPoint.Y - SelectedTool.SurroundingRect.Top;
 
-                                DoDragDrop( lIndex.ToString(), DragDropEffects.All );
-                                DraggingPoint = Point.Empty;
-                                DragBoxFromMouseDown = Rectangle.Empty;
+                                using (DragImage image = new DragImage(SelectedTool.GetImage(LayerWidth, LayerHeight), dx, dy))
+                                {
+                                    Cursor.Hide();
+                                    DoDragDrop(lIndex.ToString(), DragDropEffects.All);
+                                    DraggingPoint = Point.Empty;
+                                    DragBoxFromMouseDown = Rectangle.Empty;
+                                    Cursor.Show();
+                                }
                             }
                         }
                         else

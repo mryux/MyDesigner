@@ -2,7 +2,6 @@
 -- support multiple selection and move.
 -- support Text object.
 -- support ImageTool (support AVI or animation gif)
--- support dragging image and tool selection image.
 -- support zoom in/out.
 -- support PageUnit millionmeter.
 

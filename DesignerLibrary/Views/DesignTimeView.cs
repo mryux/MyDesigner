@@ -158,6 +158,14 @@ namespace DesignerLibrary.Views
             return lRect;
         }
 
+        protected override void OnGiveFeedback(GiveFeedbackEventArgs pArgs)
+        {
+            base.OnGiveFeedback(pArgs);
+
+            pArgs.UseDefaultCursors = false;
+            Cursor.Current = Cursors.SizeAll;
+        }
+
         protected override void OnDragDrop(DragEventArgs pArgs)
         {
             base.OnDragDrop( pArgs );
@@ -309,11 +317,11 @@ namespace DesignerLibrary.Views
 
                                 using (DragImage image = new DragImage(SelectedTool.GetImage(LayerWidth, LayerHeight), dx, dy))
                                 {
-                                    Cursor.Hide();
+                                    //Cursor.Hide();
                                     DoDragDrop(lIndex.ToString(), DragDropEffects.All);
                                     DraggingPoint = Point.Empty;
                                     DragBoxFromMouseDown = Rectangle.Empty;
-                                    Cursor.Show();
+                                    //Cursor.Show();
                                 }
                             }
                         }

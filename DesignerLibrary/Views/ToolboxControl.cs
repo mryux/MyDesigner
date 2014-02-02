@@ -1,8 +1,12 @@
 ﻿using DesignerLibrary.Consts;
+using DesignerLibrary.DrawingTools;
+using DesignerLibrary.Helpers;
 using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace DesignerLibrary.Views
 {
@@ -145,11 +149,27 @@ namespace DesignerLibrary.Views
 
                     IToolboxService lToolboxService = mToolboxService as IToolboxService;
                     object lDataObject = lToolboxService.SerializeToolboxItem( lItem );
-                    DoDragDrop( lDataObject, DragDropEffects.All );
-                    //DragHelper.Instance.BeginDrag();
+                    DrawingTool lTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
+
+                    lTool.Persistence = lTool.CreatePersistence();
+                    Rectangle lRect = lTool.SurroundingRect;
+
+                    using (DragImage image = new DragImage(lTool.DefaultImage, lRect.Width/2, lRect.Height/2))
+                    {
+                        DoDragDrop(lDataObject, DragDropEffects.All);
+                    }
+
                     mIsDragging = false;
                 }
             }
+        }
+
+        protected override void OnGiveFeedback(GiveFeedbackEventArgs pArgs)
+        {
+            base.OnGiveFeedback(pArgs);
+
+            pArgs.UseDefaultCursors = false;
+            Cursor.Current = Cursors.SizeAll;
         }
     }
 }

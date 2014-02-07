@@ -69,6 +69,7 @@
     <Compile Include="Helpers\DragHelper.cs" />
     <Compile Include="Helpers\DragImage.cs" />
     <Compile Include="Helpers\EventArgs.cs" />
+    <Compile Include="Helpers\KeyboardHelper.cs" />
     <Compile Include="Helpers\SiPropertyDescriptor.cs" />
     <Compile Include="Persistence\EllipseToolPersistence.cs" />
     <Compile Include="Persistence\ImageToolPersistence.cs" />

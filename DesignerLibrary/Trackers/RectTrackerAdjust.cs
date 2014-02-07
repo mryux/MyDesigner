@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using DesignerLibrary.Helpers;
 
 namespace DesignerLibrary.Trackers
 {
@@ -89,6 +90,14 @@ namespace DesignerLibrary.Trackers
             OnRectify( lSize );
             Rectify( lRect, pPoint, ref lLocation, ref lSize, ref lMovingPointIndex );
             MovingPointIndex = (int)lMovingPointIndex;
+
+            if(KeyboardHelper.Instance.CtrlPressed)
+            {
+                int lLen = Math.Min( lSize.Width, lSize.Height );
+
+                lSize = new Size(lLen, lLen);
+            }
+
             pRect = new Rectangle( lLocation, lSize );
         }
 

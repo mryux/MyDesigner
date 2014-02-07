@@ -669,17 +669,36 @@ namespace DesignerLibrary.Views
         {
             bool lRet = false;
 
-            if (pMsg.Msg == WinMessages.WM_KEYUP)
+            switch(pMsg.Msg)
             {
-                Keys lKeyPressed = (Keys)pMsg.WParam.ToInt32() | Control.ModifierKeys;
+                case WinMessages.WM_KEYUP:
+                    Keys lKeyUp = (Keys)pMsg.WParam.ToInt32() | Control.ModifierKeys;
 
-                switch (lKeyPressed)
-                {
-                    case Keys.Delete:
-                        _deleteToolStripMenuItem.PerformClick();
-                        lRet = true;
-                        break;
-                }
+                    switch (lKeyUp)
+                    {
+                        case Keys.Delete:
+                            _deleteToolStripMenuItem.PerformClick();
+                            lRet = true;
+                            break;
+
+                        case Keys.ControlKey:
+                            KeyboardHelper.Instance.CtrlPressed = false;
+                            lRet = true;
+                            break;
+                    }
+                    break;
+
+                case WinMessages.WM_KEYDOWN:
+                    Keys lKeyDown = (Keys)pMsg.WParam.ToInt32();
+
+                    switch (lKeyDown)
+                    {
+                        case Keys.ControlKey:
+                            KeyboardHelper.Instance.CtrlPressed = true;
+                            lRet = true;
+                            break;
+                    }
+                    break;
             }
 
             return lRet;

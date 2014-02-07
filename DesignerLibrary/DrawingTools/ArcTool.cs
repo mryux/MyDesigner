@@ -33,6 +33,11 @@ namespace DesignerLibrary.DrawingTools
             pPath.AddArc( Bounds, StartAngle, SweepAngle );
         }
 
+        protected override bool OnHitTest(Point pPoint)
+        {
+            return Region.IsVisible( pPoint );
+        }
+
         private ArcTrackerAdjust ArcAdjust { get { return Adjust as ArcTrackerAdjust; } }
 
         protected override void OnStartResize(Point pPoint)

@@ -76,7 +76,7 @@ namespace DesignerLibrary.Trackers
                 {
                     case ArcPointIndex.eStartAngle:
                     case ArcPointIndex.eEndAngle:
-                        lRet = Cursors.Hand;
+                        lRet = Cursors.SizeWE;
                         break;
                 }
             }

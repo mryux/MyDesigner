@@ -194,9 +194,9 @@ namespace DesignerLibrary.DrawingTools
             get
             {
                 Rectangle lRect = GetSurroundingRect();
-                int lWidth = (int)(Pen.Width / 2) + 1;  // +1 for SmoothingMode.AntiAlias
+                //int lWidth = (int)(Pen.Width / 2) + 1;  // +1 for SmoothingMode.AntiAlias
 
-                lRect.Inflate( lWidth, lWidth );
+                //lRect.Inflate( lWidth, lWidth );
                 return lRect;
             }
         }

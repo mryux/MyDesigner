@@ -58,14 +58,16 @@ namespace DesignerLibrary.Trackers
         {
             if (IsResizing)
                 OnResizePaint( pArgs );
+            else
+            {
+                // paint involved Tracker rects.
+                var lRects = from rect in TrackerRects.Values
+                             where pArgs.Graphics.ClipBounds.Contains(rect)
+                             select rect;
 
-            // paint involved Tracker rects.
-            var lRects = from rect in TrackerRects.Values
-                         where pArgs.Graphics.ClipBounds.Contains( rect )
-                         select rect;
-
-            if (lRects.Count() > 0)
-                pArgs.Graphics.FillRectangles( Brushes.Black, lRects.ToArray() );
+                if (lRects.Count() > 0)
+                    pArgs.Graphics.FillRectangles(Brushes.Black, lRects.ToArray());
+            }
         }
                 
         /// <summary>

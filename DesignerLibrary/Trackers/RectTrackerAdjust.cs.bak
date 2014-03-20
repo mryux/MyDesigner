@@ -91,12 +91,11 @@ namespace DesignerLibrary.Trackers
             Rectify( lRect, pPoint, ref lLocation, ref lSize, ref lMovingPointIndex );
             MovingPointIndex = (int)lMovingPointIndex;
 
-            // draw circle/square when Control key is pressing
-            if (KeyboardHelper.Instance.IsCtrlPressing)
+            if(KeyboardHelper.Instance.CtrlPressed)
             {
                 int lLen = Math.Min( lSize.Width, lSize.Height );
 
-                lSize = new Size( lLen, lLen );
+                lSize = new Size(lLen, lLen);
             }
 
             pRect = new Rectangle( lLocation, lSize );

@@ -47,8 +47,8 @@ namespace DesignerLibrary.Trackers
                 ArcTool lTool = DrawingTool as ArcTool;
                 Rectangle lRect = lTool.SurroundingRect;
 
-                lRet.Add( (int)ArcPointIndex.eStartAngle, GetPoint( lRect, lTool.StartAngle ) );
-                lRet.Add( (int)ArcPointIndex.eEndAngle, GetPoint( lRect, lTool.StartAngle + lTool.SweepAngle ) );
+                lRet.Add((int)ArcPointIndex.eStartAngle, GetPoint(lRect, lTool.StartAngle));
+                lRet.Add((int)ArcPointIndex.eEndAngle, GetPoint(lRect, lTool.StartAngle + lTool.SweepAngle));
 
                 return lRet;
             }
@@ -112,7 +112,7 @@ namespace DesignerLibrary.Trackers
         }
 
         /// <summary>
-        /// get point on ellipse around pRect via specific angle.
+        /// get point with specific angle on ellipse around pRect
         /// use x^2/a^2 + y^2/b^2 = 1 to calculate point.
         /// </summary>
         /// <param name="pRect"></param>
@@ -120,22 +120,21 @@ namespace DesignerLibrary.Trackers
         /// <returns></returns>
         private Point GetPoint(Rectangle pRect, float pAngle)
         {
-            pAngle = ArcTrackerAdjust.RectifyAngle( pAngle );
-
-            Point lRet = GetCenter( pRect );
-            double lRadians = pAngle * Math.PI / 180;
+            pAngle = ArcTrackerAdjust.RectifyAngle(pAngle);
+            Point lCenter = GetCenter(pRect);
+            double lRadians = pAngle * (Math.PI / 180);
             int a = pRect.Width / 2;
             int b = pRect.Height / 2;
-            double lTan = Math.Tan( lRadians );
+            double lTan = Math.Tan(lRadians);
 
-            double lX = (a * b) / Math.Sqrt( Math.Pow( b, 2 ) + Math.Pow( lTan, 2 ) * Math.Pow( a, 2 ) );
+            double lX = (a * b) / Math.Sqrt(Math.Pow(b, 2) + Math.Pow(lTan, 2) * Math.Pow(a, 2));
+
             if (pAngle >= 90.0 && pAngle < 270.0)
                 lX = -lX;
 
             double lY = lTan * lX;
-            lRet.Offset( (int)lX, (int)lY );
-
-            return lRet;
+            lCenter.Offset((int)lX, (int)lY);
+            return lCenter;
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using DesignerLibrary.DrawingTools;
-using DesignerLibrary.Helpers;
 
 namespace DesignerLibrary.Trackers
 {
@@ -15,9 +14,6 @@ namespace DesignerLibrary.Trackers
 
             _Pen = new Pen( Brushes.Blue, 2.0f );
             _Pen.DashPattern = new float[] { 4.0F, 2.0F, 1.0F, 3.0F };
-
-            _Margin = GraphicsMapper.Instance.TransformInt( 2 );
-            _MarginAmendForAntiAlias = GraphicsMapper.Instance.TransformInt( 1 );
         }
 
         public bool IsResizing { get; protected set; }
@@ -44,11 +40,11 @@ namespace DesignerLibrary.Trackers
 
         private Pen _Pen;
         public Pen Pen { get { return _Pen; } }
-
-        private int _Margin = 0;
+        
+        private static readonly int sMargin = 2;
         public int Margin
         {
-            get { return (int)( DrawingTool.Pen.Width / 2 + _Margin ); }
+            get { return (int)( DrawingTool.Pen.Width / 2 + sMargin ); }
         }
 
         protected abstract void OnResizePaint(PaintEventArgs pArgs);
@@ -66,11 +62,11 @@ namespace DesignerLibrary.Trackers
             {
                 // paint involved Tracker rects.
                 var lRects = from rect in TrackerRects.Values
-                             where pArgs.Graphics.ClipBounds.Contains( rect )
+                             where pArgs.Graphics.ClipBounds.Contains(rect)
                              select rect;
 
                 if (lRects.Count() > 0)
-                    pArgs.Graphics.FillRectangles( Brushes.Black, lRects.ToArray() );
+                    pArgs.Graphics.FillRectangles(Brushes.Black, lRects.ToArray());
             }
         }
                 
@@ -150,14 +146,12 @@ namespace DesignerLibrary.Trackers
             MovingPointIndex = 0;
         }
 
-        private int _MarginAmendForAntiAlias = 0;
-
         public Rectangle SurroundingRect
         {
             get
             {
                 Rectangle lRet = GetSurroundingRect();
-                int lMargin = Margin + _MarginAmendForAntiAlias;
+                int lMargin = Margin + 1;   // +1 for SmoothingMode.AntiAlias
 
                 lRet.Inflate( lMargin, lMargin );
                 return lRet;

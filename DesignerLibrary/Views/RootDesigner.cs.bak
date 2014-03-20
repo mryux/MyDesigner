@@ -37,7 +37,7 @@ namespace DesignerLibrary.Views
                 // for a root designer that overrides GetView(). In this 
                 // example, a Control of type RootDesignerView is used.
                 // Any class that inherits from Control will work.
-                m_view = new DesignTimeView( this );
+                m_view = new DesignTimeView(this);
             }
 
             return m_view;

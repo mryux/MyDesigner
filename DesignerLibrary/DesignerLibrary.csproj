@@ -50,9 +50,12 @@
   <ItemGroup>
     <Compile Include="Attributes\BrowsablePropertiesConverter.cs" />
     <Compile Include="Attributes\CustomVisibleAttribute.cs" />
+    <Compile Include="Attributes\LocalizedCategoryAttribute.cs" />
+    <Compile Include="Attributes\LocalizedDisplayNameAttribute.cs" />
     <Compile Include="Attributes\PropertyOrderAttribute.cs" />
-    <Compile Include="Consts\PropertyNames.cs" />
-    <Compile Include="Consts\WinMessages.cs" />
+    <Compile Include="Constants\PropertyNames.cs" />
+    <Compile Include="Converters\AlignmentConverter.cs" />
+    <Compile Include="Helpers\WinMessages.cs" />
     <Compile Include="Converters\EnumTypeConverter.cs" />
     <Compile Include="Converters\LineWidthConverter.cs" />
     <Compile Include="DrawingTools\ArcTool.cs" />
@@ -62,6 +65,7 @@
     <Compile Include="DrawingTools\LineTool.cs" />
     <Compile Include="DrawingTools\PolygonTool.cs" />
     <Compile Include="DrawingTools\RectangleTool.cs" />
+    <Compile Include="DrawingTools\TextTool.cs" />
     <Compile Include="DrawingTools\TwoDTool.cs" />
     <Compile Include="Helpers\AutoScrollTimer.cs">
       <SubType>Component</SubType>
@@ -69,13 +73,19 @@
     <Compile Include="Helpers\DragHelper.cs" />
     <Compile Include="Helpers\DragImage.cs" />
     <Compile Include="Helpers\EventArgs.cs" />
+    <Compile Include="Helpers\GraphicsMapper.cs" />
     <Compile Include="Helpers\KeyboardHelper.cs" />
+    <Compile Include="Helpers\MessageBoxHelper.cs" />
     <Compile Include="Helpers\SiPropertyDescriptor.cs" />
+    <Compile Include="Models\SitePlanModel.cs" />
+    <Compile Include="Persistence\ArcToolPersistence.cs" />
     <Compile Include="Persistence\EllipseToolPersistence.cs" />
     <Compile Include="Persistence\ImageToolPersistence.cs" />
     <Compile Include="Persistence\LineToolPersistence.cs" />
+    <Compile Include="Persistence\PersistenceFactory.cs" />
     <Compile Include="Persistence\PolygonToolPersistence.cs" />
     <Compile Include="Persistence\RectangleToolPersistence.cs" />
+    <Compile Include="Persistence\TextToolPersistence.cs" />
     <Compile Include="Persistence\ToolPersistence.cs" />
     <Compile Include="Persistence\TwoDToolPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,6 +116,7 @@
     <Compile Include="Views\DesignTimeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Views\Ruler.cs" />
     <Compile Include="Views\RuntimeView.cs">
       <SubType>Component</SubType>
     </Compile>

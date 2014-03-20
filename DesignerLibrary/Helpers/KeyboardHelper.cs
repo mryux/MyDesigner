@@ -14,6 +14,6 @@ namespace DesignerLibrary.Helpers
 
         public static readonly KeyboardHelper Instance = new KeyboardHelper();
 
-        public bool CtrlPressed { get; set; }
+        public bool IsCtrlPressing { get; set; }
     }
 }

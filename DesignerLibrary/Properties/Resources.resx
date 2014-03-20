@@ -168,6 +168,9 @@
   <data name="Tool_Rectangle" xml:space="preserve">
     <value>Rectangle</value>
   </data>
+  <data name="Tool_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
   <data name="Warning_Delete" xml:space="preserve">
     <value>Are you sure to delete this tool?</value>
   </data>

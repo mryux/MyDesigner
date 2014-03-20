@@ -1,4 +1,5 @@
-﻿using DesignerLibrary.Trackers;
+﻿using DesignerLibrary.Persistence;
+using DesignerLibrary.Trackers;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -7,15 +8,14 @@ namespace DesignerLibrary.DrawingTools
 {
     class ArcTool : RectangleTool
     {
-        public float StartAngle { get; set; }
-        public float SweepAngle { get; set; }
-
         public ArcTool()
         {
-            StartAngle = 180.0f;
-            SweepAngle = 180.0f;
-
             base.Tracker = new ArcTracker( this );
+        }
+
+        protected override ToolPersistence NewPersistence()
+        {
+            return new ArcToolPersistence();
         }
 
         protected override void OnPaint(PaintEventArgs pArgs)
@@ -28,17 +28,37 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
-        protected override void FillPath(GraphicsPath pPath)
-        {
-            pPath.AddArc( Bounds, StartAngle, SweepAngle );
-        }
-
         protected override bool OnHitTest(Point pPoint)
         {
             return Region.IsVisible( pPoint );
         }
 
-        private ArcTrackerAdjust ArcAdjust { get { return Adjust as ArcTrackerAdjust; } }
+        protected override void FillPath(GraphicsPath pPath)
+        {
+            pPath.AddArc( Bounds, StartAngle, SweepAngle );
+        }
+
+        public float StartAngle
+        {
+            get { return Persistence.StartAngle; }
+            set { Persistence.StartAngle = value; }
+        }
+
+        public float SweepAngle
+        {
+            get { return Persistence.SweepAngle; }
+            set { Persistence.SweepAngle = value; }
+        }
+
+        private new ArcToolPersistence Persistence
+        {
+            get { return base.Persistence as ArcToolPersistence; }
+        }
+
+        private ArcTrackerAdjust ArcAdjust
+        {
+            get { return Adjust as ArcTrackerAdjust; }
+        }
 
         protected override void OnStartResize(Point pPoint)
         {

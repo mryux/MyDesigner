@@ -29,6 +29,7 @@ namespace DesignerLibrary.DrawingTools
             {
                 (Persistence as TwoDToolPersistence).FillColor = value;
                 Brush = new SolidBrush( value );
+                IsDirty = true;
                 Invalidate();
             }
         }
@@ -43,9 +44,9 @@ namespace DesignerLibrary.DrawingTools
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "FillColor" ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eFillColor )
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "FillColor" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eFillColor )
                 } ) );
 
             return lDescriptors;

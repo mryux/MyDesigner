@@ -214,6 +214,15 @@ namespace DesignerLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        internal static string Tool_Text {
+            get {
+                return ResourceManager.GetString("Tool_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure to delete this tool?.
         /// </summary>
         internal static string Warning_Delete {

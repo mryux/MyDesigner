@@ -16,28 +16,14 @@ namespace DesignerLibrary.DrawingTools
 
         public Point StartPos
         {
-            get
-            {
-                return (Persistence as LineToolPersistence).StartPos;
-            }
-
-            set
-            {
-                (Persistence as LineToolPersistence).StartPos = value;
-            }
+            get { return (Persistence as LineToolPersistence).StartPos; }
+            set { (Persistence as LineToolPersistence).StartPos = value; }
         }
 
         public Point EndPos
         {
-            get
-            {
-                return (Persistence as LineToolPersistence).EndPos;
-            }
-
-            set
-            {
-                (Persistence as LineToolPersistence).EndPos = value;
-            }
+            get { return (Persistence as LineToolPersistence).EndPos; }
+            set { (Persistence as LineToolPersistence).EndPos = value; }
         }
 
         protected override ToolPersistence NewPersistence()
@@ -70,7 +56,9 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void OnPaint(PaintEventArgs pArgs)
         {
-            pArgs.Graphics.DrawLine( Pen, StartPos, EndPos );
+            Graphics lGraph = pArgs.Graphics;
+
+            lGraph.DrawLine( Pen, StartPos, EndPos );
         }
 
         protected override Rectangle GetSurroundingRect()

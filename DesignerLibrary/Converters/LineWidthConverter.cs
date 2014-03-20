@@ -5,7 +5,7 @@ namespace DesignerLibrary.Converters
 {
     class LineWidthConverter : EnumTypeConverter<LineWidth>
     {
-        private static readonly Dictionary<LineWidth, string> LineWidthDict = new Dictionary<LineWidth, string>()
+        private static readonly Dictionary<LineWidth, string> _Dict = new Dictionary<LineWidth, string>()
         {
             { LineWidth.Thin, Properties.Resources.LineWidth_Thin },
             { LineWidth.Medium, Properties.Resources.LineWidth_Medium },
@@ -13,7 +13,7 @@ namespace DesignerLibrary.Converters
         };
 
         public LineWidthConverter()
-            : base( LineWidthDict )
+            : base( _Dict )
         {
         }
     }

@@ -21,6 +21,7 @@ namespace DesignerLibrary.DrawingTools
             {
                 Invalidate();
                 (Persistence as RectangleToolPersistence).Bounds = value;
+                IsDirty = true;
                 Invalidate();
             }
         }
@@ -94,9 +95,9 @@ namespace DesignerLibrary.DrawingTools
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "Bounds" ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eBounds )
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "Bounds" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eBounds )
                 } ) );
 
             return lDescriptors;

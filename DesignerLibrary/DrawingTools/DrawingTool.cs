@@ -18,16 +18,13 @@ namespace DesignerLibrary.DrawingTools
     {
         protected DrawingTool()
         {
+            Selected = false;
         }
 
         private ToolPersistence _Persistence = null;
         public ToolPersistence Persistence
         {
-            get 
-            {
-                return _Persistence;
-            }
-
+            get { return _Persistence; }
             set
             {
                 _Persistence = value;
@@ -49,6 +46,7 @@ namespace DesignerLibrary.DrawingTools
                 _Persistence.PenColor = value;
 
                 Pen.Color = value;
+                IsDirty = true;
                 Invalidate();
             }
         }
@@ -61,6 +59,7 @@ namespace DesignerLibrary.DrawingTools
                 _Persistence.PenWidth = value;
 
                 Pen.Width = GetLineWidth( value );
+                IsDirty = true;
                 Invalidate();
             }
         }
@@ -84,13 +83,15 @@ namespace DesignerLibrary.DrawingTools
                     break;
             }
 
-            return lRet;
+            return GraphicsMapper.Instance.TransformInt( (int)lRet );
         }
 
         protected Region Region 
         {
             get
             {
+                // todo: try to reuse Region object for performance concern
+                // recreate Region object when Size changed
                 GraphicsPath lPath = new GraphicsPath();
 
                 FillPath( lPath );
@@ -120,7 +121,6 @@ namespace DesignerLibrary.DrawingTools
                 Point lOffset = new Point( value.X - Location.X, value.Y - Location.Y );
 
                 Invalidate();   // invalidate old area
-                //_Persistence.Location = value;
                 OnLocationChanged( lOffset );
                 Invalidate();   // invalidate new area
             }
@@ -159,8 +159,21 @@ namespace DesignerLibrary.DrawingTools
 
         public void Paint(PaintEventArgs pArgs)
         {
+            if (InRuntime)
+                OnRuntimePaint( pArgs );
+            else
+                OnDesignPaint( pArgs );
+        }
+
+        protected void OnDesignPaint(PaintEventArgs pArgs)
+        {
             if (pArgs.Graphics.ClipBounds.IntersectsWith( SurroundingRect ))
                 OnPaint( pArgs );
+        }
+
+        protected virtual void OnRuntimePaint(PaintEventArgs pArgs)
+        {
+            OnDesignPaint( pArgs );
         }
 
         public bool HitTest(Point pPoint)
@@ -178,27 +191,11 @@ namespace DesignerLibrary.DrawingTools
             return Region.IsVisible( pPoint );
         }
 
-        private bool _Selected = false;
-        public bool Selected
-        {
-            get { return _Selected; }
-            set
-            {
-                _Selected = value;
-                Pen.Color = _Selected ? Color.Red : _Persistence.PenColor;
-            }
-        }
+        public bool Selected { get; set; }
 
         public Rectangle SurroundingRect
         {
-            get
-            {
-                Rectangle lRect = GetSurroundingRect();
-                //int lWidth = (int)(Pen.Width / 2) + 1;  // +1 for SmoothingMode.AntiAlias
-
-                //lRect.Inflate( lWidth, lWidth );
-                return lRect;
-            }
+            get { return GetSurroundingRect(); }
         }
 
         public void DoDrop(Point pOffset)
@@ -238,37 +235,43 @@ namespace DesignerLibrary.DrawingTools
             IsResizing = false;
         }
 
-        public Bitmap DefaultImage
+        public Image DefaultImage
         {
             get
             {
-                Size lSize = new Size(SurroundingRect.Size.Width + 1, SurroundingRect.Size.Height + 1);
-                Bitmap lRet = new Bitmap(lSize.Width, lSize.Height);
+                Size lSize = new Size( SurroundingRect.Size.Width, SurroundingRect.Size.Height );
+                lSize = GraphicsMapper.Instance.TransformSize( lSize, CoordinateSpace.Device, CoordinateSpace.Page );
+                Bitmap lRet = new Bitmap( lSize.Width + 1, lSize.Height + 1 );
 
-                using (Graphics lGraph = Graphics.FromImage(lRet))
+                using (Graphics lGraph = Graphics.FromImage( lRet ))
                 {
-                    OnPaint(new PaintEventArgs(lGraph, Rectangle.Empty));
+                    GraphicsMapper.InitGraphics( lGraph );
+                    OnPaint( new PaintEventArgs( lGraph, Rectangle.Empty ) );
                 }
 
                 return lRet;
             }
         }
 
-        public Bitmap GetImage(int pWidth, int pHeight)
+        public Image GetImage(int pWidth, int pHeight)
         {
-            Size lSize = new Size(SurroundingRect.Size.Width + 1, SurroundingRect.Size.Height + 1);
-            Bitmap lRet = new Bitmap(lSize.Width, lSize.Height);
+            Bitmap lRet = null;
+            Size lSize = GraphicsMapper.Instance.TransformSize( new Size( pWidth, pHeight ), CoordinateSpace.Device, CoordinateSpace.Page );
 
-            using(Bitmap tmpImage = new Bitmap(pWidth, pHeight))
+            using (Bitmap tmpImage = new Bitmap( lSize.Width, lSize.Height ))
             {
-                using (Graphics lGraph = Graphics.FromImage(tmpImage))
+                using (Graphics lGraph = Graphics.FromImage( tmpImage ))
                 {
-                    OnPaint(new PaintEventArgs(lGraph, Rectangle.Empty));
+                    GraphicsMapper.InitGraphics( lGraph );
+                    OnPaint( new PaintEventArgs( lGraph, Rectangle.Empty ) );
                 }
 
-                using(Graphics lGraph = Graphics.FromImage(lRet))
+                lSize = GraphicsMapper.Instance.TransformSize( SurroundingRect.Size, CoordinateSpace.Device, CoordinateSpace.Page );
+                lRet = new Bitmap( lSize.Width + 1, lSize.Height + 1 );
+                using (Graphics lGraph = Graphics.FromImage( lRet ))
                 {
-                    lGraph.DrawImage(tmpImage, 0, 0, SurroundingRect, GraphicsUnit.Pixel);
+                    Rectangle lRect = GraphicsMapper.Instance.TransformRectangle( SurroundingRect, CoordinateSpace.Device, CoordinateSpace.Page );
+                    lGraph.DrawImage( tmpImage, 0, 0, lRect, GraphicsUnit.Pixel );
                 }
             }
 
@@ -284,6 +287,22 @@ namespace DesignerLibrary.DrawingTools
             OnRun( pControl );
         }
 
+        protected virtual void OnInitialize()
+        {
+        }
+
+        protected virtual void OnDisposed()
+        {
+        }
+
+        protected bool InRuntime { get; set; }
+
+        public void Initialize()
+        {
+            InRuntime = true;
+            OnInitialize();
+        }
+        
         public event EventHandler RedrawEvent;
 
         protected void Invalidate()
@@ -291,6 +310,21 @@ namespace DesignerLibrary.DrawingTools
             if (RedrawEvent != null)
                 RedrawEvent( this, EventArgs.Empty );
         }
+
+        public event EventHandler<EventArgs<bool>> IsDirtyEvent;
+
+        private bool _IsDirty = false;
+        protected bool IsDirty
+        {
+            get { return _IsDirty; }
+            set
+            {
+                _IsDirty = value;
+                if (IsDirtyEvent != null)
+                    IsDirtyEvent( this, new EventArgs<bool>( value ) );
+            }
+        }
+
 
         protected ICollection<string> Fields = new List<string>();
         public string Validate()
@@ -319,37 +353,36 @@ namespace DesignerLibrary.DrawingTools
         protected virtual IList<PropertyDescriptor> GetPropertyDescriptors()
         {
             IList<PropertyDescriptor> lRet = new List<PropertyDescriptor>();
-
-            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.Location,
-                new Attribute[] 
-                { 
-                    CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "Location" ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eLocation )
-                } ) );
-
+            
             lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenColor,
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "LineColor" ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eLineColor ),
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "LineColor" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eLineColor ),
                 } ) );
 
             lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenWidth,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "LineWidth" ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eLineWidth ),
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "LineWidth" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eLineWidth ),
                     new TypeConverterAttribute( typeof( LineWidthConverter ) ),
                 } ) );
 
             return lRet;
         }
+
+        protected IEnumerable<PropertyDescriptor> RemoveProperties(IEnumerable<PropertyDescriptor> pProperties, IEnumerable<string> pNames)
+        {
+            return from p in pProperties
+                   where !pNames.Contains( p.Name )
+                   select p;
+        }
+
 
         #region IComponent implementation
         private EventHandler _Disposed;
@@ -363,6 +396,7 @@ namespace DesignerLibrary.DrawingTools
 
         void IDisposable.Dispose()
         {
+            OnDisposed();
         }
         #endregion
 

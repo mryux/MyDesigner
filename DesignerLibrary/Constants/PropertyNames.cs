@@ -14,6 +14,18 @@ namespace DesignerLibrary.Consts
         eFillColor = 6,
         eLineWidth = 7,
         eFileLocation = 10,
+
+        Text = 20,
+        TextColor = 20,
+        Font = 22,
+        Alignment = 23,
+        VAlignment = 24,
+        TimeFormat = 25,
+
+        eLogicalPointType = 100,
+        eLogicalPointName = 101,
+
+        eAction = 200,
     }
 
     class NameConsts
@@ -34,5 +46,16 @@ namespace DesignerLibrary.Consts
 
         public static readonly string LocationType = "LocationType";
         public static readonly string LogicalPoint = "LogicalPoint";
+
+        public static readonly string Action = "Action";
+
+        public static readonly string Text = "Text";
+        public static readonly string TextColor = "TextColor";
+        public static readonly string Font = "Font";
+        public static readonly string Alignment = "Alignment";
+
+        public static readonly string ControlType = "ControlType";
+        public static readonly string VAlignment = "VAlignment";
+        public static readonly string TimeFormat = "TimeFormat";
     }
 }

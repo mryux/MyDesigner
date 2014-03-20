@@ -41,6 +41,7 @@ namespace DesignerLibrary.DrawingTools
             set
             {
                 _FileLocation = value;
+                IsDirty = true;
                 Invalidate();
             }
         }
@@ -71,10 +72,10 @@ namespace DesignerLibrary.DrawingTools
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
-                    new CategoryAttribute( "Appearance" ),
-                    new DisplayNameAttribute( "FileLocation" ),
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "FileLocation" ),
                     new EditorAttribute( typeof( ImageFileTypeEditor ), typeof( UITypeEditor ) ),
-                    new PropertyOrderAttribute( (int)PropertyOrder.eFileLocation )
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eFileLocation )
                 } ) );
 
             return lDescriptors;

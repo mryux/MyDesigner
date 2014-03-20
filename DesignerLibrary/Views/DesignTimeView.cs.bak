@@ -2,7 +2,6 @@
 using DesignerLibrary.Consts;
 using DesignerLibrary.DrawingTools;
 using DesignerLibrary.Helpers;
-using DesignerLibrary.Models;
 using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
 using System;
@@ -12,8 +11,10 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace DesignerLibrary.Views
 {
@@ -33,16 +34,11 @@ namespace DesignerLibrary.Views
             ServiceProvider = Site.Container as IServiceProvider;
             SelectionService = GetService<ISelectionService>();
 
+            LayerDescription = Properties.Resources.LayerDescription;
+
             _deleteToolStripMenuItem.Click += OnDeleteTool;
             _bringToFrontToolStripMenuItem.Click += OnBringToFront;
             _bringToBackToolStripMenuItem.Click += OnBringToBack;
-        }
-
-        protected override void OnCreateControl()
-        {
-            base.OnCreateControl();
-
-            _Ruler = new JointRuler();
         }
 
         public event EventHandler<EventArgs<bool>> DirtyEvent;
@@ -57,16 +53,6 @@ namespace DesignerLibrary.Views
                 if (DirtyEvent != null)
                     DirtyEvent( this, new EventArgs<bool>( _IsDirty ) );
             }
-        }
-
-        protected override void PrePaint(Graphics pGraph)
-        {
-            int lHeight = GraphicsMapper.Instance.TransformInt( CaptionHeight );
-
-            pGraph.TranslateTransform( 0, lHeight );
-            _Ruler.Paint( pGraph );
-            PaintGrid( pGraph );
-            pGraph.TranslateTransform( 0, -lHeight );
         }
 
         protected override void OnPaint(PaintEventArgs pArgs)
@@ -166,8 +152,18 @@ namespace DesignerLibrary.Views
 
         private Rectangle InflateRect(Rectangle pRect, int lWidth, int lHeight)
         {
-            pRect.Inflate( lWidth, lHeight );
-            return pRect;
+            Rectangle lRect = pRect;
+
+            lRect.Inflate( lWidth, lHeight );
+            return lRect;
+        }
+
+        protected override void OnGiveFeedback(GiveFeedbackEventArgs pArgs)
+        {
+            base.OnGiveFeedback(pArgs);
+
+            pArgs.UseDefaultCursors = false;
+            Cursor.Current = Cursors.SizeAll;
         }
 
         protected override void OnDragDrop(DragEventArgs pArgs)
@@ -188,7 +184,6 @@ namespace DesignerLibrary.Views
                     InvalidateRect( lDrawingTool.Tracker.SurroundingRect );
                     lDrawingTool.DoDrop( new Point( lPoint.X - DraggingPoint.X, lPoint.Y - DraggingPoint.Y ) );
                     InvalidateRect( lDrawingTool.Tracker.SurroundingRect );
-                    SelectedTool = lDrawingTool;
 
                     return true;
                 } );
@@ -225,19 +220,35 @@ namespace DesignerLibrary.Views
                 Point lLocation = GetScrollablePoint( pArgs.Location );
                 DrawingTool lTool = HitTest( lLocation );
 
-                if (lTool == null)
-                    base.FullDragMode = SelectedToolboxItem == null;
-                else
+                if (lTool != null)
                     lTool.Tracker.StartResize( lLocation );
 
                 SelectedTool = lTool;
 
-                Size lDragSize = GraphicsMapper.Instance.TransformSize( SystemInformation.DragSize );
-                DragBoxFromMouseDown = new Rectangle( lLocation, lDragSize );
+                base.FullDragMode = (lTool == null && SelectedToolboxItem == null);
+
+                DragBoxFromMouseDown = new Rectangle( lLocation, SystemInformation.DragSize );
                 DraggingPoint = lLocation;
             }
 
             base.OnMouseDown( pArgs );
+        }
+
+        ToolboxItem SelectedToolboxItem
+        {
+            get
+            {
+                var lItem = GetService<IToolboxService>().GetSelectedToolboxItem();
+                ToolboxItem lRet = null;
+
+                if (lItem != null
+                    && lItem.TypeName != NameConsts.Pointer)
+                {
+                    lRet = lItem;
+                }
+
+                return lRet;
+            }
         }
 
         protected override void OnMouseMove(MouseEventArgs pArgs)
@@ -300,16 +311,17 @@ namespace DesignerLibrary.Views
                             // start DragDrop on selected tool object.
                             if (!DragBoxFromMouseDown.Contains( lLocation ))
                             {
-                                int dx = GraphicsMapper.Instance.TransformInt( DraggingPoint.X - SelectedTool.SurroundingRect.Left, CoordinateSpace.Device, CoordinateSpace.Page );
-                                int dy = GraphicsMapper.Instance.TransformInt( DraggingPoint.Y - SelectedTool.SurroundingRect.Top, CoordinateSpace.Device, CoordinateSpace.Page );
+                                int lIndex = DrawingTools.IndexOf( SelectedTool );
+                                int dx = DraggingPoint.X - SelectedTool.SurroundingRect.Left;
+                                int dy = DraggingPoint.Y - SelectedTool.SurroundingRect.Top;
 
-                                using (new DragImage( SelectedTool.GetImage( LayerWidth, LayerHeight ), dx, dy ))
+                                using (DragImage image = new DragImage(SelectedTool.GetImage(LayerWidth, LayerHeight), dx, dy))
                                 {
-                                    int lIndex = DrawingTools.IndexOf( SelectedTool );
-
-                                    DoDragDrop( lIndex.ToString(), DragDropEffects.All );
+                                    //Cursor.Hide();
+                                    DoDragDrop(lIndex.ToString(), DragDropEffects.All);
                                     DraggingPoint = Point.Empty;
                                     DragBoxFromMouseDown = Rectangle.Empty;
+                                    //Cursor.Show();
                                 }
                             }
                         }
@@ -349,14 +361,6 @@ namespace DesignerLibrary.Views
             }
         }
 
-        protected override void OnGiveFeedback(GiveFeedbackEventArgs pArgs)
-        {
-            base.OnGiveFeedback( pArgs );
-
-            pArgs.UseDefaultCursors = false;
-            Cursor.Current = Cursors.SizeAll;
-        }
-
         protected override void OnMouseUp(MouseEventArgs pArgs)
         {
             base.OnMouseUp( pArgs );
@@ -370,8 +374,7 @@ namespace DesignerLibrary.Views
             {
                 case MouseButtons.Right:
                     SelectedTool = HitTest( lLocation );
-                    if (SelectedTool != null)
-                        _contextMenuStrip.Show( this, pArgs.Location );
+                    _contextMenuStrip.Show( this, pArgs.Location );
                     break;
 
                 case MouseButtons.Left:
@@ -385,7 +388,6 @@ namespace DesignerLibrary.Views
                         InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
                         SelectedTool.Tracker.EndResize( lLocation );
                         InvalidateRect( InflateRect( SelectedTool.SurroundingRect, lWidth, lWidth ) );
-                        SelectedTool = SelectedTool;    // refresh property grid
                         IsDirty = true;
                     }
                     else if (PickingTool != null)
@@ -400,7 +402,7 @@ namespace DesignerLibrary.Views
                     }
                     break;
             }
-
+            
             DragBoxFromMouseDown = Rectangle.Empty;
             DraggingPoint = Point.Empty;
         }
@@ -427,30 +429,23 @@ namespace DesignerLibrary.Views
             InvalidateRect( lRect );
             IsDirty = true;
         }
-
+        
         protected override void OnAddTool(DrawingTool pTool)
         {
             (pTool as IComponent).Site = Site;
-
-            // setup pTool events
-            pTool.IsDirtyEvent += (pSender, pArgs) =>
+            pTool.RedrawEvent += (object pSender, EventArgs pArgs)=>
             {
-                bool lIsDirty = pArgs.Data;
-
-                if (lIsDirty)
-                    IsDirty = true;
+                InvalidateRect( (pSender as DrawingTool).Tracker.SurroundingRect );
             };
-
+            
             IsDirty = true;
         }
 
-        protected override void OnLoadModel(SitePlanModel pModel)
+        protected override void OnLoadModel(string pPath)
         {
-            base.OnLoadModel( pModel );
+            base.OnLoadModel( pPath );
 
-            LayerName = pModel.Name;
             IsDirty = false;
-            SelectedTool = null;
         }
 
         public string Validate()
@@ -460,9 +455,9 @@ namespace DesignerLibrary.Views
             if (string.IsNullOrEmpty( lRet ))
             {
                 var lTools = from tool in DrawingTools
-                             let errorMsg = tool.Validate()
-                             where !string.IsNullOrEmpty( errorMsg )
-                             select new Tuple<DrawingTool, string>( tool, errorMsg );
+                            let errorMsg = tool.Validate()
+                            where !string.IsNullOrEmpty( errorMsg )
+                            select new Tuple<DrawingTool, string>( tool, errorMsg );
 
                 if (lTools.Count() > 0)
                 {
@@ -478,21 +473,30 @@ namespace DesignerLibrary.Views
             return lRet;
         }
 
-        public void Save(SitePlanModel pModel)
+        public void Save(string pPath)
         {
-            var lPersistences = from tool in DrawingTools
-                                select tool.Persistence;
+            SitePlanTools lTools = new SitePlanTools();
+
             // DrawingTools
-            pModel.Name = LayerName;
-            pModel.Description = LayerDescription;
-            pModel.Width = LayerWidth;
-            pModel.Height = LayerHeight;
-            pModel.Layout = PersistenceFactory.Instance.GetLayout( lPersistences );
+            lTools.Name = LayerName;
+            lTools.Description = LayerDescription;
+            lTools.Width = Width;
+            lTools.Height = Height; 
+
+            XmlSerializer lSerializer = new XmlSerializer( typeof( SitePlanTools ), PersistenceTypes );
+
+            lTools.Persistences = (from tool in DrawingTools
+                            select tool.Persistence).ToArray();
+            using (TextWriter writer = new StreamWriter(pPath))
+            {
+                lSerializer.Serialize( writer, lTools );
+                writer.Flush();
+            }
         }
 
         void OnDeleteTool(object sender, EventArgs pArgs)
         {
-            if (MessageBoxHelper.OKCancelMessage( Properties.Resources.Warning_Delete ) == DialogResult.OK)
+            if (MessageBox.Show( Properties.Resources.Warning_Delete, Properties.Resources.Caption_Warning, MessageBoxButtons.OKCancel ) == DialogResult.OK)
             {
                 RemoveTool( SelectedTool );
                 SelectedTool = null;
@@ -501,7 +505,7 @@ namespace DesignerLibrary.Views
 
         void OnBringToFront(object sender, EventArgs pArgs)
         {
-            OnBringTo( tools =>
+            OnBringTo( tools => 
             {
                 // move SelectedTool next to last overlapped tool
                 int lIndex = tools.Max( t => DrawingTools.IndexOf( t ) );
@@ -544,53 +548,6 @@ namespace DesignerLibrary.Views
                    select t;
         }
 
-        private ToolboxItem SelectedToolboxItem
-        {
-            get
-            {
-                var lItem = GetService<IToolboxService>().GetSelectedToolboxItem();
-                ToolboxItem lRet = null;
-
-                if (lItem != null
-                    && lItem.TypeName != NameConsts.Pointer)
-                {
-                    lRet = lItem;
-                }
-
-                return lRet;
-            }
-        }
-
-        private JointRuler _Ruler = null;
-
-        private bool _ShowGrid = false;
-        public bool ShowGrid
-        {
-            get { return _ShowGrid; }
-            set
-            {
-                _ShowGrid = value;
-                Invalidate();
-            }
-        }
-
-        private void PaintGrid(Graphics pGraph)
-        {
-            if (ShowGrid)
-            {
-                Pen lPen = new Pen( Color.DarkGray, 1.0f ) { DashStyle = DashStyle.Dot };
-                int lOrigin = GraphicsMapper.Instance.TransformInt( _Ruler.RulerSize.Height );
-
-                pGraph.TranslateTransform( lOrigin, lOrigin );
-                for (int i = 0; i < LayerHeight; i += 50)
-                    Ruler.DrawHorzLine( pGraph, lPen, 0, LayerWidth, i );
-
-                for (int i = 0; i < LayerWidth; i += 50)
-                    Ruler.DrawVertLine( pGraph, lPen, i, 0, LayerHeight );
-                pGraph.TranslateTransform( -lOrigin, -lOrigin );
-            }
-        }
-
         #region IDataErrorInfo Members
         string IDataErrorInfo.Error
         {
@@ -617,22 +574,22 @@ namespace DesignerLibrary.Views
         private string _LayerName = string.Empty;
 
         [CustomVisible( true )]
-        [LocalizedCategory( "Appearance" )]
-        [LocalizedDisplayName( "Name" )]
-        public string LayerName
+        [Category( "Appearance" )]
+        [DisplayName( "Name" )]
+        public string DesignerName
         {
-            get { return _LayerName; }
+            get { return base.LayerName; }
             set
             {
-                _LayerName = value;
+                base.LayerName = value;
                 IsDirty = true;
             }
         }
 
         [CustomVisible( true )]
-        [LocalizedCategory( "Appearance" )]
-        [LocalizedDisplayName( "Description" )]
-        public new string LayerDescription
+        [Category( "Appearance" )]
+        [DisplayName( "Description" )]
+        public string DesignerDescription
         {
             get { return base.LayerDescription; }
             set
@@ -643,9 +600,9 @@ namespace DesignerLibrary.Views
         }
 
         [CustomVisible( true )]
-        [LocalizedCategory( "Appearance" )]
-        [LocalizedDisplayName( "Width" )]
-        public new int LayerWidth
+        [Category( "Appearance" )]
+        [DisplayName( "Width" )]
+        public int DesignerWidth
         {
             get { return base.LayerWidth; }
             set
@@ -656,9 +613,9 @@ namespace DesignerLibrary.Views
         }
 
         [CustomVisible( true )]
-        [LocalizedCategory( "Appearance" )]
-        [LocalizedDisplayName( "Height" )]
-        public new int LayerHeight
+        [Category( "Appearance" )]
+        [DisplayName( "Height" )]
+        public int DesignerHeight
         {
             get { return base.LayerHeight; }
             set
@@ -667,7 +624,7 @@ namespace DesignerLibrary.Views
                 IsDirty = true;
             }
         }
-
+        
         protected T GetService<T>()
             where T : class
         {
@@ -712,36 +669,33 @@ namespace DesignerLibrary.Views
         {
             bool lRet = false;
 
-            switch (pMsg.Msg)
+            switch(pMsg.Msg)
             {
-                case WinMessageHelper.WM_KEYDOWN:
-                    Keys lKeyDown = (Keys)pMsg.WParam.ToInt32();
-
-                    switch (lKeyDown)
-                    {
-                        case Keys.ControlKey:
-                            KeyboardHelper.Instance.IsCtrlPressing = true;
-                            WinMessageHelper.Instance.PostMessage_MouseMove( this );
-                            break;
-                    }
-                    break;
-
-                case WinMessageHelper.WM_KEYUP:
+                case WinMessages.WM_KEYUP:
                     Keys lKeyUp = (Keys)pMsg.WParam.ToInt32() | Control.ModifierKeys;
 
                     switch (lKeyUp)
                     {
                         case Keys.Delete:
-                            if (SelectedTool != null)
-                            {
-                                _deleteToolStripMenuItem.PerformClick();
-                                lRet = true;
-                            }
+                            _deleteToolStripMenuItem.PerformClick();
+                            lRet = true;
                             break;
 
                         case Keys.ControlKey:
-                            KeyboardHelper.Instance.IsCtrlPressing = false;
-                            WinMessageHelper.Instance.PostMessage_MouseMove( this );
+                            KeyboardHelper.Instance.CtrlPressed = false;
+                            lRet = true;
+                            break;
+                    }
+                    break;
+
+                case WinMessages.WM_KEYDOWN:
+                    Keys lKeyDown = (Keys)pMsg.WParam.ToInt32();
+
+                    switch (lKeyDown)
+                    {
+                        case Keys.ControlKey:
+                            KeyboardHelper.Instance.CtrlPressed = true;
+                            lRet = true;
                             break;
                     }
                     break;

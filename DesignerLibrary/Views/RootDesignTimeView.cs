@@ -1,5 +1,6 @@
 ﻿using DesignerLibrary.Consts;
 using DesignerLibrary.DrawingTools;
+using DesignerLibrary.Models;
 using System;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -35,6 +36,7 @@ namespace DesignerLibrary.Views
             _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( PolygonTool ) ) { DisplayName = Properties.Resources.Tool_Polygon } );
             _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ArcTool ) ) { DisplayName = Properties.Resources.Tool_Arc } );
             _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ImageTool ) ) { DisplayName = Properties.Resources.Tool_Image } );
+            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( TextTool ) ) { DisplayName = Properties.Resources.Tool_Text } );
 
             DesignerHost = _DesignSurface.GetService( typeof( IDesignerHost ) ) as IDesignerHost;
             DesignerHost.AddService( typeof( IToolboxService ), _ToolboxControl.ToolboxService );
@@ -102,12 +104,15 @@ namespace DesignerLibrary.Views
 
         public void Open(string pFilePath)
         {
-            DesignView.Load(pFilePath);
+            DesignView.Load( SitePlanModel.FromFile( pFilePath ) );
         }
 
         public void Save(string pFilePath)
         {
-            DesignView.Save(pFilePath);
+            SitePlanModel lModel = new SitePlanModel();
+
+            DesignView.Save( lModel );
+            lModel.SaveToFile( pFilePath );
         }
 
         private DesignTimeView DesignView

@@ -4,12 +4,8 @@ namespace DesignerLibrary.Persistence
     public class EllipseToolPersistence : RectangleToolPersistence
     {
         public EllipseToolPersistence()
+            : base( typeof( DrawingTools.EllipseTool ) )
         {
-        }
-
-        internal override DrawingTools.DrawingTool NewDrawingTool()
-        {
-            return new DrawingTools.EllipseTool();
         }
     }
 }

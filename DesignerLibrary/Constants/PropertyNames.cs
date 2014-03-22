@@ -8,8 +8,9 @@ namespace DesignerLibrary.Consts
     public enum PropertyOrder
     {
         eNone,
-        eLocation = 1,
-        eBounds = 2,
+        eName = 1,
+        eLocation = 2,
+        eBounds = 3,
         eLineColor = 5,
         eFillColor = 6,
         eLineWidth = 7,
@@ -37,6 +38,7 @@ namespace DesignerLibrary.Consts
     {
         public static readonly string LayerName = "LayerName";
 
+        public static readonly string Name = "Name";
         public static readonly string Location = "Location";
         public static readonly string Bounds = "Bounds";
         public static readonly string PenColor = "PenColor";

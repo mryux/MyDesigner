@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 
 namespace MyDesigner
@@ -34,6 +35,17 @@ namespace MyDesigner
             {
                 rootDesignTimeView1.Save(lDialog.FileName);
             }
+        }
+
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PrintDocument lDocument = new PrintDocument();
+
+            lDocument.PrintPage += OnPrintPage;
+        }
+
+        void OnPrintPage(object sender, PrintPageEventArgs pArgs)
+        {
         }
     }
 }

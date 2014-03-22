@@ -1,6 +1,10 @@
-﻿using System;
+﻿using DesignerLibrary.Models;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Serialization;
@@ -11,22 +15,40 @@ namespace DesignerLibrary.Persistence
 
     public abstract class ToolPersistence
     {
-        protected ToolPersistence()
+        protected ToolPersistence(Type pToolType)
         {
+            ToolType = pToolType;
+
             PenColor = Color.Black;
             PenWidth = LineWidth.Thin;
             Location = Point.Empty;
         }
 
-        internal DrawingTools.DrawingTool CreateDrawingTool()
-        {
-            return NewDrawingTool();
-        }
+        private Type ToolType { get; set; }
 
-        internal abstract DrawingTools.DrawingTool NewDrawingTool();
+        internal DrawingTools.DrawingTool CreateDrawingTool(IDesignerHost pDesignerHost)
+        {
+            DrawingTools.DrawingTool lRet = null;
+
+            // construct tool via DesignerHost at DesignTime.
+            if (pDesignerHost != null)
+                lRet = pDesignerHost.CreateComponent( ToolType ) as DrawingTools.DrawingTool;
+            else
+            {
+                // construct tool via reflection at Runtime.
+                ConstructorInfo lInfo = ToolType.GetConstructor( new Type[] { } );
+
+                lRet = lInfo.Invoke( null ) as DrawingTools.DrawingTool;
+            }
+
+            lRet.Persistence = this;
+            return lRet;
+        }
 
         protected virtual void OnRectDeserialized(Rectangle pRect) { }
         protected virtual void OnFillColorDeserialized(Color pColor) { }
+        protected virtual void OnToXml(Dictionary<string, string> pImages) { }
+        protected virtual void OnLoadFromSitePlanModel(SitePlanModel pModel) { }
         protected virtual void OnDeserialize(BinaryReader pReader)
         {
             int lVersion = Read<int>( pReader );
@@ -35,15 +57,28 @@ namespace DesignerLibrary.Persistence
         [XmlIgnore]
         public Color PenColor { get; set; }
 
-        [XmlElement("PenColor")]
+        [XmlElement( "PenColor" )]
         public int PenColorAsArgb
         {
             get { return PenColor.ToArgb(); }
             set { PenColor = Color.FromArgb( value ); }
         }
 
+        [XmlAttribute( AttributeName = "Name" )]
+        public string Name { get; set; }
+
         public LineWidth PenWidth { get; set; }
         public Point Location { get; set; }
+
+        public void ToXml(Dictionary<string, string> pImages)
+        {
+            OnToXml( pImages );
+        }
+
+        public void LoadFromSitePlanModel(SitePlanModel pModel)
+        {
+            OnLoadFromSitePlanModel( pModel );
+        }
 
         public void Deserialize(BinaryReader pReader)
         {

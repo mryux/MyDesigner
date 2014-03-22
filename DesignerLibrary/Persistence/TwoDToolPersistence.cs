@@ -9,7 +9,8 @@ namespace DesignerLibrary.Persistence
 {
     public abstract class TwoDToolPersistence : ToolPersistence
     {
-        protected TwoDToolPersistence()
+        protected TwoDToolPersistence(Type pToolType)
+            : base( pToolType )
         {
             FillColor = Color.Transparent;
         }

@@ -9,17 +9,18 @@ namespace DesignerLibrary.Persistence
     public class TextToolPersistence : RectangleToolPersistence
     {
         public TextToolPersistence()
+            : this( typeof( DrawingTools.TextTool ) )
+        {        
+        }
+
+        public TextToolPersistence(Type pToolType)
+            : base( pToolType )
         {
             Alignment = StringAlignment.Near;
             TextColor = Color.Black;
             SetLogFont( new Font( FontFamily.GenericSerif, 10.0f ) );
         }
-
-        internal override DrawingTools.DrawingTool NewDrawingTool()
-        {
-            return new DrawingTools.TextTool();
-        }
-
+        
         protected override void OnDeserialize(BinaryReader pReader)
         {
             base.OnDeserialize( pReader );

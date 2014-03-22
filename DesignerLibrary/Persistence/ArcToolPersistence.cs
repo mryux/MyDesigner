@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Drawing;
+using System.IO;
 
 namespace DesignerLibrary.Persistence
 {
     public class ArcToolPersistence : RectangleToolPersistence
     {
         public ArcToolPersistence()
+            : base( typeof( DrawingTools.ArcTool ) )
         {
             StartAngle = 180.0f;
             SweepAngle = 180.0f;
-        }
-
-        internal override DrawingTools.DrawingTool NewDrawingTool()
-        {
-            return new DrawingTools.ArcTool();
         }
 
         protected override void OnDeserialize(BinaryReader pReader)

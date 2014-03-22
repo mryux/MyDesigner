@@ -151,7 +151,7 @@ namespace DesignerLibrary.Views
                     object lDataObject = lToolboxService.SerializeToolboxItem( lItem );
                     DrawingTool lTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
 
-                    lTool.Persistence = lTool.CreatePersistence();
+                    lTool.CreatePersistence();
                     Rectangle lRect = lTool.SurroundingRect;
 
                     using (DragImage image = new DragImage(lTool.DefaultImage, lRect.Width/2, lRect.Height/2))

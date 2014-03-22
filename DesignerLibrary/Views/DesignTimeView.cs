@@ -30,7 +30,7 @@ namespace DesignerLibrary.Views
             AllowDrop = true;
 
             Site = pDesigner.Component.Site;
-            ServiceProvider = Site.Container as IServiceProvider;
+            DesignerHost = Site.Container as IDesignerHost;
             SelectionService = GetService<ISelectionService>();
 
             _deleteToolStripMenuItem.Click += OnDeleteTool;
@@ -199,11 +199,11 @@ namespace DesignerLibrary.Views
             {
                 // drag ToolboxItem & drop.
                 ToolboxItem lItem = GetService<IToolboxService>().DeserializeToolboxItem( pArgs.Data );
-                DrawingTool lTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
+                DrawingTool lTool = lItem.CreateComponents( DesignerHost ).FirstOrDefault() as DrawingTool;
 
                 if (lTool != null)
                 {
-                    lTool.Persistence = lTool.CreatePersistence();
+                    lTool.CreatePersistence();
                     Point lLocation = GetScrollablePoint( PointToClient( new Point( pArgs.X, pArgs.Y ) ) );
                     Rectangle lRect = lTool.SurroundingRect;
 
@@ -331,8 +331,8 @@ namespace DesignerLibrary.Views
                                 // create toolbox item
                                 if (!DragBoxFromMouseDown.Contains( lLocation ))
                                 {
-                                    PickingTool = lItem.CreateComponents().FirstOrDefault() as DrawingTool;
-                                    PickingTool.Persistence = PickingTool.CreatePersistence();
+                                    PickingTool = lItem.CreateComponents( DesignerHost ).FirstOrDefault() as DrawingTool;
+                                    PickingTool.CreatePersistence();
                                     PickingTool.StartResize( lLocation );
                                 }
                             }
@@ -421,17 +421,17 @@ namespace DesignerLibrary.Views
 
         private void RemoveTool(DrawingTool pTool)
         {
+            pTool.OnRemove();
+            DrawingTools.Remove( pTool );
+
             Rectangle lRect = pTool.Tracker.SurroundingRect;
 
-            DrawingTools.Remove( pTool );
             InvalidateRect( lRect );
             IsDirty = true;
         }
-
+        
         protected override void OnAddTool(DrawingTool pTool)
         {
-            (pTool as IComponent).Site = Site;
-
             // setup pTool events
             pTool.IsDirtyEvent += (pSender, pArgs) =>
             {
@@ -440,7 +440,7 @@ namespace DesignerLibrary.Views
                 if (lIsDirty)
                     IsDirty = true;
             };
-
+            
             IsDirty = true;
         }
 
@@ -460,9 +460,9 @@ namespace DesignerLibrary.Views
             if (string.IsNullOrEmpty( lRet ))
             {
                 var lTools = from tool in DrawingTools
-                             let errorMsg = tool.Validate()
-                             where !string.IsNullOrEmpty( errorMsg )
-                             select new Tuple<DrawingTool, string>( tool, errorMsg );
+                            let errorMsg = tool.Validate()
+                            where !string.IsNullOrEmpty( errorMsg )
+                            select new Tuple<DrawingTool, string>( tool, errorMsg );
 
                 if (lTools.Count() > 0)
                 {
@@ -671,7 +671,7 @@ namespace DesignerLibrary.Views
         protected T GetService<T>()
             where T : class
         {
-            return ServiceProvider.GetService( typeof( T ) ) as T;
+            return DesignerHost.GetService( typeof( T ) ) as T;
         }
 
         private void InitializeComponent()

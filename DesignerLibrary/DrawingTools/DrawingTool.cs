@@ -33,6 +33,21 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        public string Name
+        {
+            get
+            {
+                ISite lSite = GetSite();
+
+                if (string.IsNullOrEmpty( Persistence.Name ))
+                    Persistence.Name = lSite.Name;
+                else
+                    lSite.Name = Persistence.Name;
+
+                return lSite.Name;
+            }
+        }
+
         protected virtual void OnSetPersistence()
         {
             Pen = new Pen( _Persistence.PenColor, GetLineWidth( _Persistence.PenWidth ) );
@@ -126,9 +141,17 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
-        public ToolPersistence CreatePersistence()
+        public void CreatePersistence()
         {
-            return NewPersistence();
+            Persistence = NewPersistence();
+        }
+
+        public void OnRemove()
+        {
+            ISite lSite = GetSite();
+
+            if (lSite != null)
+                lSite.Container.Remove( this );
         }
 
         protected abstract ToolPersistence NewPersistence();
@@ -354,6 +377,15 @@ namespace DesignerLibrary.DrawingTools
         {
             IList<PropertyDescriptor> lRet = new List<PropertyDescriptor>();
             
+            lRet.Add( new SiPropertyDescriptor( this, PropertyNames.Name,
+                new Attribute[] 
+                { 
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "Name" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eName ),
+                } ) );
+
             lRet.Add( new SiPropertyDescriptor( this, PropertyNames.PenColor,
                 new Attribute[] 
                 { 
@@ -383,6 +415,12 @@ namespace DesignerLibrary.DrawingTools
                    select p;
         }
 
+        private ISite GetSite()
+        {
+            IComponent lComponent = this as IComponent;
+
+            return lComponent.Site;
+        }
 
         #region IComponent implementation
         private EventHandler _Disposed;

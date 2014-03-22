@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Xml.Serialization;
 
 namespace DesignerLibrary.Persistence
@@ -6,13 +7,15 @@ namespace DesignerLibrary.Persistence
     public class RectangleToolPersistence : TwoDToolPersistence
     {
         public RectangleToolPersistence()
+            : this( typeof( DrawingTools.RectangleTool ) )
         {
-            Size = new Size ( 100, 100 );
+
         }
 
-        internal override DrawingTools.DrawingTool NewDrawingTool()
+        public RectangleToolPersistence(Type pToolType)
+            : base( pToolType )
         {
-            return new DrawingTools.RectangleTool();
+            Size = new Size ( 100, 100 );
         }
 
         public Size Size { get; set; }

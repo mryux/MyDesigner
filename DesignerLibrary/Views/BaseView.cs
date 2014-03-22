@@ -3,6 +3,7 @@ using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
 using DesignerLibrary.Persistence;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace DesignerLibrary.Views
 {
     abstract class BaseView : ScrollableControl
     {
+		protected IDesignerHost DesignerHost { get; set; }
         protected BaseView()
         {
             BackColor = Color.LightGreen;
@@ -40,11 +42,11 @@ namespace DesignerLibrary.Views
 
         protected virtual void OnLoadModel(SitePlanModel pModel)
         {
-            PersistenceFactory.Instance.Import( pModel ).All( persistence =>
+            PersistenceFactory.Instance.Import( pModel ).All( p =>
             {
-                DrawingTool lTool = persistence.CreateDrawingTool();
+                DrawingTool lTool = p.CreateDrawingTool( DesignerHost );
 
-                lTool.Persistence = persistence;
+                p.LoadFromSitePlanModel( pModel );
                 AddTool( lTool );
                 return true;
             } );

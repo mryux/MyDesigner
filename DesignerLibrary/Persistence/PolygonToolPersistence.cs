@@ -6,13 +6,9 @@ namespace DesignerLibrary.Persistence
     public class PolygonToolPersistence : TwoDToolPersistence
     {
         public PolygonToolPersistence()
+            : base( typeof( DrawingTools.PolygonTool ) )
         {
             Points = new List<Point>();
-        }
-
-        internal override DrawingTools.DrawingTool NewDrawingTool()
-        {
-            return new DrawingTools.PolygonTool();
         }
 
         public List<Point> Points { get; set; }

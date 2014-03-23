@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -72,6 +73,13 @@ namespace DesignerLibrary.Views
         public void Load(SitePlanModel pModel)
         {
             OnLoadModel( pModel );
+        }
+
+        public void OnPrint(PrintPageEventArgs pArgs)
+        {
+            PaintEventArgs lPaintArgs = new PaintEventArgs( pArgs.Graphics, pArgs.PageBounds );
+
+            OnPaint( lPaintArgs );
         }
 
         private static readonly Color DesignTitleBaseColor = Color.FromArgb( 50, 50, 50 );

@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -113,6 +114,11 @@ namespace DesignerLibrary.Views
 
             DesignView.Save( lModel );
             lModel.SaveToFile( pFilePath );
+        }
+
+        public void OnPrint(PrintPageEventArgs pArgs)
+        {
+            DesignView.OnPrint( pArgs );
         }
 
         private DesignTimeView DesignView

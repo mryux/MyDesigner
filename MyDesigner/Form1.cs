@@ -39,13 +39,21 @@ namespace MyDesigner
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            PrintDialog lDialog = new PrintDialog();
+
             PrintDocument lDocument = new PrintDocument();
 
+            lDialog.Document = lDocument;
             lDocument.PrintPage += OnPrintPage;
+            if (lDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                lDocument.Print();
+            }
         }
 
         void OnPrintPage(object sender, PrintPageEventArgs pArgs)
         {
+            rootDesignTimeView1.OnPrint( pArgs );
         }
     }
 }

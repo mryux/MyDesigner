@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DesignerLibrary.Helpers
 {
-    class EventArgs<T> : EventArgs
+    public class EventArgs<T> : EventArgs
     {
         public EventArgs(T pData)
         {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DesignerLibrary.Helpers;
+using DesignerLibrary.Models;
+using System;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 
@@ -11,9 +13,34 @@ namespace MyDesigner
             InitializeComponent();
         }
 
+        private event EventHandler<EventArgs<Tuple<string, SitePlanModel>>> LoadModelEvent;
+        private event EventHandler SaveModelEvent;
+
         protected override void OnLoad(EventArgs pArgs)
         {
             base.OnLoad( pArgs );
+
+            LoadModelEvent += rootDesignTimeView1.OnLoadModel;
+            SaveModelEvent += rootDesignTimeView1.OnSaveModel;
+
+            OnNew( this, EventArgs.Empty );
+        }
+
+        void FireEvent_LoadModel(string pTitle, SitePlanModel pModel)
+        {
+            if (LoadModelEvent != null)
+                LoadModelEvent( this, new EventArgs<Tuple<string, SitePlanModel>>( new Tuple<string, SitePlanModel>( pTitle, pModel ) ) );
+        }
+
+        void FireEvent_SaveModel()
+        {
+            if (SaveModelEvent != null)
+                SaveModelEvent( this, EventArgs.Empty );
+        }
+
+        private void OnNew(object sender, EventArgs e)
+        {
+            FireEvent_LoadModel( "New", new SitePlanModel() );
         }
 
         void OnOpen(object sender, EventArgs e)
@@ -23,18 +50,15 @@ namespace MyDesigner
             lDialog.CheckFileExists = true;
             if(lDialog.ShowDialog() == DialogResult.OK)
             {
-                rootDesignTimeView1.Open(lDialog.FileName);
+                string lTitle = System.IO.Path.GetFileName( lDialog.FileName );
+
+                FireEvent_LoadModel( lTitle, SitePlanModel.FromFile( lDialog.FileName ) );
             }
         }
 
         void OnSave(object sender, EventArgs e)
         {
-            FileDialog lDialog = new SaveFileDialog();
-
-            if(lDialog.ShowDialog() == DialogResult.OK)
-            {
-                rootDesignTimeView1.Save(lDialog.FileName);
-            }
+            FireEvent_SaveModel();
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)

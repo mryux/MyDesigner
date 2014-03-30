@@ -48,7 +48,7 @@ namespace DesignerLibrary.Views
         public event EventHandler<EventArgs<bool>> DirtyEvent;
 
         private bool _IsDirty = false;
-        private bool IsDirty
+        public bool IsDirty
         {
             get { return _IsDirty; }
             set
@@ -419,6 +419,17 @@ namespace DesignerLibrary.Views
             }
         }
 
+        public void Cleanup()
+        {
+            var lTools = DrawingTools.ToList();
+
+            lTools.All( t =>
+            {
+                RemoveTool( t );
+                return true;
+            } );
+        }
+
         private void RemoveTool(DrawingTool pTool)
         {
             pTool.OnRemove();
@@ -488,6 +499,8 @@ namespace DesignerLibrary.Views
             pModel.Width = LayerWidth;
             pModel.Height = LayerHeight;
             pModel.Layout = PersistenceFactory.Instance.GetLayout( lPersistences );
+
+            IsDirty = false;
         }
 
         void OnDeleteTool(object sender, EventArgs pArgs)

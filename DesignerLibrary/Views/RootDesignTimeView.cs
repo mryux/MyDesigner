@@ -1,5 +1,6 @@
 ﻿using DesignerLibrary.Consts;
 using DesignerLibrary.DrawingTools;
+using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
 using System;
 using System.ComponentModel.Design;
@@ -95,25 +96,50 @@ namespace DesignerLibrary.Views
             }
         }
 
-        void OnDirtyEvent(object sender, Helpers.EventArgs<bool> pArgs)
+        void OnDirtyEvent(object sender, EventArgs<bool> pArgs)
         {
             bool lIsDirty = pArgs.Data;
 
+            Parent.Text = Title;
             if (lIsDirty)
                 Parent.Text += "*";
         }
 
-        public void Open(string pFilePath)
+        public void OnLoadModel(object sender, EventArgs<Tuple<string, SitePlanModel>> pArgs)
         {
-            DesignView.Load( SitePlanModel.FromFile( pFilePath ) );
+            if (DesignView.IsDirty)
+            {
+                DialogResult lResult = MessageBox.Show( "Current Model has been changed, are you sure to save it?", "Warning", MessageBoxButtons.YesNoCancel );
+
+                if(lResult != DialogResult.Cancel)
+                {
+                    if(lResult == DialogResult.Yes)
+                    {
+                        OnSaveModel( this, EventArgs.Empty );
+                    }
+                }
+            }
+
+            // clean up
+            DesignView.Cleanup();
+
+            Title = pArgs.Data.Item1;
+            DesignView.Load( pArgs.Data.Item2 );
         }
+                
+        private string Title { get; set; }
 
-        public void Save(string pFilePath)
+        public void OnSaveModel(object pSender, EventArgs pArgs)
         {
-            SitePlanModel lModel = new SitePlanModel();
+            FileDialog lDialog = new SaveFileDialog();
 
-            DesignView.Save( lModel );
-            lModel.SaveToFile( pFilePath );
+            if (lDialog.ShowDialog() == DialogResult.OK)
+            {
+                SitePlanModel lModel = new SitePlanModel();
+
+                DesignView.Save( lModel );
+                lModel.SaveToFile( lDialog.FileName );
+            }
         }
 
         public void OnPrint(PrintPageEventArgs pArgs)

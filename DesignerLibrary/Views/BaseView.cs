@@ -73,6 +73,8 @@ namespace DesignerLibrary.Views
         public void Load(SitePlanModel pModel)
         {
             OnLoadModel( pModel );
+
+            Invalidate();
         }
 
         public void OnPrint(PrintPageEventArgs pArgs)

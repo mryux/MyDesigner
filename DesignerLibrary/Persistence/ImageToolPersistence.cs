@@ -11,7 +11,6 @@ namespace DesignerLibrary.Persistence
         {
         }
 
-        [XmlIgnore]
         public string ImagePath { get; set; }
 
         protected override void OnToXml(Dictionary<string, string> pImages)

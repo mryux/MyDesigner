@@ -1,6 +1,6 @@
 ﻿namespace MyDesigner
 {
-    partial class Form1
+    partial class DesignForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DesignForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.modeToolStripMenuItem});
             resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             // 
@@ -55,6 +58,12 @@
             this.printToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.OnNew);
             // 
             // openToolStripMenuItem
             // 
@@ -74,24 +83,31 @@
             resources.ApplyResources(this.printToolStripMenuItem, "printToolStripMenuItem");
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
+            // modeToolStripMenuItem
+            // 
+            this.modeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.runtimeModeToolStripMenuItem});
+            this.modeToolStripMenuItem.Name = "modeToolStripMenuItem";
+            resources.ApplyResources(this.modeToolStripMenuItem, "modeToolStripMenuItem");
+            // 
+            // runtimeModeToolStripMenuItem
+            // 
+            this.runtimeModeToolStripMenuItem.Name = "runtimeModeToolStripMenuItem";
+            resources.ApplyResources(this.runtimeModeToolStripMenuItem, "runtimeModeToolStripMenuItem");
+            this.runtimeModeToolStripMenuItem.Click += new System.EventHandler(this.runtimeModeToolStripMenuItem_Click);
+            // 
             // rootDesignTimeView1
             // 
             resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
             this.rootDesignTimeView1.Name = "rootDesignTimeView1";
             // 
-            // newToolStripMenuItem
-            // 
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.OnNew);
-            // 
-            // Form1
+            // DesignForm
             // 
             resources.ApplyResources(this, "$this");
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.rootDesignTimeView1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "DesignForm";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -108,6 +124,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runtimeModeToolStripMenuItem;
 
     }
 }

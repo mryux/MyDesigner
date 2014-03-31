@@ -6,9 +6,9 @@ using System.Windows.Forms;
 
 namespace MyDesigner
 {
-    public partial class Form1 : Form
+    public partial class DesignForm : Form
     {
-        public Form1()
+        public DesignForm()
         {
             InitializeComponent();
         }
@@ -78,6 +78,15 @@ namespace MyDesigner
         void OnPrintPage(object sender, PrintPageEventArgs pArgs)
         {
             rootDesignTimeView1.OnPrint( pArgs );
+        }
+
+        private void runtimeModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RuntimeForm lForm = new RuntimeForm();
+
+            lForm.Model = rootDesignTimeView1.Model;
+            lForm.Owner = this;
+            lForm.Show( this );
         }
     }
 }

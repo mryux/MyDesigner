@@ -142,6 +142,17 @@ namespace DesignerLibrary.Views
             }
         }
 
+        public SitePlanModel Model
+        {
+            get
+            {
+                SitePlanModel lModel = new SitePlanModel();
+
+                DesignView.Save( lModel );
+                return lModel;
+            }
+        }
+
         public void OnPrint(PrintPageEventArgs pArgs)
         {
             DesignView.OnPrint( pArgs );

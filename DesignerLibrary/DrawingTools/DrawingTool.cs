@@ -310,7 +310,7 @@ namespace DesignerLibrary.DrawingTools
             OnRun( pControl );
         }
 
-        protected virtual void OnInitialize()
+        protected virtual void OnRuntimeInitialize(Control pParent)
         {
         }
 
@@ -320,10 +320,10 @@ namespace DesignerLibrary.DrawingTools
 
         protected bool InRuntime { get; set; }
 
-        public void Initialize()
+        public void RuntimeInitialize(Control pParent)
         {
             InRuntime = true;
-            OnInitialize();
+            OnRuntimeInitialize( pParent );
         }
         
         public event EventHandler RedrawEvent;

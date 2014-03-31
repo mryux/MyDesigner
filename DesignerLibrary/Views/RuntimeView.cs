@@ -3,6 +3,7 @@ using DesignerLibrary.Models;
 using DesignerLibrary.Views;
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.Views
@@ -10,7 +11,6 @@ namespace DesignerLibrary.Views
     public interface IRuntimeView
     {
         void Load(SitePlanModel pModel);
-        IntPtr SiPassMainFrameHandle { get; set; }
     }
 
     public class RuntimeViewFactory
@@ -39,22 +39,16 @@ namespace DesignerLibrary.Views
             Load( pModel );
         }
 
-        IntPtr IRuntimeView.SiPassMainFrameHandle
-        {
-            get;
-            set;
-        }
-
         protected override void OnAddTool(DrawingTool pTool)
         {
             base.OnAddTool( pTool );
 
-            pTool.Initialize();
+            pTool.RuntimeInitialize( this );
         }
 
         protected override void Dispose(bool disposing)
         {
-            DrawingTools.ConvertAll( t =>
+            DrawingTools.All( t =>
             {
                 (t as IDisposable).Dispose();
                 return true;

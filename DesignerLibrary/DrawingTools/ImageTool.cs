@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -34,16 +35,32 @@ namespace DesignerLibrary.DrawingTools
                 pArgs.Graphics.DrawImage( Image.FromFile( FileLocation ), Bounds );
         }
 
-        private string _FileLocation = string.Empty;
+        protected override void OnRuntimeInitialize(Control pParent)
+        {
+            base.OnRuntimeInitialize( pParent );
+
+            _PictureBox = new PictureBox();
+            _PictureBox.Bounds = GraphicsMapper.Instance.TransformRectangle( Bounds, CoordinateSpace.Device, CoordinateSpace.Page );
+            _PictureBox.ImageLocation = FileLocation;
+            _PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+
+            pParent.Controls.Add( _PictureBox );
+        }
+
         public string FileLocation
         {
-            get { return _FileLocation; }
+            get { return Persistence.ImagePath; }
             set
             {
-                _FileLocation = value;
+                Persistence.ImagePath = value;
                 IsDirty = true;
                 Invalidate();
             }
+        }
+
+        private new ImageToolPersistence Persistence
+        {
+            get { return base.Persistence as ImageToolPersistence; }
         }
 
         public override string GetFieldError(string pFieldName)
@@ -80,24 +97,5 @@ namespace DesignerLibrary.DrawingTools
 
             return lDescriptors;
         }
-
-        //protected override void OnSetSite(ISite pSite)
-        //{
-        //    base.OnSetSite( pSite );
-
-        //    IDesignerHost pHost = pSite.Container as IDesignerHost;
-
-        //    Control lView = (pHost.GetDesigner( pHost.RootComponent ) as IRootDesigner).GetView( ViewTechnology.Default ) as Control;
-
-        //    if (lView != null)
-        //    {
-        //        _PictureBox = new PictureBox();
-        //        _PictureBox.Bounds = Rect;
-        //        //_PictureBox.ImageLocation = @"C:\Downloads\fun1.gif";
-        //        _PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-
-        //        lView.Controls.Add( _PictureBox );
-        //    }
-        //}
     }
 }

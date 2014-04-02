@@ -443,6 +443,8 @@ namespace DesignerLibrary.Views
         
         protected override void OnAddTool(DrawingTool pTool)
         {
+            base.OnAddTool( pTool );
+
             // setup pTool events
             pTool.IsDirtyEvent += (pSender, pArgs) =>
             {

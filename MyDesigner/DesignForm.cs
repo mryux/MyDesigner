@@ -88,5 +88,20 @@ namespace MyDesigner
             lForm.Owner = this;
             lForm.Show( this );
         }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

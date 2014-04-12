@@ -18,7 +18,6 @@ namespace DesignerLibrary.DrawingTools
     {
         protected DrawingTool()
         {
-            Selected = false;
         }
 
         private ToolPersistence _Persistence = null;
@@ -214,7 +213,37 @@ namespace DesignerLibrary.DrawingTools
             return Region.IsVisible( pPoint );
         }
 
-        public bool Selected { get; set; }
+        private bool _Selected = false;
+        public bool Selected
+        {
+            get { return _Selected; }
+            set
+            {
+                _Selected = value;
+                if (_Selected)
+                    OnSelected();
+                else
+                    OnLostSelection();
+            }
+        }
+
+        protected virtual void OnSelected()
+        {
+        }
+
+        protected virtual void OnLostSelection()
+        {
+        }
+
+        public bool ProcessKeyMsg(Keys pKey)
+        {
+            return OnKey( pKey );
+        }
+
+        protected virtual bool OnKey(Keys pKey)
+        {
+            return true;
+        }
 
         public Rectangle SurroundingRect
         {
@@ -256,6 +285,15 @@ namespace DesignerLibrary.DrawingTools
         {
             OnEscape();
             IsResizing = false;
+        }
+
+        protected virtual void OnDoubleClick(Control pSender, MouseEventArgs pArgs)
+        {
+        }
+
+        public void OnMouseDoubleClick(Control pSender, MouseEventArgs pArgs)
+        {
+            OnDoubleClick( pSender, pArgs );
         }
 
         public Image DefaultImage
@@ -347,7 +385,6 @@ namespace DesignerLibrary.DrawingTools
                     IsDirtyEvent( this, new EventArgs<bool>( value ) );
             }
         }
-
 
         protected ICollection<string> Fields = new List<string>();
         public string Validate()

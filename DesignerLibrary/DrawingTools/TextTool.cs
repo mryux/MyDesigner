@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.DrawingTools
@@ -44,6 +45,50 @@ namespace DesignerLibrary.DrawingTools
 
             Font lFont = Font.FromLogFont( Persistence.LogFont );
             _Font = new Font( lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point );
+        }
+
+        private TextBox _TextBox = null;
+
+        protected override void OnDoubleClick(Control pSender, MouseEventArgs pArgs)
+        {
+            base.OnDoubleClick( pSender, pArgs );
+
+            if(_TextBox == null)
+            {
+                _TextBox = new TextBox();
+                _TextBox.Multiline = true;
+                pSender.Controls.Add( _TextBox );
+            }
+            else
+                _TextBox.Visible = true;
+
+            _TextBox.Font = Font;
+            _TextBox.ForeColor = TextColor;
+            if (FillColor != Color.Transparent)
+                _TextBox.BackColor = FillColor;
+            _TextBox.Bounds = GraphicsMapper.Instance.TransformRectangle( Bounds, CoordinateSpace.Device, CoordinateSpace.Page );
+            _TextBox.Focus();
+        }
+
+        protected override void OnLostSelection()
+        {
+            base.OnLostSelection();
+
+            if( _TextBox != null)
+            {
+                _TextBox.Visible = false;
+                Text = _TextBox.Text;
+            }
+        }
+
+        protected override bool OnKey(Keys pKey)
+        {
+            bool lRet = base.OnKey( pKey );
+
+            if (pKey == Keys.Delete)
+                lRet = !_TextBox.Visible;
+
+            return lRet;
         }
 
         public Color TextColor

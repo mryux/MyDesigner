@@ -417,6 +417,10 @@ namespace DesignerLibrary.Views
                 InvalidateRect( PickingTool.SurroundingRect );
                 PickingTool = null;
             }
+            else if (SelectedTool != null)
+            {
+                SelectedTool.OnMouseDoubleClick( this, pArgs );
+            }
         }
 
         public void Cleanup()
@@ -453,7 +457,7 @@ namespace DesignerLibrary.Views
                 if (lIsDirty)
                     IsDirty = true;
             };
-            
+
             IsDirty = true;
         }
 
@@ -747,7 +751,8 @@ namespace DesignerLibrary.Views
                     switch (lKeyUp)
                     {
                         case Keys.Delete:
-                            if (SelectedTool != null)
+                            if (SelectedTool != null
+                                && SelectedTool.ProcessKeyMsg( lKeyUp ))
                             {
                                 _deleteToolStripMenuItem.PerformClick();
                                 lRet = true;

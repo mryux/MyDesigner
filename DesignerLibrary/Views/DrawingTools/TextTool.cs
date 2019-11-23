@@ -26,13 +26,13 @@ namespace DesignerLibrary.DrawingTools
             return new TextToolPersistence();
         }
 
-        protected override void OnPaint(PaintEventArgs pArgs)
+        protected override void OnPaint(PaintEventArgs args)
         {
-            base.OnPaint( pArgs );
+            base.OnPaint(args);
 
-            Graphics lGraph = pArgs.Graphics;
+            Graphics graph = args.Graphics;
 
-            lGraph.DrawString( Text, Font, new SolidBrush( TextColor ), Bounds, Format );
+            graph.DrawString(Text, Font, new SolidBrush(TextColor), Bounds, Format);
         }
 
         protected StringFormat Format { get; set; }
@@ -43,21 +43,21 @@ namespace DesignerLibrary.DrawingTools
 
             Format.Alignment = Alignment;
 
-            Font lFont = Font.FromLogFont( Persistence.LogFont );
-            _Font = new Font( lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point );
+            Font lFont = Font.FromLogFont(Persistence.LogFont);
+            _Font = new Font(lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point);
         }
 
         private TextBox _TextBox = null;
 
-        protected override void OnDoubleClick(Control pSender, MouseEventArgs pArgs)
+        protected override void OnDoubleClick(Control sender, MouseEventArgs args)
         {
-            base.OnDoubleClick( pSender, pArgs );
+            base.OnDoubleClick(sender, args);
 
-            if(_TextBox == null)
+            if (_TextBox == null)
             {
                 _TextBox = new TextBox();
                 _TextBox.Multiline = true;
-                pSender.Controls.Add( _TextBox );
+                sender.Controls.Add(_TextBox);
             }
             else
                 _TextBox.Visible = true;
@@ -66,7 +66,7 @@ namespace DesignerLibrary.DrawingTools
             _TextBox.ForeColor = TextColor;
             if (FillColor != Color.Transparent)
                 _TextBox.BackColor = FillColor;
-            _TextBox.Bounds = GraphicsMapper.Instance.TransformRectangle( Bounds, CoordinateSpace.Device, CoordinateSpace.Page );
+            _TextBox.Bounds = GraphicsMapper.Instance.TransformRectangle(Bounds, CoordinateSpace.Device, CoordinateSpace.Page);
             _TextBox.Focus();
         }
 
@@ -74,18 +74,18 @@ namespace DesignerLibrary.DrawingTools
         {
             base.OnLostSelection();
 
-            if( _TextBox != null)
+            if (_TextBox != null)
             {
                 _TextBox.Visible = false;
                 Text = _TextBox.Text;
             }
         }
 
-        protected override bool OnKey(Keys pKey)
+        protected override bool OnKey(Keys key)
         {
-            bool lRet = base.OnKey( pKey );
+            bool lRet = base.OnKey(key);
 
-            if (pKey == Keys.Delete)
+            if (key == Keys.Delete)
                 lRet = !_TextBox.Visible;
 
             return lRet;
@@ -120,7 +120,7 @@ namespace DesignerLibrary.DrawingTools
             set
             {
                 _Font = value;
-                Persistence.SetLogFont( _Font );
+                Persistence.SetLogFont(_Font);
 
                 IsDirty = true;
                 Invalidate();
@@ -146,47 +146,47 @@ namespace DesignerLibrary.DrawingTools
 
         protected override IList<PropertyDescriptor> GetPropertyDescriptors()
         {
-            IList<PropertyDescriptor> lDescriptors = base.GetPropertyDescriptors();
+            IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.TextColor,
-                new Attribute[] 
-                { 
+            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.TextColor,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "TextColor" ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.TextColor ),
-                } ) );
+                }));
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.Text,
-                new Attribute[] 
-                { 
+            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Text,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "Text" ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.Text ),
                     new EditorAttribute( typeof( MultilineStringEditor ), typeof( UITypeEditor ) ),
-                } ) );
+                }));
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.Font,
-                new Attribute[] 
-                { 
+            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Font,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "Font" ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.Font ),
-                } ) );
+                }));
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.Alignment,
-                new Attribute[] 
-                { 
+            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Alignment,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "Alignment" ),
                     new TypeConverterAttribute( typeof( AlignmentConverter ) ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.Alignment ),
-                } ) );
+                }));
 
-            return lDescriptors;
+            return descriptors;
         }
     }
 }

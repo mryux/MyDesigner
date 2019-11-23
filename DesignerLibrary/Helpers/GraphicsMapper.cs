@@ -14,48 +14,48 @@ namespace DesignerLibrary.Helpers
 
         private Graphics Graph { get; set; }
 
-        public void Initialize(Control pControl)
+        public void Initialize(Control control)
         {
-            Graph = Graphics.FromHwnd( pControl.Handle );
-            InitGraphics( Graph );
+            Graph = Graphics.FromHwnd(control.Handle);
+            InitGraphics(Graph);
         }
 
-        public int TransformInt(int pValue, CoordinateSpace pDest = CoordinateSpace.Page, CoordinateSpace pSource = CoordinateSpace.Device)
+        public int TransformInt(int value, CoordinateSpace dest = CoordinateSpace.Page, CoordinateSpace source = CoordinateSpace.Device)
         {
-            Point lPt = new Point( pValue, 0 );
+            Point pt = new Point(value, 0);
 
-            return TransformPoint( lPt, pDest, pSource ).X;
+            return TransformPoint(pt, dest, source).X;
         }
 
-        public Point TransformPoint(Point pPoint, CoordinateSpace pDest = CoordinateSpace.Page, CoordinateSpace pSource = CoordinateSpace.Device)
+        public Point TransformPoint(Point point, CoordinateSpace dest = CoordinateSpace.Page, CoordinateSpace source = CoordinateSpace.Device)
         {
-            Point[] lPoints = new Point[] { pPoint };
+            Point[] points = new Point[] { point };
 
-            Graph.TransformPoints( pDest, pSource, lPoints );
-            return lPoints[0];
+            Graph.TransformPoints(dest, source, points);
+            return points[0];
         }
 
-        public Rectangle TransformRectangle(Rectangle pRect, CoordinateSpace pDest = CoordinateSpace.Page, CoordinateSpace pSource = CoordinateSpace.Device)
+        public Rectangle TransformRectangle(Rectangle rect, CoordinateSpace dest = CoordinateSpace.Page, CoordinateSpace source = CoordinateSpace.Device)
         {
-            Point[] lPoints = new Point[] { pRect.Location, new Point( pRect.Width, pRect.Height ) };
+            Point[] points = new Point[] { rect.Location, new Point(rect.Width, rect.Height) };
 
-            Graph.TransformPoints( pDest, pSource, lPoints );
-            return new Rectangle( lPoints[0], new Size( lPoints[1].X, lPoints[1].Y ) );
+            Graph.TransformPoints(dest, source, points);
+            return new Rectangle(points[0], new Size(points[1].X, points[1].Y));
         }
 
-        public Size TransformSize(Size pSize, CoordinateSpace pDest = CoordinateSpace.Page, CoordinateSpace pSource = CoordinateSpace.Device)
+        public Size TransformSize(Size size, CoordinateSpace dest = CoordinateSpace.Page, CoordinateSpace source = CoordinateSpace.Device)
         {
-            Point[] lPoints = new Point[] { Point.Empty, new Point( pSize.Width, pSize.Height ) };
+            Point[] points = new Point[] { Point.Empty, new Point(size.Width, size.Height) };
 
-            Graph.TransformPoints( pDest, pSource, lPoints );
-            return new Size( lPoints[1].X, lPoints[1].Y );
+            Graph.TransformPoints(dest, source, points);
+            return new Size(points[1].X, points[1].Y);
         }
 
-        public static void InitGraphics(Graphics pGraph)
+        public static void InitGraphics(Graphics graph)
         {
-            pGraph.PageUnit = GraphicsUnit.Millimeter;
-            pGraph.PageScale = 0.1f;
-            pGraph.SmoothingMode = SmoothingMode.AntiAlias;
+            graph.PageUnit = GraphicsUnit.Millimeter;
+            graph.PageScale = 0.1f;
+            graph.SmoothingMode = SmoothingMode.AntiAlias;
         }
     }
 }

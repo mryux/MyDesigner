@@ -1,8 +1,10 @@
-﻿using DesignerLibrary.DrawingTools;
+﻿using DesignerLibrary.Constants;
+using DesignerLibrary.DrawingTools;
+using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
-using DesignerLibrary.Views;
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,7 +12,8 @@ namespace DesignerLibrary.Views
 {
     public interface IRuntimeView
     {
-        void Load(SitePlanModel pModel);
+        void Load(DesignerModel model);
+        void OnPrint(PrintPageEventArgs args);
     }
 
     public class RuntimeViewFactory
@@ -31,46 +34,58 @@ namespace DesignerLibrary.Views
     {
         public RuntimeView()
         {
-
         }
 
-        void IRuntimeView.Load(SitePlanModel pModel)
+        void IRuntimeView.Load(DesignerModel model)
         {
-            Load( pModel );
+            Load(model);
         }
 
-        protected override void OnAddTool(DrawingTool pTool)
+        void IRuntimeView.OnPrint(PrintPageEventArgs args)
         {
-            base.OnAddTool( pTool );
+            OnPrint(args);
+        }
 
-            pTool.RuntimeInitialize( this );
+        protected override void PrePaint(PaintEventArgs args)
+        {
+            base.PrePaint(args);
+
+            Point pt = GraphicsMapper.Instance.TransformPoint(new Point(0, -ViewConsts.Height));
+            args.Graphics.TranslateTransform(pt.X, pt.Y);
+        }
+
+        protected override void OnAddTool(DrawingTool tool)
+        {
+            base.OnAddTool(tool);
+
+            tool.RuntimeInitialize(this);
         }
 
         protected override void Dispose(bool disposing)
         {
-            DrawingTools.All( t =>
+            DrawingTools.All(t =>
             {
                 (t as IDisposable).Dispose();
                 return true;
-            } );
+            });
         }
 
-        protected override void OnMouseDown(MouseEventArgs pArgs)
+        protected override void OnMouseDown(MouseEventArgs args)
         {
-            Point lLocation = GetScrollablePoint( pArgs.Location );
-            DrawingTool lTool = HitTest( lLocation );
+            Point lLocation = GetScrollablePoint(args.Location);
+            DrawingTool lTool = HitTest(lLocation);
 
             if (lTool != null)
-                lTool.Run( this );
+                lTool.Run(this);
             else
                 base.FullDragMode = true;
 
-            base.OnMouseDown( pArgs );
+            base.OnMouseDown(args);
         }
 
-        protected override void OnMouseUp(MouseEventArgs pArgs)
+        protected override void OnMouseUp(MouseEventArgs args)
         {
-            base.OnMouseUp( pArgs );
+            base.OnMouseUp(args);
 
             base.FullDragMode = false;
         }

@@ -35,18 +35,19 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
@@ -88,24 +89,6 @@
             resources.ApplyResources(this.printToolStripMenuItem, "printToolStripMenuItem");
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
-            // modeToolStripMenuItem
-            // 
-            this.modeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runtimeModeToolStripMenuItem});
-            this.modeToolStripMenuItem.Name = "modeToolStripMenuItem";
-            resources.ApplyResources(this.modeToolStripMenuItem, "modeToolStripMenuItem");
-            // 
-            // runtimeModeToolStripMenuItem
-            // 
-            this.runtimeModeToolStripMenuItem.Name = "runtimeModeToolStripMenuItem";
-            resources.ApplyResources(this.runtimeModeToolStripMenuItem, "runtimeModeToolStripMenuItem");
-            this.runtimeModeToolStripMenuItem.Click += new System.EventHandler(this.runtimeModeToolStripMenuItem_Click);
-            // 
-            // rootDesignTimeView1
-            // 
-            resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
-            this.rootDesignTimeView1.Name = "rootDesignTimeView1";
-            // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -132,6 +115,24 @@
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             resources.ApplyResources(this.pasteToolStripMenuItem, "pasteToolStripMenuItem");
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
+            // modeToolStripMenuItem
+            // 
+            this.modeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.runtimeModeToolStripMenuItem});
+            this.modeToolStripMenuItem.Name = "modeToolStripMenuItem";
+            resources.ApplyResources(this.modeToolStripMenuItem, "modeToolStripMenuItem");
+            // 
+            // runtimeModeToolStripMenuItem
+            // 
+            this.runtimeModeToolStripMenuItem.Name = "runtimeModeToolStripMenuItem";
+            resources.ApplyResources(this.runtimeModeToolStripMenuItem, "runtimeModeToolStripMenuItem");
+            this.runtimeModeToolStripMenuItem.Click += new System.EventHandler(this.runtimeModeToolStripMenuItem_Click);
+            // 
+            // rootDesignTimeView1
+            // 
+            resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
+            this.rootDesignTimeView1.Name = "rootDesignTimeView1";
             // 
             // DesignForm
             // 

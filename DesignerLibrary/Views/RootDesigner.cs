@@ -1,5 +1,4 @@
-﻿using DesignerLibrary.Views;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
@@ -29,7 +28,7 @@ namespace DesignerLibrary.Views
         object IRootDesigner.GetView(ViewTechnology technology)
         {
             if (technology != ViewTechnology.Default)
-                throw new ArgumentException( "Not a supported view technology", "technology" );
+                throw new ArgumentException("Not a supported view technology", "technology");
 
             if (m_view == null)
             {
@@ -37,7 +36,7 @@ namespace DesignerLibrary.Views
                 // for a root designer that overrides GetView(). In this 
                 // example, a Control of type RootDesignerView is used.
                 // Any class that inherits from Control will work.
-                m_view = new DesignTimeView( this );
+                m_view = new DesignTimeView(this);
             }
 
             return m_view;

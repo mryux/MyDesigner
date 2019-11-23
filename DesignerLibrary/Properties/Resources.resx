@@ -150,6 +150,9 @@
   <data name="Tool_Arc" xml:space="preserve">
     <value>Arc</value>
   </data>
+  <data name="Tool_Barcode" xml:space="preserve">
+    <value>Barcode</value>
+  </data>
   <data name="Tool_Ellipse" xml:space="preserve">
     <value>Ellipse</value>
   </data>

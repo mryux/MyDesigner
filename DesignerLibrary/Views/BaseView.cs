@@ -1,4 +1,5 @@
-﻿using DesignerLibrary.DrawingTools;
+﻿using DesignerLibrary.Constants;
+using DesignerLibrary.DrawingTools;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
 using DesignerLibrary.Persistence;
@@ -14,147 +15,129 @@ namespace DesignerLibrary.Views
 {
     abstract class BaseView : ScrollableControl
     {
-		protected IDesignerHost DesignerHost { get; set; }
+        protected IDesignerHost DesignerHost { get; set; }
         protected BaseView()
         {
-            BackColor = Color.LightGreen;
+            BackColor = Color.White;
 
             DoubleBuffered = true;
             ResizeRedraw = true;
-            AutoScrollMinSize = new Size( 1200, 800 );
-            CaptionHeight = 30;
+            AutoScrollMinSize = new Size(ViewConsts.Width, ViewConsts.Height);
         }
 
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
 
-            GraphicsMapper.Instance.Initialize( this );
-            _LayerSize = GraphicsMapper.Instance.TransformSize( AutoScrollMinSize );
+            GraphicsMapper.Instance.Initialize(this);
+            _LayerSize = GraphicsMapper.Instance.TransformSize(AutoScrollMinSize);
         }
 
-        protected virtual void OnAddTool(DrawingTool pTool)
+        protected virtual void OnAddTool(DrawingTool tool)
         {
-            pTool.RedrawEvent += (pSender, pArgs) =>
+            tool.RedrawEvent += (sender, args) =>
             {
-                InvalidateRect( (pSender as DrawingTool).Tracker.SurroundingRect );
+                InvalidateRect((sender as DrawingTool).Tracker.SurroundingRect);
             };
         }
 
-        protected virtual void OnLoadModel(SitePlanModel pModel)
+        protected virtual void OnLoadModel(DesignerModel model)
         {
-            PersistenceFactory.Instance.Import( pModel ).All( p =>
+            PersistenceFactory.Instance.Import(model).All(persist =>
             {
-                DrawingTool lTool = p.CreateDrawingTool( DesignerHost );
+                DrawingTool tool = persist.CreateDrawingTool(DesignerHost);
 
-                p.LoadFromSitePlanModel( pModel );
-                AddTool( lTool );
+                AddTool(tool);
                 return true;
-            } );
+            });
 
-            LayerDescription = pModel.Description;
+            LayerDescription = model.Description;
 
-            if (pModel.Width > 0)
-                LayerWidth = pModel.Width;
+            if (model.Width > 0)
+                LayerWidth = model.Width;
 
-            if (pModel.Height > 0)
-                LayerHeight = pModel.Height;
+            if (model.Height > 0)
+                LayerHeight = model.Height;
         }
 
         protected List<DrawingTool> DrawingTools = new List<DrawingTool>();
 
-        protected void AddTool(DrawingTool pTool)
+        protected void AddTool(DrawingTool tool)
         {
-            OnAddTool( pTool );
+            OnAddTool(tool);
 
-            DrawingTools.Add( pTool );
+            DrawingTools.Add(tool);
         }
 
-        public void Load(SitePlanModel pModel)
+        public void Load(DesignerModel model)
         {
-            OnLoadModel( pModel );
+            OnLoadModel(model);
 
             Invalidate();
         }
 
-        public void OnPrint(PrintPageEventArgs pArgs)
+        public void OnPrint(PrintPageEventArgs args)
         {
-            PaintEventArgs lPaintArgs = new PaintEventArgs( pArgs.Graphics, pArgs.PageBounds );
+            PaintEventArgs paintArgs = new PaintEventArgs(args.Graphics, args.PageBounds);
 
-            OnPaint( lPaintArgs );
+            OnPaint(paintArgs);
         }
 
-        private static readonly Color DesignTitleBaseColor = Color.FromArgb( 50, 50, 50 );
-        private static readonly Color DesignTitleLightingColor = Color.FromArgb( 200, 200, 200 );
-        protected int CaptionHeight { get; set; }
-
-        protected virtual void PrePaint(Graphics pGraph)
+        protected virtual void PrePaint(PaintEventArgs args)
         {
         }
 
-        protected override void OnPaint(PaintEventArgs pArgs)
+        protected override void OnPaint(PaintEventArgs args)
         {
-            base.OnPaint( pArgs );
+            base.OnPaint(args);
 
-            Graphics lGraph = pArgs.Graphics;
+            Graphics graph = args.Graphics;
 
             // in vc, there is PrepareDC in which I can set MapMode for CDC object, we don't have to Setup CDC object in OnPaint()
             // todo: find an alternative PrepareDC in C#.
-            GraphicsMapper.InitGraphics( lGraph );
+            GraphicsMapper.InitGraphics(graph);
 
-            Point lPt = GraphicsMapper.Instance.TransformPoint( AutoScrollPosition );
-            lGraph.TranslateTransform( lPt.X, lPt.Y );
+            Point pt = GraphicsMapper.Instance.TransformPoint(AutoScrollPosition);
+            graph.TranslateTransform(pt.X, pt.Y);
 
-            // paint title
-            Rectangle lRect = new Rectangle( Bounds.Left, Bounds.Top, AutoScrollMinSize.Width, CaptionHeight );
-
-            lRect = GraphicsMapper.Instance.TransformRectangle( lRect );
-            if (pArgs.Graphics.ClipBounds.IntersectsWith( lRect ))
-            {
-                Brush lBrush = new LinearGradientBrush( lRect, DesignTitleBaseColor, DesignTitleLightingColor, LinearGradientMode.Horizontal );
-
-                lGraph.FillRectangle( lBrush, lRect );
-                lRect.Inflate( -4, 0 );
-                lGraph.DrawString( LayerDescription, Font, Brushes.White, lRect );
-            }
-            PrePaint( lGraph );
+            PrePaint(args);
 
             // paint each drawingTool.
-            DrawingTools.All( e =>
+            DrawingTools.All(tool =>
             {
-                e.Paint( pArgs );
+                tool.Paint(args);
                 return true;
-            } );
+            });
         }
 
         protected bool FullDragMode = false;
         private Point FullDragPoint = Point.Empty;
 
-        protected override void OnMouseDown(MouseEventArgs pArgs)
+        protected override void OnMouseDown(MouseEventArgs args)
         {
-            base.OnMouseDown( pArgs );
+            base.OnMouseDown(args);
 
             if (FullDragMode)
             {
-                FullDragPoint = pArgs.Location;
-                FullDragPoint.Offset( -AutoScrollPosition.X, -AutoScrollPosition.Y );
+                FullDragPoint = args.Location;
+                FullDragPoint.Offset(-AutoScrollPosition.X, -AutoScrollPosition.Y);
             }
         }
 
-        protected override void OnMouseMove(MouseEventArgs pArgs)
+        protected override void OnMouseMove(MouseEventArgs args)
         {
-            base.OnMouseMove( pArgs );
+            base.OnMouseMove(args);
 
             if (FullDragMode)
             {
-                AutoScrollPosition = new Point( FullDragPoint.X - pArgs.X, FullDragPoint.Y - pArgs.Y );
+                AutoScrollPosition = new Point(FullDragPoint.X - args.X, FullDragPoint.Y - args.Y);
                 Cursor.Current = Cursors.Hand;
             }
         }
 
-        protected override void OnMouseUp(MouseEventArgs pArgs)
+        protected override void OnMouseUp(MouseEventArgs args)
         {
-            base.OnMouseUp( pArgs );
+            base.OnMouseUp(args);
 
             if (FullDragMode)
             {
@@ -171,10 +154,10 @@ namespace DesignerLibrary.Views
             {
                 _Description = value;
 
-                Rectangle lRect = new Rectangle( Bounds.Left, Bounds.Top, Bounds.Width, CaptionHeight );
+                //Rectangle rect = new Rectangle(Bounds.Left, Bounds.Top, Bounds.Width, CaptionHeight);
 
-                lRect = GraphicsMapper.Instance.TransformRectangle( lRect );
-                InvalidateRect( lRect );
+                //rect = GraphicsMapper.Instance.TransformRectangle(rect);
+                //InvalidateRect(rect);
             }
         }
 
@@ -185,7 +168,7 @@ namespace DesignerLibrary.Views
             set
             {
                 _LayerSize.Width = value;
-                AutoScrollMinSize = GraphicsMapper.Instance.TransformSize( _LayerSize, CoordinateSpace.Device, CoordinateSpace.Page );
+                AutoScrollMinSize = GraphicsMapper.Instance.TransformSize(_LayerSize, CoordinateSpace.Device, CoordinateSpace.Page);
             }
         }
 
@@ -195,45 +178,45 @@ namespace DesignerLibrary.Views
             set
             {
                 _LayerSize.Height = value;
-                AutoScrollMinSize = GraphicsMapper.Instance.TransformSize( _LayerSize, CoordinateSpace.Device, CoordinateSpace.Page );
+                AutoScrollMinSize = GraphicsMapper.Instance.TransformSize(_LayerSize, CoordinateSpace.Device, CoordinateSpace.Page);
             }
         }
 
-        protected DrawingTool HitTest(Point pPoint)
+        protected DrawingTool HitTest(Point point)
         {
-            return DrawingTools.Reverse<DrawingTool>().FirstOrDefault( e =>
-            {
-                bool lRet = e.HitTest( pPoint );
+            return DrawingTools.Reverse<DrawingTool>().FirstOrDefault(e =>
+           {
+               bool lRet = e.HitTest(point);
 
-                if (!lRet)
-                    lRet = e.Tracker.HitTest( pPoint ) > 0;
+               if (!lRet)
+                   lRet = e.Tracker.HitTest(point) > 0;
 
-                return lRet;
-            } );
+               return lRet;
+           });
         }
 
         /// <summary>
         /// map pPoint to point in scroll control.
         /// </summary>
-        /// <param name="pPoint"></param>
+        /// <param name="point"></param>
         /// <returns></returns>
-        protected Point GetScrollablePoint(Point pPoint)
+        protected Point GetScrollablePoint(Point point)
         {
-            pPoint.Offset( -AutoScrollPosition.X, -AutoScrollPosition.Y );
+            point.Offset(-AutoScrollPosition.X, -AutoScrollPosition.Y);
 
-            return GraphicsMapper.Instance.TransformPoint( pPoint );
+            return GraphicsMapper.Instance.TransformPoint(point);
         }
 
         /// <summary>
         /// map pRect to rectangle in current view
         /// </summary>
-        /// <param name="pRect">rect in scroll control</param>
-        protected void InvalidateRect(Rectangle pRect)
+        /// <param name="rect">rect in scroll control</param>
+        protected void InvalidateRect(Rectangle rect)
         {
-            Rectangle lRect = GraphicsMapper.Instance.TransformRectangle( pRect, CoordinateSpace.Device, CoordinateSpace.Page );
+            Rectangle lRect = GraphicsMapper.Instance.TransformRectangle(rect, CoordinateSpace.Device, CoordinateSpace.Page);
 
-            lRect.Offset( AutoScrollPosition.X, AutoScrollPosition.Y );
-            Invalidate( lRect );
+            lRect.Offset(AutoScrollPosition.X, AutoScrollPosition.Y);
+            Invalidate(lRect);
         }
     }
 }

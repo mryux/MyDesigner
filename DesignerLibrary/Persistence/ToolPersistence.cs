@@ -15,9 +15,9 @@ namespace DesignerLibrary.Persistence
 
     public abstract class ToolPersistence
     {
-        protected ToolPersistence(Type pToolType)
+        protected ToolPersistence(Type toolType)
         {
-            ToolType = pToolType;
+            ToolType = toolType;
 
             PenColor = Color.Black;
             PenWidth = LineWidth.Thin;
@@ -26,159 +26,153 @@ namespace DesignerLibrary.Persistence
 
         private Type ToolType { get; set; }
 
-        internal DrawingTools.DrawingTool CreateDrawingTool(IDesignerHost pDesignerHost)
+        internal DrawingTools.DrawingTool CreateDrawingTool(IDesignerHost designerHost)
         {
-            DrawingTools.DrawingTool lRet = null;
+            DrawingTools.DrawingTool ret = null;
 
             // construct tool via DesignerHost at DesignTime.
-            if (pDesignerHost != null)
-                lRet = pDesignerHost.CreateComponent( ToolType ) as DrawingTools.DrawingTool;
+            if (designerHost != null)
+                ret = designerHost.CreateComponent(ToolType) as DrawingTools.DrawingTool;
             else
             {
                 // construct tool via reflection at Runtime.
-                ConstructorInfo lInfo = ToolType.GetConstructor( new Type[] { } );
+                ConstructorInfo ci = ToolType.GetConstructor(new Type[] { });
 
-                lRet = lInfo.Invoke( null ) as DrawingTools.DrawingTool;
+                ret = ci.Invoke(null) as DrawingTools.DrawingTool;
             }
 
-            lRet.Persistence = this;
-            return lRet;
+            ret.Persistence = this;
+            return ret;
         }
 
-        protected virtual void OnRectDeserialized(Rectangle pRect) { }
-        protected virtual void OnFillColorDeserialized(Color pColor) { }
-        protected virtual void OnToXml(Dictionary<string, string> pImages) { }
-        protected virtual void OnLoadFromSitePlanModel(SitePlanModel pModel) { }
-        protected virtual void OnDeserialize(BinaryReader pReader)
+        protected virtual void OnRectDeserialized(Rectangle rect) { }
+        protected virtual void OnFillColorDeserialized(Color color) { }
+        protected virtual void OnToXml(Dictionary<string, string> map) { }
+        protected virtual void OnDeserialize(BinaryReader reader)
         {
-            int lVersion = Read<int>( pReader );
+            int lVersion = Read<int>(reader);
         }
 
         [XmlIgnore]
         public Color PenColor { get; set; }
 
-        [XmlElement( "PenColor" )]
+        [XmlElement("PenColor")]
         public int PenColorAsArgb
         {
             get { return PenColor.ToArgb(); }
-            set { PenColor = Color.FromArgb( value ); }
+            set { PenColor = Color.FromArgb(value); }
         }
 
-        [XmlAttribute( AttributeName = "Name" )]
+        [XmlAttribute(AttributeName = "Name")]
         public string Name { get; set; }
 
         public LineWidth PenWidth { get; set; }
         public Point Location { get; set; }
 
-        public void ToXml(Dictionary<string, string> pImages)
+        public void ToXml(Dictionary<string, string> map)
         {
-            OnToXml( pImages );
+            OnToXml(map);
         }
 
-        public void LoadFromSitePlanModel(SitePlanModel pModel)
-        {
-            OnLoadFromSitePlanModel( pModel );
-        }
-
-        public void Deserialize(BinaryReader pReader)
+        public void Deserialize(BinaryReader reader)
         {
             // version
-            int lVersion = Read<int>( pReader );
+            int lVersion = Read<int>(reader);
 
             // rect
-            Rectangle lRect = ReadRectangle( pReader );
-            OnRectDeserialized( lRect );
+            Rectangle lRect = ReadRectangle(reader);
+            OnRectDeserialized(lRect);
 
             // foreColor
-            PenColor = ReadColor( pReader );
+            PenColor = ReadColor(reader);
 
             // filled
-            bool lFilled = Convert.ToBoolean( Read<int>( pReader ) );
+            bool lFilled = Convert.ToBoolean(Read<int>(reader));
             // backColor
-            Color lFillColor = ReadColor( pReader );
+            Color lFillColor = ReadColor(reader);
 
-            OnFillColorDeserialized( lFilled ? lFillColor : Color.Transparent );
+            OnFillColorDeserialized(lFilled ? lFillColor : Color.Transparent);
 
             // PenWidth
-            PenWidth = ReadLineWidth( pReader );
+            PenWidth = ReadLineWidth(reader);
 
-            OnDeserialize( pReader );
+            OnDeserialize(reader);
         }
 
-        public static T Read<T>(BinaryReader pReader)
+        public static T Read<T>(BinaryReader reader)
         {
-            byte[] bytes = pReader.ReadBytes( Marshal.SizeOf( typeof( T ) ) );
+            byte[] bytes = reader.ReadBytes(Marshal.SizeOf(typeof(T)));
 
-            GCHandle lHandle = GCHandle.Alloc( bytes, GCHandleType.Pinned );
-            T lRet = (T)Marshal.PtrToStructure( lHandle.AddrOfPinnedObject(), typeof( T ) );
+            GCHandle lHandle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            T lRet = (T)Marshal.PtrToStructure(lHandle.AddrOfPinnedObject(), typeof(T));
             lHandle.Free();
 
             return lRet;
         }
 
-        public string ReadString(BinaryReader pReader)
+        public string ReadString(BinaryReader reader)
         {
-            byte lbLen = Read<byte>( pReader );
+            byte lbLen = Read<byte>(reader);
 
             // handle string up to 255 length
             if (lbLen < byte.MaxValue)
-                return ReadString( pReader, lbLen );
+                return ReadString(reader, lbLen);
 
             // handle string up to 2 bytes length
-            ushort lwLen = Read<ushort>( pReader );
+            ushort lwLen = Read<ushort>(reader);
 
             if (lwLen < ushort.MaxValue)
-                return ReadString( pReader, lwLen );
+                return ReadString(reader, lwLen);
 
-            int liLen = Read<int>( pReader );
+            int liLen = Read<int>(reader);
 
             if (liLen < int.MaxValue)
-                return ReadString( pReader, liLen );
+                return ReadString(reader, liLen);
 
-            throw new InvalidOperationException( string.Format( "strings are supported up to {0} bytes length", int.MaxValue ) );
+            throw new InvalidOperationException(string.Format("strings are supported up to {0} bytes length", int.MaxValue));
         }
 
-        public static string ReadString(BinaryReader pReader, int pLength)
+        public static string ReadString(BinaryReader reader, int length)
         {
             string lRet = string.Empty;
-            byte[] lBytes = pReader.ReadBytes( pLength );
+            byte[] lBytes = reader.ReadBytes(length);
 
-            lRet = Encoding.ASCII.GetString( lBytes );
+            lRet = Encoding.ASCII.GetString(lBytes);
 
             return lRet;
         }
 
-        protected Rectangle ReadRectangle(BinaryReader pReader)
+        protected Rectangle ReadRectangle(BinaryReader reader)
         {
-            int lX = Read<int>( pReader );
-            int lY = Read<int>( pReader );
-            int lWidth = Read<int>( pReader ) - lX;
-            int lHeight = Read<int>( pReader ) - lY;
+            int lX = Read<int>(reader);
+            int lY = Read<int>(reader);
+            int lWidth = Read<int>(reader) - lX;
+            int lHeight = Read<int>(reader) - lY;
 
-            return new Rectangle( lX, -lY, lWidth, -lHeight );
+            return new Rectangle(lX, -lY, lWidth, -lHeight);
         }
 
-        protected Color ReadColor(BinaryReader pReader)
+        protected Color ReadColor(BinaryReader reader)
         {
-            int lColor = Read<int>( pReader );
+            int lColor = Read<int>(reader);
             byte r = (byte)(lColor & 0xff);
             byte g = (byte)(lColor >> 8 & 0xff);
             byte b = (byte)(lColor >> 16 & 0xff);
 
-            return Color.FromArgb( r, g, b );
+            return Color.FromArgb(r, g, b);
         }
 
-        private LineWidth ReadLineWidth(BinaryReader pReader)
+        private LineWidth ReadLineWidth(BinaryReader reader)
         {
-            return (LineWidth)Read<int>( pReader );
+            return (LineWidth)Read<int>(reader);
         }
 
-        public static Point ReadPoint(BinaryReader pReader)
+        public static Point ReadPoint(BinaryReader reader)
         {
-            int lX = Read<int>( pReader );
-            int lY = Read<int>( pReader );
+            int lX = Read<int>(reader);
+            int lY = Read<int>(reader);
 
-            return new Point( lX, -lY );
+            return new Point(lX, -lY);
         }
     }
 }

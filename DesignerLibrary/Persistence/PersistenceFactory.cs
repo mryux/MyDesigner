@@ -1,11 +1,8 @@
 ﻿using DesignerLibrary.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace DesignerLibrary.Persistence
@@ -17,60 +14,60 @@ namespace DesignerLibrary.Persistence
         }
 
         public static readonly PersistenceFactory Instance = new PersistenceFactory();
-        
-        protected static readonly Type[] PersistenceTypes = new Type[]
+
+        private static readonly Type[] PersistenceTypes = new Type[]
         {
-            typeof( LineToolPersistence ),
-            typeof( PolygonToolPersistence ),
-            typeof( RectangleToolPersistence ),
-            typeof( ArcToolPersistence ),
-            typeof( EllipseToolPersistence ),
-            typeof( TextToolPersistence ),
-            typeof( ImageToolPersistence ),
+            typeof(LineToolPersistence),
+            typeof(PolygonToolPersistence),
+            typeof(RectangleToolPersistence),
+            typeof(ArcToolPersistence),
+            typeof(EllipseToolPersistence),
+            typeof(TextToolPersistence),
+            typeof(ImageToolPersistence),
+            typeof(BarcodePersistence),
         };
-                
-        public IEnumerable<ToolPersistence> Import(SitePlanModel pModel)
+
+        private static readonly XmlSerializer Serializer = new XmlSerializer(typeof(RootPersistence), PersistenceTypes);
+
+        public IEnumerable<ToolPersistence> Import(DesignerModel model)
         {
-            List<ToolPersistence> lRet = new List<ToolPersistence>();
+            List<ToolPersistence> ret = new List<ToolPersistence>();
 
-            if (!string.IsNullOrEmpty( pModel.Layout ))
+            if (string.IsNullOrEmpty(model.Layout))
+                return ret;
+
+            using (TextReader reader = new StringReader(model.Layout))
             {
-                XmlSerializer lSerializer = new XmlSerializer( typeof( SitePlanTools ), PersistenceTypes );
+                RootPersistence persistence = Serializer.Deserialize(reader) as RootPersistence;
 
-                using (TextReader reader = new StringReader( pModel.Layout ))
-                {
-                    SitePlanTools lTools = lSerializer.Deserialize( reader ) as SitePlanTools;
-
-                    lRet.AddRange( lTools.Tools );
-                }
+                ret.AddRange(persistence.Tools);
             }
 
-            return lRet;
+            return ret;
         }
 
-        public string GetLayout(IEnumerable<ToolPersistence> pPersistences)
+        public string GetLayout(IEnumerable<ToolPersistence> persistences)
         {
-            string lRet = string.Empty;
+            string ret = string.Empty;
 
             // DrawingTools
-            XmlSerializer lSerializer = new XmlSerializer( typeof( SitePlanTools ), PersistenceTypes );
-            SitePlanTools lTools = new SitePlanTools()
+            RootPersistence rootPersist = new RootPersistence()
             {
-                Tools = pPersistences.ToArray()
+                Tools = persistences.ToArray()
             };
 
             using (TextWriter writer = new StringWriter())
             {
-                lSerializer.Serialize( writer, lTools );
+                Serializer.Serialize(writer, rootPersist);
                 writer.Flush();
-                lRet= writer.ToString();
+                ret = writer.ToString();
             }
 
-            return lRet;
+            return ret;
         }
     }
 
-    public class SitePlanTools
+    public class RootPersistence
     {
         public ToolPersistence[] Tools { get; set; }
     }

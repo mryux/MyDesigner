@@ -13,7 +13,7 @@ namespace MyDesigner
             InitializeComponent();
         }
 
-        private event EventHandler<EventArgs<Tuple<string, SitePlanModel>>> LoadModelEvent;
+        private event EventHandler<EventArgs<Tuple<string, DesignerModel>>> LoadModelEvent;
         private event EventHandler SaveModelEvent;
 
         protected override void OnLoad(EventArgs pArgs)
@@ -26,10 +26,10 @@ namespace MyDesigner
             OnNew( this, EventArgs.Empty );
         }
 
-        void FireEvent_LoadModel(string pTitle, SitePlanModel pModel)
+        void FireEvent_LoadModel(string pTitle, DesignerModel pModel)
         {
             if (LoadModelEvent != null)
-                LoadModelEvent( this, new EventArgs<Tuple<string, SitePlanModel>>( new Tuple<string, SitePlanModel>( pTitle, pModel ) ) );
+                LoadModelEvent( this, new EventArgs<Tuple<string, DesignerModel>>( new Tuple<string, DesignerModel>( pTitle, pModel ) ) );
         }
 
         void FireEvent_SaveModel()
@@ -40,7 +40,7 @@ namespace MyDesigner
 
         private void OnNew(object sender, EventArgs e)
         {
-            FireEvent_LoadModel( "New", new SitePlanModel() );
+            FireEvent_LoadModel( "New", new DesignerModel() );
         }
 
         void OnOpen(object sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace MyDesigner
             {
                 string lTitle = System.IO.Path.GetFileName( lDialog.FileName );
 
-                FireEvent_LoadModel( lTitle, SitePlanModel.FromFile( lDialog.FileName ) );
+                FireEvent_LoadModel( lTitle, DesignerModel.FromFile( lDialog.FileName ) );
             }
         }
 

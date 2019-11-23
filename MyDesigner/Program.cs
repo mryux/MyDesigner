@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace MyDesigner
@@ -13,9 +11,11 @@ namespace MyDesigner
         [STAThread]
         static void Main()
         {
+            log4net.Config.XmlConfigurator.Configure();
+
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new DesignForm() );
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new DesignForm());
         }
     }
 }

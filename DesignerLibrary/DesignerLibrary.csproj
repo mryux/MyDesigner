@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,12 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DesignerLibrary</RootNamespace>
     <AssemblyName>DesignerLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,12 +35,23 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BarcodeStandard, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BarcodeLib.2.2.3\lib\netstandard2.0\BarcodeStandard.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=23aa8d9dad487bce, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Runtime\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.5.1\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -48,25 +61,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\BrowsablePropertiesConverter.cs" />
-    <Compile Include="Attributes\CustomVisibleAttribute.cs" />
-    <Compile Include="Attributes\LocalizedCategoryAttribute.cs" />
-    <Compile Include="Attributes\LocalizedDisplayNameAttribute.cs" />
-    <Compile Include="Attributes\PropertyOrderAttribute.cs" />
+    <Compile Include="Views\Attributes\BrowsablePropertiesConverter.cs" />
+    <Compile Include="Views\Attributes\CustomVisibleAttribute.cs" />
+    <Compile Include="Views\Attributes\LocalizedCategoryAttribute.cs" />
+    <Compile Include="Views\Attributes\LocalizedDisplayNameAttribute.cs" />
+    <Compile Include="Views\Attributes\PropertyOrderAttribute.cs" />
     <Compile Include="Constants\PropertyNames.cs" />
-    <Compile Include="Converters\AlignmentConverter.cs" />
+    <Compile Include="Constants\ViewConsts.cs" />
+    <Compile Include="Views\Converters\AlignmentConverter.cs" />
+    <Compile Include="Views\DrawingTools\BarcodeTool.cs" />
     <Compile Include="Helpers\WinMessages.cs" />
-    <Compile Include="Converters\EnumTypeConverter.cs" />
-    <Compile Include="Converters\LineWidthConverter.cs" />
-    <Compile Include="DrawingTools\ArcTool.cs" />
-    <Compile Include="DrawingTools\EllipseTool.cs" />
-    <Compile Include="DrawingTools\DrawingTool.cs" />
-    <Compile Include="DrawingTools\ImageTool.cs" />
-    <Compile Include="DrawingTools\LineTool.cs" />
-    <Compile Include="DrawingTools\PolygonTool.cs" />
-    <Compile Include="DrawingTools\RectangleTool.cs" />
-    <Compile Include="DrawingTools\TextTool.cs" />
-    <Compile Include="DrawingTools\TwoDTool.cs" />
+    <Compile Include="Views\Converters\EnumTypeConverter.cs" />
+    <Compile Include="Views\Converters\LineWidthConverter.cs" />
+    <Compile Include="Views\DrawingTools\ArcTool.cs" />
+    <Compile Include="Views\DrawingTools\EllipseTool.cs" />
+    <Compile Include="Views\DrawingTools\DrawingTool.cs" />
+    <Compile Include="Views\DrawingTools\ImageTool.cs" />
+    <Compile Include="Views\DrawingTools\LineTool.cs" />
+    <Compile Include="Views\DrawingTools\PolygonTool.cs" />
+    <Compile Include="Views\DrawingTools\RectangleTool.cs" />
+    <Compile Include="Views\DrawingTools\TextTool.cs" />
+    <Compile Include="Views\DrawingTools\TwoDTool.cs" />
     <Compile Include="Helpers\AutoScrollTimer.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -77,8 +92,9 @@
     <Compile Include="Helpers\KeyboardHelper.cs" />
     <Compile Include="Helpers\MessageBoxHelper.cs" />
     <Compile Include="Helpers\SiPropertyDescriptor.cs" />
-    <Compile Include="Models\SitePlanModel.cs" />
+    <Compile Include="Models\DesignerModel.cs" />
     <Compile Include="Persistence\ArcToolPersistence.cs" />
+    <Compile Include="Persistence\BarcodePersistence.cs" />
     <Compile Include="Persistence\EllipseToolPersistence.cs" />
     <Compile Include="Persistence\ImageToolPersistence.cs" />
     <Compile Include="Persistence\LineToolPersistence.cs" />
@@ -98,17 +114,17 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Services\ServiceProviderHelper.cs" />
-    <Compile Include="Trackers\ArcTracker.cs" />
-    <Compile Include="Trackers\ArcTrackerAdjust.cs" />
-    <Compile Include="Trackers\DrawingTracker.cs" />
-    <Compile Include="Trackers\EllipseTracker.cs" />
-    <Compile Include="Trackers\LineTracker.cs" />
-    <Compile Include="Trackers\PolygonTracker.cs" />
-    <Compile Include="Trackers\RectangleTracker.cs" />
-    <Compile Include="Trackers\RectTrackerAdjust.cs" />
-    <Compile Include="Trackers\TrackerAdjust.cs" />
-    <Compile Include="TypeEditors\ImageFileTypeEditor.cs" />
-    <Compile Include="TypeEditors\ModalUITypeEditor.cs" />
+    <Compile Include="Views\Trackers\ArcTracker.cs" />
+    <Compile Include="Views\Trackers\ArcTrackerAdjust.cs" />
+    <Compile Include="Views\Trackers\DrawingTracker.cs" />
+    <Compile Include="Views\Trackers\EllipseTracker.cs" />
+    <Compile Include="Views\Trackers\LineTracker.cs" />
+    <Compile Include="Views\Trackers\PolygonTracker.cs" />
+    <Compile Include="Views\Trackers\RectangleTracker.cs" />
+    <Compile Include="Views\Trackers\RectTrackerAdjust.cs" />
+    <Compile Include="Views\Trackers\TrackerAdjust.cs" />
+    <Compile Include="Views\TypeEditors\ImageFileTypeEditor.cs" />
+    <Compile Include="Views\TypeEditors\ModalUITypeEditor.cs" />
     <Compile Include="Views\BaseView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -116,10 +132,11 @@
     <Compile Include="Views\DesignTimeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\Ruler.cs" />
-    <Compile Include="Views\RuntimeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Views\Rulers\BaseRuler.cs" />
+    <Compile Include="Views\Rulers\HorzRuler.cs" />
+    <Compile Include="Views\Rulers\JointRuler.cs" />
+    <Compile Include="Views\Rulers\VertRuler.cs" />
+    <Compile Include="Views\RuntimeView.cs" />
     <Compile Include="Views\RootDesignTimeView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -155,7 +172,9 @@
       <DependentUpon>ToolboxControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

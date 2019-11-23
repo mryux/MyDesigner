@@ -2,7 +2,9 @@
 using DesignerLibrary.DrawingTools;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
+using log4net;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
@@ -14,7 +16,7 @@ namespace DesignerLibrary.Views
 {
     public partial class RootDesignTimeView : UserControl
     {
-        //private static readonly ILog cLog = LogFactory.GetLogger( typeof( RootDesignTimeView ) );
+        private static readonly ILog cLog = LogManager.GetLogger(typeof(RootDesignTimeView));
         private DesignSurface _DesignSurface;
         private IDesignerHost DesignerHost { get; set; }
         private ISelectionService SelectionService { get; set; }
@@ -24,34 +26,44 @@ namespace DesignerLibrary.Views
             InitializeComponent();
         }
 
-        protected override void OnLoad(EventArgs pArgs)
+        private static readonly Dictionary<Type, string> ToolMap = new Dictionary<Type, string>()
         {
-            base.OnLoad( pArgs );
+            { typeof(LineTool), Properties.Resources.Tool_Line },
+            { typeof(RectangleTool), Properties.Resources.Tool_Rectangle },
+            { typeof(EllipseTool), Properties.Resources.Tool_Ellipse },
+            { typeof(PolygonTool), Properties.Resources.Tool_Polygon },
+            { typeof(ArcTool), Properties.Resources.Tool_Arc },
+            { typeof(ImageTool), Properties.Resources.Tool_Image },
+            { typeof(TextTool), Properties.Resources.Tool_Text },
+            { typeof(BarcodeTool), Properties.Resources.Tool_Barcode },
+        };
+
+        protected override void OnLoad(EventArgs args)
+        {
+            base.OnLoad(args);
 
             _DesignSurface = new DesignSurface();
-            _DesignSurface.Loaded += new LoadedEventHandler( OnDesignSurfaceLoaded );
+            _DesignSurface.Loaded += new LoadedEventHandler(OnDesignSurfaceLoaded);
 
-            _ToolboxControl.AddToolboxItem( new ToolboxItem() { TypeName = NameConsts.Pointer, DisplayName = Properties.Resources.Tool_Pointer, Bitmap = new Bitmap( 1, 1 ) } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( LineTool ) ) { DisplayName = Properties.Resources.Tool_Line } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( RectangleTool ) ) { DisplayName = Properties.Resources.Tool_Rectangle } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( EllipseTool ) ) { DisplayName = Properties.Resources.Tool_Ellipse } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( PolygonTool ) ) { DisplayName = Properties.Resources.Tool_Polygon } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ArcTool ) ) { DisplayName = Properties.Resources.Tool_Arc } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( ImageTool ) ) { DisplayName = Properties.Resources.Tool_Image } );
-            _ToolboxControl.AddToolboxItem( new ToolboxItem( typeof( TextTool ) ) { DisplayName = Properties.Resources.Tool_Text } );
+            _ToolboxControl.AddToolboxItem(new ToolboxItem() { TypeName = NameConsts.Pointer, DisplayName = Properties.Resources.Tool_Pointer, Bitmap = new Bitmap(1, 1) });
+            ToolMap.All(pair =>
+            {
+                _ToolboxControl.AddToolboxItem(new ToolboxItem(pair.Key) { DisplayName = pair.Value });
+                return true;
+            });
 
-            DesignerHost = _DesignSurface.GetService( typeof( IDesignerHost ) ) as IDesignerHost;
-            DesignerHost.AddService( typeof( IToolboxService ), _ToolboxControl.ToolboxService );
+            DesignerHost = _DesignSurface.GetService(typeof(IDesignerHost)) as IDesignerHost;
+            DesignerHost.AddService(typeof(IToolboxService), _ToolboxControl.ToolboxService);
             //DesignerHost.AddService( typeof( IPropertyValueUIService ), new GlyphService() );
 
-            SelectionService = _DesignSurface.GetService( typeof( ISelectionService ) ) as ISelectionService;
+            SelectionService = _DesignSurface.GetService(typeof(ISelectionService)) as ISelectionService;
             SelectionService.SelectionChanged += OnDesignerSurfaceView_SelectionChanged;
 
             // Initialise the DesignSurface class
-            _DesignSurface.BeginLoad( typeof( RootDesignedComponent ) );
+            _DesignSurface.BeginLoad(typeof(RootDesignedComponent));
         }
 
-        void OnDesignerSurfaceView_SelectionChanged(object sender, EventArgs pArgs)
+        void OnDesignerSurfaceView_SelectionChanged(object sender, EventArgs args)
         {
             object lObj = SelectionService.PrimarySelection;
 
@@ -67,55 +79,55 @@ namespace DesignerLibrary.Views
         {
             if (pArgs.HasSucceeded)
             {
-                DesignTimeView lDesignView = _DesignSurface.View as DesignTimeView;
+                DesignTimeView designView = _DesignSurface.View as DesignTimeView;
 
-                Application.AddMessageFilter(lDesignView);
-                lDesignView.DirtyEvent += OnDirtyEvent;
-                lDesignView.Dock = DockStyle.Fill;
-                DesignerPanel.Controls.Add( lDesignView );
+                Application.AddMessageFilter(designView);
+                designView.DirtyEvent += OnDirtyEvent;
+                designView.Dock = DockStyle.Fill;
+                DesignerPanel.Controls.Add(designView);
 
                 // set PropertyGrid.Site, so IDataErrorInfo could work properly.
                 _PropertyGrid.Site = DesignerHost.RootComponent.Site;
-                _PropertyGrid.SelectedObject = lDesignView;
+                _PropertyGrid.SelectedObject = designView;
             }
             else
             {
                 // log errors
-                foreach (object lError in _DesignSurface.LoadErrors)
+                foreach (object error in _DesignSurface.LoadErrors)
                 {
-                    Exception lExceptionError = lError as Exception;
-                    string lErrorString;
+                    Exception ex = error as Exception;
+                    string errorString;
 
-                    if (lExceptionError != null)
-                        lErrorString = lExceptionError.Message;
+                    if (ex != null)
+                        errorString = ex.Message;
                     else
-                        lErrorString = lError.ToString();
+                        errorString = error.ToString();
 
-                    //cLog.Error( lErrorString );
+                    cLog.Error(errorString);
                 }
             }
         }
 
-        void OnDirtyEvent(object sender, EventArgs<bool> pArgs)
+        void OnDirtyEvent(object sender, EventArgs<bool> args)
         {
-            bool lIsDirty = pArgs.Data;
+            bool isDirty = args.Data;
 
             Parent.Text = Title;
-            if (lIsDirty)
+            if (isDirty)
                 Parent.Text += "*";
         }
 
-        public void OnLoadModel(object sender, EventArgs<Tuple<string, SitePlanModel>> pArgs)
+        public void OnLoadModel(object sender, EventArgs<Tuple<string, DesignerModel>> args)
         {
             if (DesignView.IsDirty)
             {
-                DialogResult lResult = MessageBox.Show( "Current Model has been changed, are you sure to save it?", "Warning", MessageBoxButtons.YesNoCancel );
+                DialogResult result = MessageBox.Show("Current Model has been changed, are you sure to save it?", "Warning", MessageBoxButtons.YesNoCancel);
 
-                if(lResult != DialogResult.Cancel)
+                if (result != DialogResult.Cancel)
                 {
-                    if(lResult == DialogResult.Yes)
+                    if (result == DialogResult.Yes)
                     {
-                        OnSaveModel( this, EventArgs.Empty );
+                        OnSaveModel(this, EventArgs.Empty);
                     }
                 }
             }
@@ -123,39 +135,39 @@ namespace DesignerLibrary.Views
             // clean up
             DesignView.Cleanup();
 
-            Title = pArgs.Data.Item1;
-            DesignView.Load( pArgs.Data.Item2 );
+            Title = args.Data.Item1;
+            DesignView.Load(args.Data.Item2);
         }
-                
+
         private string Title { get; set; }
 
-        public void OnSaveModel(object pSender, EventArgs pArgs)
+        public void OnSaveModel(object sender, EventArgs args)
         {
-            FileDialog lDialog = new SaveFileDialog();
+            FileDialog dialog = new SaveFileDialog();
 
-            if (lDialog.ShowDialog() == DialogResult.OK)
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                SitePlanModel lModel = new SitePlanModel();
+                DesignerModel model = new DesignerModel();
 
-                DesignView.Save( lModel );
-                lModel.SaveToFile( lDialog.FileName );
+                DesignView.Save(model);
+                model.SaveToFile(dialog.FileName);
             }
         }
 
-        public SitePlanModel Model
+        public DesignerModel Model
         {
             get
             {
-                SitePlanModel lModel = new SitePlanModel();
+                DesignerModel model = new DesignerModel();
 
-                DesignView.Save( lModel );
-                return lModel;
+                DesignView.Save(model);
+                return model;
             }
         }
 
-        public void OnPrint(PrintPageEventArgs pArgs)
+        public void OnPrint(PrintPageEventArgs args)
         {
-            DesignView.OnPrint( pArgs );
+            DesignView.OnPrint(args);
         }
 
         private DesignTimeView DesignView

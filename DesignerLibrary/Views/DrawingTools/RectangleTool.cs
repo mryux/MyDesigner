@@ -20,15 +20,20 @@ namespace DesignerLibrary.DrawingTools
             set
             {
                 Invalidate();
+                OnBoundsChanged();
                 (Persistence as RectangleToolPersistence).Bounds = value;
                 IsDirty = true;
                 Invalidate();
             }
         }
 
+        protected virtual void OnBoundsChanged()
+        {
+        }
+
         public RectangleTool()
         {
-            base.Tracker = new RectangleTracker( this );
+            base.Tracker = new RectangleTracker(this);
         }
 
         protected override ToolPersistence NewPersistence()
@@ -36,30 +41,30 @@ namespace DesignerLibrary.DrawingTools
             return new RectangleToolPersistence();
         }
 
-        protected override void OnLocationChanged(Point pOffset)
+        protected override void OnLocationChanged(Point offset)
         {
-            Rectangle lRect = Bounds;
+            Rectangle rect = Bounds;
 
-            lRect.Offset( pOffset );
-            Bounds = lRect;
+            rect.Offset(offset);
+            Bounds = rect;
         }
 
-        protected override void OnPaint(PaintEventArgs pArgs)
+        protected override void OnPaint(PaintEventArgs args)
         {
-            Graphics lGraph = pArgs.Graphics;
+            Graphics graph = args.Graphics;
 
-            lGraph.FillRectangle( Brush, Bounds );
-            lGraph.DrawRectangle( Pen, Bounds );
+            graph.FillRectangle(Brush, Bounds);
+            graph.DrawRectangle(Pen, Bounds);
         }
 
-        protected override void FillPath(GraphicsPath pPath)
+        protected override void FillPath(GraphicsPath path)
         {
-            pPath.AddRectangle( Bounds );
+            path.AddRectangle(Bounds);
         }
 
-        protected override bool OnHitTest(Point pPoint)
+        protected override bool OnHitTest(Point point)
         {
-            return Bounds.Contains( pPoint );
+            return Bounds.Contains(point);
         }
 
         protected override Rectangle GetSurroundingRect()
@@ -67,40 +72,40 @@ namespace DesignerLibrary.DrawingTools
             return Bounds;
         }
 
-        protected override void OnStartResize(Point pPoint)
+        protected override void OnStartResize(Point point)
         {
-            Location = pPoint;
+            Location = point;
             Adjust.MovingPointIndex = (int)RectTrackerAdjust.RectPointIndex.eBottomRight;
         }
 
-        protected override void OnResize(Point pPoint)
+        protected override void OnResize(Point point)
         {
             Rectangle lRect = Bounds;
 
-            Adjust.Resize( pPoint, ref lRect );
+            Adjust.Resize(point, ref lRect);
             Bounds = lRect;
         }
 
-        protected override bool OnEndResize(Point pPoint)
+        protected override bool OnEndResize(Point point)
         {
-            OnResize( pPoint );
+            OnResize(point);
             return true;
         }
 
         protected override IList<PropertyDescriptor> GetPropertyDescriptors()
         {
-            IList<PropertyDescriptor> lDescriptors = base.GetPropertyDescriptors();
+            IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.Bounds,
-                new Attribute[] 
-                { 
+            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Bounds,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "Bounds" ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eBounds )
-                } ) );
+                }));
 
-            return lDescriptors;
+            return descriptors;
         }
     }
 }

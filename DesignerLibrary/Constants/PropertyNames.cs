@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DesignerLibrary.Consts
+﻿namespace DesignerLibrary.Consts
 {
     public enum PropertyOrder
     {
@@ -18,6 +13,7 @@ namespace DesignerLibrary.Consts
 
         Text = 20,
         TextColor = 20,
+        Barcode = 21,
         Font = 22,
         Alignment = 23,
         VAlignment = 24,
@@ -55,6 +51,7 @@ namespace DesignerLibrary.Consts
         public static readonly string TextColor = "TextColor";
         public static readonly string Font = "Font";
         public static readonly string Alignment = "Alignment";
+        public static readonly string Barcode = "Barcode";
 
         public static readonly string ControlType = "ControlType";
         public static readonly string VAlignment = "VAlignment";

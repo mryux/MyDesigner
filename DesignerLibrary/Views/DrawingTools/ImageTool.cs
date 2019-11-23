@@ -27,24 +27,24 @@ namespace DesignerLibrary.DrawingTools
             return new ImageToolPersistence();
         }
 
-        protected override void OnPaint(PaintEventArgs pArgs)
+        protected override void OnPaint(PaintEventArgs args)
         {
-            pArgs.Graphics.DrawRectangle( Pen, Bounds );
+            args.Graphics.DrawRectangle(Pen, Bounds);
 
-            if (!string.IsNullOrEmpty( FileLocation ))
-                pArgs.Graphics.DrawImage( Image.FromFile( FileLocation ), Bounds );
+            if (!string.IsNullOrEmpty(FileLocation))
+                args.Graphics.DrawImage(Image.FromFile(FileLocation), Bounds);
         }
 
-        protected override void OnRuntimeInitialize(Control pParent)
+        protected override void OnRuntimeInitialize(Control parent)
         {
-            base.OnRuntimeInitialize( pParent );
+            base.OnRuntimeInitialize(parent);
 
             _PictureBox = new PictureBox();
-            _PictureBox.Bounds = GraphicsMapper.Instance.TransformRectangle( Bounds, CoordinateSpace.Device, CoordinateSpace.Page );
+            _PictureBox.Bounds = GraphicsMapper.Instance.TransformRectangle(Bounds, CoordinateSpace.Device, CoordinateSpace.Page);
             _PictureBox.ImageLocation = FileLocation;
             _PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
 
-            pParent.Controls.Add( _PictureBox );
+            parent.Controls.Add(_PictureBox);
         }
 
         public string FileLocation
@@ -69,7 +69,7 @@ namespace DesignerLibrary.DrawingTools
 
             if (pFieldName == PropertyNames.FileLocation)
             {
-                if (string.IsNullOrEmpty( FileLocation ))
+                if (string.IsNullOrEmpty(FileLocation))
                     lRet = Properties.Resources.Error_InvalidFileLocation;
             }
 
@@ -81,19 +81,19 @@ namespace DesignerLibrary.DrawingTools
             IList<PropertyDescriptor> lDescriptors = base.GetPropertyDescriptors();
 
             // remove FillColor property descriptor.
-            var lFillColor = lDescriptors.FirstOrDefault( e => e.Name == PropertyNames.FillColor );
+            var lFillColor = lDescriptors.FirstOrDefault(e => e.Name == PropertyNames.FillColor);
             if (lFillColor != null)
-                lDescriptors.Remove( lFillColor );
+                lDescriptors.Remove(lFillColor);
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.FileLocation,
-                new Attribute[] 
-                { 
+            lDescriptors.Add(new SiPropertyDescriptor(this, PropertyNames.FileLocation,
+                new Attribute[]
+                {
                     CustomVisibleAttribute.Yes,
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "FileLocation" ),
                     new EditorAttribute( typeof( ImageFileTypeEditor ), typeof( UITypeEditor ) ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eFileLocation )
-                } ) );
+                }));
 
             return lDescriptors;
         }

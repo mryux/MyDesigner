@@ -1,6 +1,6 @@
 ﻿namespace DesignerLibrary.Constants
 {
-    class ViewConsts
+    public class ViewConsts
     {
         public const int Width = 400;
         public const int Height = 600;

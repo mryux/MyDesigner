@@ -78,6 +78,13 @@ namespace DesignerLibrary.DrawingTools
             MakeBarcodeImage();
         }
 
+        protected override void OnDrawingAdded()
+        {
+            base.OnDrawingAdded();
+
+            MakeBarcodeImage();
+        }
+
         private void MakeBarcodeImage()
         {
             if (string.IsNullOrEmpty(Barcode))

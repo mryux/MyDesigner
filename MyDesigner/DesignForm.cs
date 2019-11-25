@@ -63,30 +63,29 @@ namespace MyDesigner
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PrintDialog lDialog = new PrintDialog();
+            PrintDialog dialog = new PrintDialog();
+            PrintDocument doc = new PrintDocument();
 
-            PrintDocument lDocument = new PrintDocument();
-
-            lDialog.Document = lDocument;
-            lDocument.PrintPage += OnPrintPage;
-            if (lDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            dialog.Document = doc;
+            doc.PrintPage += OnPrintPage;
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                lDocument.Print();
+                doc.Print();
             }
         }
 
-        void OnPrintPage(object sender, PrintPageEventArgs pArgs)
+        void OnPrintPage(object sender, PrintPageEventArgs args)
         {
-            rootDesignTimeView1.OnPrint( pArgs );
+            rootDesignTimeView1.OnPrint( args );
         }
 
         private void runtimeModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RuntimeForm lForm = new RuntimeForm();
+            RuntimeForm form = new RuntimeForm();
 
-            lForm.Model = rootDesignTimeView1.Model;
-            lForm.Owner = this;
-            lForm.Show( this );
+            form.Model = rootDesignTimeView1.Model;
+            form.Owner = this;
+            form.Show( this );
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)

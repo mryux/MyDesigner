@@ -1,7 +1,10 @@
-﻿using DesignerLibrary.Models;
+﻿using DesignerLibrary.Constants;
+using DesignerLibrary.Models;
 using DesignerLibrary.Views;
 using System;
 using System.Configuration;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 
@@ -45,7 +48,7 @@ namespace MyDesigner
             {
                 Margins = new Margins(0, 0, 0, 0),
                 Landscape = false,
-                PaperSize = new PaperSize("Custom", 400, 600),
+                PaperSize = new PaperSize("Custom", ViewConsts.Width, ViewConsts.Height),
             };
 
             printDocument.PrinterSettings = printerSettings;
@@ -57,6 +60,24 @@ namespace MyDesigner
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs args)
         {
             View.OnPrint(args);
+        }
+
+        private void saveAsBmpToolStripMenuItem_Click(object sender, EventArgs args)
+        {
+            FileDialog dialog = new SaveFileDialog()
+            {
+                Filter = "Bitmap files (*.bmp)|*.bmp",
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.Cancel)
+                return;
+
+            Image image = new Bitmap(ViewConsts.Width, ViewConsts.Height);
+            Graphics graph = Graphics.FromImage(image);
+
+            graph.Clear(Color.White);
+            View.OnDraw(new PaintEventArgs(graph, Rectangle.Empty));
+            image.Save(dialog.FileName, ImageFormat.Bmp);
         }
     }
 }

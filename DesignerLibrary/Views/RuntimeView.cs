@@ -14,6 +14,7 @@ namespace DesignerLibrary.Views
     {
         void Load(DesignerModel model);
         void OnPrint(PrintPageEventArgs args);
+        void OnDraw(PaintEventArgs args);
     }
 
     public class RuntimeViewFactory
@@ -46,11 +47,16 @@ namespace DesignerLibrary.Views
             OnPrint(args);
         }
 
+        void IRuntimeView.OnDraw(PaintEventArgs args)
+        {
+            OnPaint(args);
+        }
+
         protected override void PrePaint(PaintEventArgs args)
         {
             base.PrePaint(args);
 
-            Point pt = GraphicsMapper.Instance.TransformPoint(new Point(0, -ViewConsts.Height));
+            Point pt = GraphicsMapper.Instance.TransformPoint(new Point(-ViewConsts.RulerHeight, -ViewConsts.RulerHeight));
             args.Graphics.TranslateTransform(pt.X, pt.Y);
         }
 

@@ -78,6 +78,15 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        public void OnAdded()
+        {
+            OnDrawingAdded();
+        }
+
+        protected virtual void OnDrawingAdded()
+        {
+        }
+
         private float GetLineWidth(LineWidth pWidth)
         {
             float lRet = 1.0f;
@@ -300,21 +309,21 @@ namespace DesignerLibrary.DrawingTools
         {
             get
             {
-                Size lSize = new Size(SurroundingRect.Size.Width, SurroundingRect.Size.Height);
-                lSize = GraphicsMapper.Instance.TransformSize(lSize, CoordinateSpace.Device, CoordinateSpace.Page);
-                Bitmap lRet = new Bitmap(lSize.Width + 1, lSize.Height + 1);
+                Size size = new Size(SurroundingRect.Size.Width, SurroundingRect.Size.Height);
+                size = GraphicsMapper.Instance.TransformSize(size, CoordinateSpace.Device, CoordinateSpace.Page);
+                Bitmap img = new Bitmap(size.Width + 1, size.Height + 1);
 
-                using (Graphics lGraph = Graphics.FromImage(lRet))
+                using (Graphics graph = Graphics.FromImage(img))
                 {
-                    GraphicsMapper.InitGraphics(lGraph);
-                    OnPaint(new PaintEventArgs(lGraph, Rectangle.Empty));
+                    GraphicsMapper.InitGraphics(graph);
+                    OnPaint(new PaintEventArgs(graph, Rectangle.Empty));
                 }
 
-                return lRet;
+                return img;
             }
         }
 
-        public Image GetImage(int width, int height)
+        public Image GetDraggingImage(int width, int height)
         {
             Bitmap img = null;
             Size size = GraphicsMapper.Instance.TransformSize(new Size(width, height), CoordinateSpace.Device, CoordinateSpace.Page);

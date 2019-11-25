@@ -63,14 +63,10 @@ namespace DesignerLibrary.Views
 
         protected override void PrePaint(PaintEventArgs args)
         {
-            //int height = GraphicsMapper.Instance.TransformInt(CaptionHeight);
             Graphics graph = args.Graphics;
 
-            //graph.TranslateTransform(0, height);
-            //PaintTitle(args);
             Ruler.Paint(graph);
             PaintGrid(graph);
-            //graph.TranslateTransform(0, -height);
         }
 
         //private static readonly Color DesignTitleBaseColor = Color.FromArgb(50, 50, 50);
@@ -201,21 +197,21 @@ namespace DesignerLibrary.Views
             // drag DrawingTool & drop.
             if (DraggingPoint != Point.Empty)
             {
-                string lObj = pArgs.Data.GetData(typeof(string)) as string;
+                string data = pArgs.Data.GetData(typeof(string)) as string;
 
-                lObj.Split(',').All(e =>
-             {
-                 int lIndex = Convert.ToInt32(e);
-                 DrawingTool lDrawingTool = DrawingTools[lIndex];
-                 Point lPoint = GetScrollablePoint(PointToClient(new Point(pArgs.X, pArgs.Y)));
+                data.Split(',').All(e =>
+                {
+                    int lIndex = Convert.ToInt32(e);
+                    DrawingTool lDrawingTool = DrawingTools[lIndex];
+                    Point lPoint = GetScrollablePoint(PointToClient(new Point(pArgs.X, pArgs.Y)));
 
-                 InvalidateRect(lDrawingTool.Tracker.SurroundingRect);
-                 lDrawingTool.DoDrop(new Point(lPoint.X - DraggingPoint.X, lPoint.Y - DraggingPoint.Y));
-                 InvalidateRect(lDrawingTool.Tracker.SurroundingRect);
-                 SelectedTool = lDrawingTool;
+                    InvalidateRect(lDrawingTool.Tracker.SurroundingRect);
+                    lDrawingTool.DoDrop(new Point(lPoint.X - DraggingPoint.X, lPoint.Y - DraggingPoint.Y));
+                    InvalidateRect(lDrawingTool.Tracker.SurroundingRect);
+                    SelectedTool = lDrawingTool;
 
-                 return true;
-             });
+                    return true;
+                });
 
                 IsDirty = true;
             }
@@ -327,7 +323,7 @@ namespace DesignerLibrary.Views
                                 int dx = GraphicsMapper.Instance.TransformInt(DraggingPoint.X - SelectedTool.SurroundingRect.Left, CoordinateSpace.Device, CoordinateSpace.Page);
                                 int dy = GraphicsMapper.Instance.TransformInt(DraggingPoint.Y - SelectedTool.SurroundingRect.Top, CoordinateSpace.Device, CoordinateSpace.Page);
 
-                                using (new DragImage(SelectedTool.GetImage(LayerWidth, LayerHeight), dx, dy))
+                                using (new DragImage(SelectedTool.GetDraggingImage(LayerWidth, LayerHeight), dx, dy))
                                 {
                                     int lIndex = DrawingTools.IndexOf(SelectedTool);
 
@@ -449,7 +445,7 @@ namespace DesignerLibrary.Views
 
         public void Cleanup()
         {
-            DrawingTools.All(t =>
+            DrawingTools.ToList().All(t =>
             {
                 RemoveTool(t);
                 return true;

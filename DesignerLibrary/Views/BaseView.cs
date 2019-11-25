@@ -67,6 +67,7 @@ namespace DesignerLibrary.Views
             OnAddTool(tool);
 
             DrawingTools.Add(tool);
+            tool.OnAdded();
         }
 
         public void Load(DesignerModel model)
@@ -185,14 +186,14 @@ namespace DesignerLibrary.Views
         protected DrawingTool HitTest(Point point)
         {
             return DrawingTools.Reverse<DrawingTool>().FirstOrDefault(e =>
-           {
-               bool lRet = e.HitTest(point);
+            {
+                bool lRet = e.HitTest(point);
 
-               if (!lRet)
-                   lRet = e.Tracker.HitTest(point) > 0;
+                if (!lRet)
+                    lRet = e.Tracker.HitTest(point) > 0;
 
-               return lRet;
-           });
+                return lRet;
+            });
         }
 
         /// <summary>

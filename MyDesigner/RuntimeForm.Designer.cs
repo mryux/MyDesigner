@@ -65,6 +65,7 @@
             this.printAsBmpToolStripMenuItem.Name = "printAsBmpToolStripMenuItem";
             this.printAsBmpToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.printAsBmpToolStripMenuItem.Text = "Print as bmp";
+            this.printAsBmpToolStripMenuItem.Click += new System.EventHandler(this.printAsBmpToolStripMenuItem_Click);
             // 
             // RuntimeForm
             // 

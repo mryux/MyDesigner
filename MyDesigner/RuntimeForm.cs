@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MyDesigner
@@ -36,6 +37,14 @@ namespace MyDesigner
 
         private void toolStripMenuItemPrint_Click(object sender, EventArgs args)
         {
+            OnPrintView((o, a) =>
+            {
+                View.OnPrint(a);
+            });
+        }
+
+        private void OnPrintView(Action<object, PrintPageEventArgs> printPage)
+        {
             PrintDocument printDocument = new PrintDocument();
 
             PrinterSettings printerSettings = new PrinterSettings
@@ -53,13 +62,8 @@ namespace MyDesigner
 
             printDocument.PrinterSettings = printerSettings;
             printDocument.DefaultPageSettings = pageSettings;
-            printDocument.PrintPage += PrintDocument_PrintPage;
+            printDocument.PrintPage += (o, a) => printPage(o, a);
             printDocument.Print();
-        }
-
-        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs args)
-        {
-            View.OnPrint(args);
         }
 
         private void saveAsBmpToolStripMenuItem_Click(object sender, EventArgs args)
@@ -72,12 +76,31 @@ namespace MyDesigner
             if (dialog.ShowDialog(this) == DialogResult.Cancel)
                 return;
 
+            CopytoImage().Save(dialog.FileName, ImageFormat.Bmp);
+        }
+
+        private Image CopytoImage()
+        {
             Image image = new Bitmap(ViewConsts.Width, ViewConsts.Height);
             Graphics graph = Graphics.FromImage(image);
 
             graph.Clear(Color.White);
             View.OnDraw(new PaintEventArgs(graph, Rectangle.Empty));
-            image.Save(dialog.FileName, ImageFormat.Bmp);
+
+            return image;
+        }
+
+        private void printAsBmpToolStripMenuItem_Click(object sender, EventArgs args)
+        {
+            using (Image image = CopytoImage())
+            {
+                OnPrintView((o, a) =>
+                {
+                    Graphics g = a.Graphics;
+
+                    g.DrawImage(image, 0, 0);
+                });
+            }
         }
     }
 }

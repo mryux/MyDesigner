@@ -1,35 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace DesignerLibrary.Helpers
 {
-    public class SiPropertyDescriptor : PropertyDescriptor
+    public class MyPropertyDescriptor : PropertyDescriptor
     {
         private object Component { get; set; }
 
-        public SiPropertyDescriptor(object pComponent, string pName, Attribute[] pAttributes)
-            : base( pName, pAttributes )
+        public MyPropertyDescriptor(object component, string name, Attribute[] attributes)
+            : base(name, attributes)
         {
-            PropertyInfo lPropertyInfo = pComponent.GetType().GetProperty( pName );
+            PropertyInfo propertyInfo = component.GetType().GetProperty(name);
 
-            if (lPropertyInfo == null)
-                throw new ArgumentException( string.Format( "Name:{0} is not a valid member of Type:{1}", pName, pComponent.GetType().ToString() ) );
+            if (propertyInfo == null)
+                throw new ArgumentException(string.Format("Name:{0} is not a valid member of Type:{1}", name, component.GetType().ToString()));
 
-            Component = pComponent;
-            _Name = pName;
+            Component = component;
+            _Name = name;
 
-            DisplayNameAttribute lNameAttribute = pAttributes.First( e => e is DisplayNameAttribute ) as DisplayNameAttribute;
+            DisplayNameAttribute nameAttribute = attributes.First(e => e is DisplayNameAttribute) as DisplayNameAttribute;
 
-            if (lNameAttribute != null)
-                _DisplayName = lNameAttribute.DisplayName;
+            if (nameAttribute != null)
+                _DisplayName = nameAttribute.DisplayName;
 
-            CategoryAttribute lCategoryAttribute = pAttributes.First( e => e is CategoryAttribute ) as CategoryAttribute;
-            if (lCategoryAttribute != null)
-                _Category = lCategoryAttribute.Category;
+            CategoryAttribute categoryAttribute = attributes.First(e => e is CategoryAttribute) as CategoryAttribute;
+            if (categoryAttribute != null)
+                _Category = categoryAttribute.Category;
         }
         
         public override Type ComponentType

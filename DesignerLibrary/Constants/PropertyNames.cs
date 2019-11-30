@@ -3,9 +3,10 @@
     public enum PropertyOrder
     {
         eNone,
-        eName = 1,
-        eLocation = 2,
-        eBounds = 3,
+        eId = 1,
+        eName = 2,
+        eLocation = 3,
+        eBounds = 4,
         eLineColor = 5,
         eFillColor = 6,
         eLineWidth = 7,
@@ -34,6 +35,7 @@
     {
         public static readonly string LayerName = "LayerName";
 
+        public static readonly string Id = "Id";
         public static readonly string Name = "Name";
         public static readonly string Location = "Location";
         public static readonly string Bounds = "Bounds";

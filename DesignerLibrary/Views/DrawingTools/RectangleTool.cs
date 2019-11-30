@@ -96,7 +96,7 @@ namespace DesignerLibrary.DrawingTools
         {
             IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Bounds,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.Bounds,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,

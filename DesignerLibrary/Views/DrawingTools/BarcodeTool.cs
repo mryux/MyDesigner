@@ -38,7 +38,7 @@ namespace DesignerLibrary.DrawingTools
 
             if (BarcodeImg != null)
             {
-                graph.DrawImage(BarcodeImg, Bounds.Left + 5, Bounds.Top + 2);
+                graph.DrawImage(BarcodeImg, Bounds.Left, Bounds.Top);
             }
 
             graph.DrawString(Barcode, SystemFonts.DefaultFont, Brushes.Black, Bounds, Format);
@@ -85,15 +85,22 @@ namespace DesignerLibrary.DrawingTools
             MakeBarcodeImage();
         }
 
+        protected override void OnSetRuntimeValue(string value)
+        {
+            base.OnSetRuntimeValue(value);
+
+            Barcode = value;
+        }
+
         private void MakeBarcodeImage()
         {
             if (string.IsNullOrEmpty(Barcode))
                 return;
 
-            Size size = new Size(Bounds.Width - 20, Bounds.Height - 40);
+            Size size = new Size(Bounds.Width, Bounds.Height - 40);
             size = GraphicsMapper.Instance.TransformSize(size, CoordinateSpace.Device, CoordinateSpace.Page);
 
-            if (size.Width > 100 && size.Height > 100)
+            if (size.Width > 70 && size.Height > 70)
                 BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode, size.Width, size.Height);
         }
 
@@ -101,7 +108,7 @@ namespace DesignerLibrary.DrawingTools
         {
             IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Barcode,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.Barcode,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,

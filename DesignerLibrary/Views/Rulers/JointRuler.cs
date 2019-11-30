@@ -20,18 +20,24 @@ namespace DesignerLibrary.Views.Rulers
 
         protected override void OnPaint(Graphics graph)
         {
-            int height = PageRulerSize.Height;
+            int cornerHeight = PageRulerSize.Height;
+            int width = Rulers[0].PageRulerSize.Width;
+            int height = Rulers[1].PageRulerSize.Height;
 
-            DrawTopLeftCorner(graph, height);
+            DrawTopLeftCorner(graph, cornerHeight);
 
-            graph.TranslateTransform(height, 0);
+            graph.TranslateTransform(cornerHeight, 0);
             Rulers[0].Paint(graph);
 
-            graph.TranslateTransform(-height, height);
+            graph.TranslateTransform(-cornerHeight, cornerHeight);
             Rulers[1].Paint(graph);
 
+            graph.TranslateTransform(cornerHeight, 0);
+            DrawHorzLine(graph, Pens.Black, 0, width, height);
+            DrawVertLine(graph, Pens.Black, width, 0, height);
+
             // restore coordinate origin
-            graph.TranslateTransform(0, -height);
+            graph.TranslateTransform(-cornerHeight, -cornerHeight);
         }
 
         private void DrawTopLeftCorner(Graphics graph, int height)

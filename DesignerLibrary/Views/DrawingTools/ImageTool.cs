@@ -85,7 +85,7 @@ namespace DesignerLibrary.DrawingTools
             if (lFillColor != null)
                 lDescriptors.Remove(lFillColor);
 
-            lDescriptors.Add(new SiPropertyDescriptor(this, PropertyNames.FileLocation,
+            lDescriptors.Add(new MyPropertyDescriptor(this, PropertyNames.FileLocation,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,

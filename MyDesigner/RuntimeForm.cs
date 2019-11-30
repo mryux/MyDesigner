@@ -27,6 +27,7 @@ namespace MyDesigner
 
             View = RuntimeViewFactory.Instance.NewRuntimeView();
 
+            View.SetValues(new string[] { "barcode1234", "test1234" });
             View.Load(Model);
 
             Control control = View as Control;

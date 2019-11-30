@@ -32,6 +32,12 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        public int Id
+        {
+            get { return _Persistence.Id; }
+            set { _Persistence.Id = value; }
+        }
+
         public string Name
         {
             get
@@ -421,9 +427,18 @@ namespace DesignerLibrary.DrawingTools
 
         protected virtual IList<PropertyDescriptor> GetPropertyDescriptors()
         {
-            IList<PropertyDescriptor> lRet = new List<PropertyDescriptor>();
+            IList<PropertyDescriptor> ret = new List<PropertyDescriptor>();
 
-            lRet.Add(new SiPropertyDescriptor(this, PropertyNames.Name,
+            ret.Add(new MyPropertyDescriptor(this, PropertyNames.Id,
+                new Attribute[]
+                {
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "Id" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eId ),
+                }));
+
+            ret.Add(new MyPropertyDescriptor(this, PropertyNames.Name,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -432,7 +447,7 @@ namespace DesignerLibrary.DrawingTools
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eName ),
                 }));
 
-            lRet.Add(new SiPropertyDescriptor(this, PropertyNames.PenColor,
+            ret.Add(new MyPropertyDescriptor(this, PropertyNames.PenColor,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -441,7 +456,7 @@ namespace DesignerLibrary.DrawingTools
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eLineColor ),
                 }));
 
-            lRet.Add(new SiPropertyDescriptor(this, PropertyNames.PenWidth,
+            ret.Add(new MyPropertyDescriptor(this, PropertyNames.PenWidth,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -451,7 +466,19 @@ namespace DesignerLibrary.DrawingTools
                     new TypeConverterAttribute( typeof( LineWidthConverter ) ),
                 }));
 
-            return lRet;
+            return ret;
+        }
+
+        public string RuntimeValue
+        {
+            set
+            {
+                OnSetRuntimeValue(value);
+            }
+        }
+
+        protected virtual void OnSetRuntimeValue(string value)
+        {
         }
 
         protected IEnumerable<PropertyDescriptor> RemoveProperties(IEnumerable<PropertyDescriptor> pProperties, IEnumerable<string> pNames)

@@ -8,7 +8,7 @@ namespace DesignerLibrary.Views.Rulers
     abstract class BaseRuler
     {
         public Size RulerSize { get; protected set; }
-        protected Size PageRulerSize { get; set; }
+        public Size PageRulerSize { get; set; }
 
         protected BaseRuler(Size size)
         {

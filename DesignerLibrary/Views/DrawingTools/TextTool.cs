@@ -42,6 +42,7 @@ namespace DesignerLibrary.DrawingTools
             base.OnSetPersistence();
 
             Format.Alignment = Alignment;
+            Format.LineAlignment = StringAlignment.Center;
 
             Font lFont = Font.FromLogFont(Persistence.LogFont);
             _Font = new Font(lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point);
@@ -113,6 +114,13 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        protected override void OnSetRuntimeValue(string value)
+        {
+            base.OnSetRuntimeValue(value);
+
+            Text = value;
+        }
+
         private Font _Font;
         public Font Font
         {
@@ -134,6 +142,7 @@ namespace DesignerLibrary.DrawingTools
             {
                 Persistence.Alignment = value;
                 Format.Alignment = value;
+                Format.LineAlignment = StringAlignment.Center;
                 IsDirty = true;
                 Invalidate();
             }
@@ -148,7 +157,7 @@ namespace DesignerLibrary.DrawingTools
         {
             IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.TextColor,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.TextColor,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -157,7 +166,7 @@ namespace DesignerLibrary.DrawingTools
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.TextColor ),
                 }));
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Text,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.Text,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -167,7 +176,7 @@ namespace DesignerLibrary.DrawingTools
                     new EditorAttribute( typeof( MultilineStringEditor ), typeof( UITypeEditor ) ),
                 }));
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Font,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.Font,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,
@@ -176,7 +185,7 @@ namespace DesignerLibrary.DrawingTools
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.Font ),
                 }));
 
-            descriptors.Add(new SiPropertyDescriptor(this, PropertyNames.Alignment,
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.Alignment,
                 new Attribute[]
                 {
                     CustomVisibleAttribute.Yes,

@@ -2,6 +2,7 @@
 using DesignerLibrary.DrawingTools;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Models;
+using DesignerLibrary.Views.Rulers;
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -15,6 +16,7 @@ namespace DesignerLibrary.Views
         void Load(DesignerModel model);
         void OnPrint(PrintPageEventArgs args);
         void OnDraw(PaintEventArgs args);
+        void SetValues(string[] values);
     }
 
     public class RuntimeViewFactory
@@ -42,6 +44,12 @@ namespace DesignerLibrary.Views
             Load(model);
         }
 
+        private string[] RuntimeValues { get; set; }
+        void IRuntimeView.SetValues(string[] values)
+        {
+            RuntimeValues = values;
+        }
+
         void IRuntimeView.OnPrint(PrintPageEventArgs args)
         {
             OnPrint(args);
@@ -56,13 +64,24 @@ namespace DesignerLibrary.Views
         {
             base.PrePaint(args);
 
-            Point pt = GraphicsMapper.Instance.TransformPoint(new Point(-ViewConsts.RulerHeight, -ViewConsts.RulerHeight));
-            args.Graphics.TranslateTransform(pt.X, pt.Y);
+            Point pt = GraphicsMapper.Instance.TransformPoint(new Point(ViewConsts.RulerHeight, ViewConsts.RulerHeight));
+            Graphics graph = args.Graphics;
+
+            int width = GraphicsMapper.Instance.TransformInt(ViewConsts.Width);
+            int height = GraphicsMapper.Instance.TransformInt(ViewConsts.Height);
+
+            BaseRuler.DrawHorzLine(graph, Pens.Black, 0, width, height);
+            BaseRuler.DrawVertLine(graph, Pens.Black, width, 0, height);
+
+            graph.TranslateTransform(-pt.X, -pt.Y);
         }
 
         protected override void OnAddTool(DrawingTool tool)
         {
             base.OnAddTool(tool);
+
+            if (tool.Id > 0 && tool.Id <= RuntimeValues.Length)
+                tool.RuntimeValue = RuntimeValues[tool.Id - 1];
 
             tool.RuntimeInitialize(this);
         }

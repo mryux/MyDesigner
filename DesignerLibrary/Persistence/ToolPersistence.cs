@@ -63,6 +63,9 @@ namespace DesignerLibrary.Persistence
             set { PenColor = Color.FromArgb(value); }
         }
 
+        [XmlAttribute(AttributeName = "Id")]
+        public int Id { get; set; }
+
         [XmlAttribute(AttributeName = "Name")]
         public string Name { get; set; }
 

@@ -91,7 +91,7 @@
     <Compile Include="Helpers\GraphicsMapper.cs" />
     <Compile Include="Helpers\KeyboardHelper.cs" />
     <Compile Include="Helpers\MessageBoxHelper.cs" />
-    <Compile Include="Helpers\SiPropertyDescriptor.cs" />
+    <Compile Include="Helpers\MyPropertyDescriptor.cs" />
     <Compile Include="Models\DesignerModel.cs" />
     <Compile Include="Persistence\ArcToolPersistence.cs" />
     <Compile Include="Persistence\BarcodePersistence.cs" />

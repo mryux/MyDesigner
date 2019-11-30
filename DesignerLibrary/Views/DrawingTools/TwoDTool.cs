@@ -38,9 +38,9 @@ namespace DesignerLibrary.DrawingTools
 
         protected override IList<PropertyDescriptor> GetPropertyDescriptors()
         {
-            IList<PropertyDescriptor> lDescriptors = base.GetPropertyDescriptors();
+            IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
 
-            lDescriptors.Add( new SiPropertyDescriptor( this, PropertyNames.FillColor,
+            descriptors.Add( new MyPropertyDescriptor( this, PropertyNames.FillColor,
                 new Attribute[] 
                 { 
                     CustomVisibleAttribute.Yes,
@@ -49,7 +49,7 @@ namespace DesignerLibrary.DrawingTools
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eFillColor )
                 } ) );
 
-            return lDescriptors;
+            return descriptors;
         }
     }
 }

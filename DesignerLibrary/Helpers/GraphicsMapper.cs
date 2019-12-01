@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace DesignerLibrary.Helpers
 {
-    class GraphicsMapper
+    public class GraphicsMapper
     {
         private GraphicsMapper()
         {

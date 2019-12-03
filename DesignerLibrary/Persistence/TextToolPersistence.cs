@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
@@ -8,7 +9,12 @@ namespace DesignerLibrary.Persistence
     public class TextToolPersistence : RectangleToolPersistence
     {
         public TextToolPersistence()
-            : base(typeof(DrawingTools.TextTool))
+            : this(typeof(DrawingTools.TextTool))
+        {
+        }
+
+        public TextToolPersistence(Type type)
+            : base(type)
         {
             Alignment = StringAlignment.Near;
             TextColor = Color.Black;

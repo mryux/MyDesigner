@@ -25,6 +25,8 @@ namespace DesignerLibrary.Persistence
             typeof(TextToolPersistence),
             typeof(ImageToolPersistence),
             typeof(BarcodePersistence),
+            typeof(TextWithLabelToolPersistence),
+            typeof(Group4Persistence),
         };
 
         private static readonly XmlSerializer Serializer = new XmlSerializer(typeof(RootPersistence), PersistenceTypes);

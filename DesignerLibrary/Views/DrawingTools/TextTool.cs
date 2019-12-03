@@ -30,9 +30,12 @@ namespace DesignerLibrary.DrawingTools
         {
             base.OnPaint(args);
 
-            Graphics graph = args.Graphics;
+            if (!string.IsNullOrEmpty(Text))
+            {
+                Graphics graph = args.Graphics;
 
-            graph.DrawString(Text, Font, new SolidBrush(TextColor), Bounds, Format);
+                graph.DrawString(Text, Font, TextBrush, Bounds, Format);
+            }
         }
 
         protected StringFormat Format { get; set; }
@@ -46,7 +49,11 @@ namespace DesignerLibrary.DrawingTools
 
             Font lFont = Font.FromLogFont(Persistence.LogFont);
             _Font = new Font(lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point);
+
+            TextBrush = new SolidBrush(TextColor);
         }
+
+        protected SolidBrush TextBrush { get; set; }
 
         private TextBox _TextBox = null;
 
@@ -86,7 +93,7 @@ namespace DesignerLibrary.DrawingTools
         {
             bool lRet = base.OnKey(key);
 
-            if (key == Keys.Delete)
+            if (key == Keys.Delete && _TextBox != null)
                 lRet = !_TextBox.Visible;
 
             return lRet;

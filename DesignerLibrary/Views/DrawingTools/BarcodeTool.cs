@@ -100,7 +100,7 @@ namespace DesignerLibrary.DrawingTools
             Size size = new Size(Bounds.Width, Bounds.Height - 40);
             size = GraphicsMapper.Instance.TransformSize(size, CoordinateSpace.Device, CoordinateSpace.Page);
 
-            if (size.Width > 70 && size.Height > 70)
+            if (size.Width > 100 && size.Height > 50)
                 BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode, size.Width, size.Height);
         }
 

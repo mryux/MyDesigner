@@ -36,6 +36,8 @@ namespace DesignerLibrary.Views
             { typeof(ImageTool), Properties.Resources.Tool_Image },
             { typeof(TextTool), Properties.Resources.Tool_Text },
             { typeof(BarcodeTool), Properties.Resources.Tool_Barcode },
+            { typeof(TextWithLabelTool), Properties.Resources.Tool_TextWithLabel },
+            { typeof(Group4Tool), Properties.Resources.Tool_Group4 },
         };
 
         protected override void OnLoad(EventArgs args)

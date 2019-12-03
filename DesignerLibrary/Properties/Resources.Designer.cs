@@ -178,6 +178,15 @@ namespace DesignerLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Group4.
+        /// </summary>
+        internal static string Tool_Group4 {
+            get {
+                return ResourceManager.GetString("Tool_Group4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Image.
         /// </summary>
         internal static string Tool_Image {
@@ -228,6 +237,15 @@ namespace DesignerLibrary.Properties {
         internal static string Tool_Text {
             get {
                 return ResourceManager.GetString("Tool_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TextWithLabel.
+        /// </summary>
+        internal static string Tool_TextWithLabel {
+            get {
+                return ResourceManager.GetString("Tool_TextWithLabel", resourceCulture);
             }
         }
         

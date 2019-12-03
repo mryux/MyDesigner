@@ -156,6 +156,9 @@
   <data name="Tool_Ellipse" xml:space="preserve">
     <value>Ellipse</value>
   </data>
+  <data name="Tool_Group4" xml:space="preserve">
+    <value>Group4</value>
+  </data>
   <data name="Tool_Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="Tool_Text" xml:space="preserve">
     <value>Text</value>
+  </data>
+  <data name="Tool_TextWithLabel" xml:space="preserve">
+    <value>TextWithLabel</value>
   </data>
   <data name="Warning_Delete" xml:space="preserve">
     <value>Are you sure to delete this tool?</value>

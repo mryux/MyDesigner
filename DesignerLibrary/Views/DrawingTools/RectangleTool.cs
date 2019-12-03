@@ -51,8 +51,11 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void OnPaint(PaintEventArgs args)
         {
-            Graphics graph = args.Graphics;
+            Clear(args.Graphics);
+        }
 
+        protected void Clear(Graphics graph)
+        {
             graph.FillRectangle(Brush, Bounds);
             graph.DrawRectangle(Pen, Bounds);
         }

@@ -12,13 +12,18 @@
         eLineWidth = 7,
         eFileLocation = 10,
 
-        Text = 20,
+        Label = 18,
+        Text = 19,
         TextColor = 20,
         Barcode = 21,
         Font = 22,
         Alignment = 23,
         VAlignment = 24,
         TimeFormat = 25,
+        Value = 26,
+        BottomLeft = 27,
+        BottomRight = 28,
+        TopRight = 29,
 
         eLogicalPointType = 100,
         eLogicalPointName = 101,
@@ -50,6 +55,10 @@
         public static readonly string Action = "Action";
 
         public static readonly string Text = "Text";
+        public static readonly string Label = "Label";
+        public static readonly string TopRight = "TopRight";
+        public static readonly string BottomLeft = "BottomLeft";
+        public static readonly string BottomRight = "BottomRight";
         public static readonly string TextColor = "TextColor";
         public static readonly string Font = "Font";
         public static readonly string Alignment = "Alignment";

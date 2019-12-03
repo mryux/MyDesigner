@@ -241,6 +241,15 @@ namespace DesignerLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UpDown Text.
+        /// </summary>
+        internal static string Tool_TextUpDown {
+            get {
+                return ResourceManager.GetString("Tool_TextUpDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TextWithLabel.
         /// </summary>
         internal static string Tool_TextWithLabel {

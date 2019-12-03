@@ -177,6 +177,9 @@
   <data name="Tool_Text" xml:space="preserve">
     <value>Text</value>
   </data>
+  <data name="Tool_TextUpDown" xml:space="preserve">
+    <value>UpDown Text</value>
+  </data>
   <data name="Tool_TextWithLabel" xml:space="preserve">
     <value>TextWithLabel</value>
   </data>

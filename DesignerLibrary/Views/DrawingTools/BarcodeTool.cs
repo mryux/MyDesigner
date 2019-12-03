@@ -101,7 +101,16 @@ namespace DesignerLibrary.DrawingTools
             size = GraphicsMapper.Instance.TransformSize(size, CoordinateSpace.Device, CoordinateSpace.Page);
 
             if (size.Width > 100 && size.Height > 50)
-                BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode, size.Width, size.Height);
+            {
+                try
+                {
+                    BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode, size.Width, size.Height);
+                }
+                catch (Exception ex)
+                {
+                    MessageBoxHelper.OKCancelMessage(ex.Message);
+                }
+            }
         }
 
         protected override IList<PropertyDescriptor> GetPropertyDescriptors()

@@ -61,7 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Persistence\Group4Persistence.cs" />
+    <Compile Include="Persistence\Group4ToolPersistence.cs" />
+    <Compile Include="Persistence\TextUpDownToolPersistence.cs" />
     <Compile Include="Persistence\TextWithLabelToolPersistence.cs" />
     <Compile Include="Views\Attributes\BrowsablePropertiesConverter.cs" />
     <Compile Include="Views\Attributes\CustomVisibleAttribute.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Views\DrawingTools\PolygonTool.cs" />
     <Compile Include="Views\DrawingTools\RectangleTool.cs" />
     <Compile Include="Views\DrawingTools\TextTool.cs" />
+    <Compile Include="Views\DrawingTools\TextUpDownTool.cs" />
     <Compile Include="Views\DrawingTools\TextWithLabelTool.cs" />
     <Compile Include="Views\DrawingTools\TwoDTool.cs" />
     <Compile Include="Helpers\AutoScrollTimer.cs">

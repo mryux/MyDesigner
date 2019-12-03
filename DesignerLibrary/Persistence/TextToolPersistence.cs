@@ -13,7 +13,7 @@ namespace DesignerLibrary.Persistence
         {
         }
 
-        public TextToolPersistence(Type type)
+        protected TextToolPersistence(Type type)
             : base(type)
         {
             Alignment = StringAlignment.Near;

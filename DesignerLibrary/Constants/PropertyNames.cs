@@ -24,6 +24,7 @@
         BottomLeft = 27,
         BottomRight = 28,
         TopRight = 29,
+        AlignRight = 30,
 
         eLogicalPointType = 100,
         eLogicalPointName = 101,
@@ -62,6 +63,7 @@
         public static readonly string TextColor = "TextColor";
         public static readonly string Font = "Font";
         public static readonly string Alignment = "Alignment";
+        public static readonly string AlignRight = "AlignRight";
         public static readonly string Barcode = "Barcode";
 
         public static readonly string ControlType = "ControlType";

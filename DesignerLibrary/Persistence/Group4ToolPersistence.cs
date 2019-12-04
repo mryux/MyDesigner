@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Xml.Serialization;
 
 namespace DesignerLibrary.Persistence
 {

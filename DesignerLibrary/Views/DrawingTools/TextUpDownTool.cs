@@ -25,14 +25,14 @@ namespace DesignerLibrary.DrawingTools
 
         protected virtual void DrawUpArea(Graphics graph)
         {
-            Format.Alignment = StringAlignment.Far;
+            Format.Alignment = AlignRight ? StringAlignment.Far : StringAlignment.Near;
             Format.LineAlignment = StringAlignment.Near;
             graph.DrawString(Text, Font, TextBrush, Bounds, Format);
         }
 
         protected virtual void DrawDownArea(Graphics graph)
         {
-            Format.Alignment = StringAlignment.Far;
+            Format.Alignment = AlignRight ? StringAlignment.Far : StringAlignment.Near;
             Format.LineAlignment = StringAlignment.Far;
             graph.DrawString(BottomRight, ItalicFont, TextBrush, Bounds, Format);
         }
@@ -68,6 +68,17 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        public bool AlignRight
+        {
+            get { return Persistence.AlignRight; }
+            set
+            {
+                Persistence.AlignRight = value;
+                IsDirty = true;
+                Invalidate();
+            }
+        }
+
         private new TextUpDownToolPersistence Persistence
         {
             get { return base.Persistence as TextUpDownToolPersistence; }
@@ -84,6 +95,15 @@ namespace DesignerLibrary.DrawingTools
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "BottomRight" ),
                     new PropertyOrderAttribute((int)PropertyOrder.BottomRight),
+                }));
+
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.AlignRight,
+                new Attribute[]
+                {
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "AlignRight" ),
+                    new PropertyOrderAttribute((int)PropertyOrder.AlignRight),
                 }));
 
             return descriptors;

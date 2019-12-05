@@ -711,6 +711,15 @@ namespace DesignerLibrary.Views
             return DesignerHost.GetService(typeof(T)) as T;
         }
 
+        public void SetPenAsTransparent(bool transparent)
+        {
+            foreach(DrawingTool tool in DrawingTools)
+            {
+                if (!(tool is LineTool))
+                    tool.PenColor = transparent ? Color.Transparent : Color.Black;
+            }
+        }
+
         private void InitializeComponent()
         {
             _deleteToolStripMenuItem = new ToolStripMenuItem()

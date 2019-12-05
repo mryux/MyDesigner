@@ -42,6 +42,7 @@
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
+            this.setPenAsTransparentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,7 +95,8 @@
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyToolStripMenuItem,
             this.cutToolStripMenuItem,
-            this.pasteToolStripMenuItem});
+            this.pasteToolStripMenuItem,
+            this.setPenAsTransparentToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             resources.ApplyResources(this.editToolStripMenuItem, "editToolStripMenuItem");
             // 
@@ -134,6 +136,12 @@
             resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
             this.rootDesignTimeView1.Name = "rootDesignTimeView1";
             // 
+            // setPenAsTransparentToolStripMenuItem
+            // 
+            this.setPenAsTransparentToolStripMenuItem.Name = "setPenAsTransparentToolStripMenuItem";
+            resources.ApplyResources(this.setPenAsTransparentToolStripMenuItem, "setPenAsTransparentToolStripMenuItem");
+            this.setPenAsTransparentToolStripMenuItem.Click += new System.EventHandler(this.setPenAsTransparentToolStripMenuItem_Click);
+            // 
             // DesignForm
             // 
             resources.ApplyResources(this, "$this");
@@ -163,7 +171,7 @@
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
-
+        private System.Windows.Forms.ToolStripMenuItem setPenAsTransparentToolStripMenuItem;
     }
 }
 

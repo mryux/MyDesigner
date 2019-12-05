@@ -152,22 +152,28 @@
     <value>File</value>
   </data>
   <data name="copyToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 26</value>
+    <value>237, 26</value>
   </data>
   <data name="copyToolStripMenuItem.Text" xml:space="preserve">
     <value>Copy</value>
   </data>
   <data name="cutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 26</value>
+    <value>237, 26</value>
   </data>
   <data name="cutToolStripMenuItem.Text" xml:space="preserve">
     <value>Cut</value>
   </data>
   <data name="pasteToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 26</value>
+    <value>237, 26</value>
   </data>
   <data name="pasteToolStripMenuItem.Text" xml:space="preserve">
     <value>Paste</value>
+  </data>
+  <data name="setPenAsTransparentToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 26</value>
+  </data>
+  <data name="setPenAsTransparentToolStripMenuItem.Text" xml:space="preserve">
+    <value>Set Pen as transparent</value>
   </data>
   <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>49, 24</value>
@@ -191,7 +197,7 @@
     <value>0, 0</value>
   </data>
   <data name="menuStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1042, 28</value>
+    <value>1056, 28</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip1.TabIndex" type="System.Int32, mscorlib">
@@ -220,7 +226,7 @@
     <value>0, 27</value>
   </data>
   <data name="rootDesignTimeView1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1042, 533</value>
+    <value>1056, 669</value>
   </data>
   <data name="rootDesignTimeView1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -241,7 +247,7 @@
     <value>True</value>
   </metadata>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>1042, 560</value>
+    <value>1056, 696</value>
   </data>
   <data name="&gt;&gt;fileToolStripMenuItem.Name" xml:space="preserve">
     <value>fileToolStripMenuItem</value>
@@ -307,6 +313,12 @@
     <value>runtimeModeToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;runtimeModeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;setPenAsTransparentToolStripMenuItem.Name" xml:space="preserve">
+    <value>setPenAsTransparentToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;setPenAsTransparentToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

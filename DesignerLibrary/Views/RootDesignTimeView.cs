@@ -173,6 +173,11 @@ namespace DesignerLibrary.Views
             DesignView.OnPrint(args);
         }
 
+        public void SetPenAsTransparent(bool transparent)
+        {
+            DesignView.SetPenAsTransparent(transparent);
+        }
+
         private DesignTimeView DesignView
         {
             get { return DesignerPanel.Controls.OfType<DesignTimeView>().First(); }

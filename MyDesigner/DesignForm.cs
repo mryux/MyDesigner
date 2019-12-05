@@ -102,5 +102,10 @@ namespace MyDesigner
         {
 
         }
+
+        private void setPenAsTransparentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rootDesignTimeView1.SetPenAsTransparent(true);
+        }
     }
 }

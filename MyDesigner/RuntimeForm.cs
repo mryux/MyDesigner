@@ -27,7 +27,9 @@ namespace MyDesigner
 
             View = RuntimeViewFactory.Instance.NewRuntimeView();
 
-            View.SetValues(new string[] { "barcode1234", "test1234" });
+            //string content = "Y|UPS|USPS First Class Package|LBX07941754426|LBX07021754493|LBX07331755403|LBX07132055837|LBX07132055838|step123";
+            string content = "Y|UPS|LBX07941754426|LBX07941754426|LBX07021754493|LBX07331755403|LBX07132055837|LBX07132055838|step123";
+            View.SetValues(content.Split('|'));
             View.Load(Model);
 
             Control control = View as Control;

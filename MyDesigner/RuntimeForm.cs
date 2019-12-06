@@ -28,7 +28,7 @@ namespace MyDesigner
             View = RuntimeViewFactory.Instance.NewRuntimeView();
 
             //string content = "Y|UPS|USPS First Class Package|LBX07941754426|LBX07021754493|LBX07331755403|LBX07132055837|LBX07132055838|step123";
-            string content = "FedEx|FedEx Ground(Over-Length)|9622001900008000288000794670978052|1|2|SKU1233_2|SKU3_11|sku4_55";
+            string content = "FedEx|FedEx Ground(Over-Length)|9622001900008000288000794670978052|1|2|SKU1233,2|SKU3,11|sku4,55";
             View.SetValues(content.Split('|'));
             View.Load(Model);
 

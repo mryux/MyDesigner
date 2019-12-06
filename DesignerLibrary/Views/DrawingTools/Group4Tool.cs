@@ -104,7 +104,7 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void OnSetRuntimeValue(string value)
         {
-            string[] values = value.Split('_');
+            string[] values = value.Split(',');
 
             base.OnSetRuntimeValue(values[0]);
             

@@ -17,17 +17,27 @@ namespace DesignerLibrary.DrawingTools
 
         protected override void DrawUpArea(Graphics graph)
         {
-            Format.Alignment = StringAlignment.Near;
-            Format.LineAlignment = StringAlignment.Near;
-            graph.DrawString(Text, Font, TextBrush, Bounds, Format);
+            ShowSeparator = !string.IsNullOrEmpty(Text);
+            if (!string.IsNullOrEmpty(Text))
+            {
+                Format.Alignment = StringAlignment.Near;
+                Format.LineAlignment = StringAlignment.Near;
+                graph.DrawString(Text, Font, TextBrush, Bounds, Format);
+            }
 
-            Format.Alignment = StringAlignment.Far;
-            Format.LineAlignment = StringAlignment.Near;
-            graph.DrawString(TopRight, Font, TextBrush, Bounds, Format);
+            if (!string.IsNullOrEmpty(TopRight))
+            {
+                Format.Alignment = StringAlignment.Far;
+                Format.LineAlignment = StringAlignment.Near;
+                graph.DrawString(TopRight, Font, TextBrush, Bounds, Format);
+            }
         }
 
         protected override void DrawDownArea(Graphics graph)
         {
+            if (string.IsNullOrEmpty(Text))
+                return;
+
             base.DrawDownArea(graph);
 
             Format.Alignment = StringAlignment.Near;
@@ -90,6 +100,16 @@ namespace DesignerLibrary.DrawingTools
                 }));
 
             return descriptors;
+        }
+
+        protected override void OnSetRuntimeValue(string value)
+        {
+            string[] values = value.Split('_');
+
+            base.OnSetRuntimeValue(values[0]);
+            
+            if (values.Length > 0)
+                TopRight = values[1];
         }
     }
 }

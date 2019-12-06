@@ -28,6 +28,8 @@ namespace DesignerLibrary.DrawingTools
             Format.Alignment = AlignRight ? StringAlignment.Far : StringAlignment.Near;
             Format.LineAlignment = StringAlignment.Near;
             graph.DrawString(Text, Font, TextBrush, Bounds, Format);
+
+            ShowSeparator = true;
         }
 
         protected virtual void DrawDownArea(Graphics graph)
@@ -37,12 +39,15 @@ namespace DesignerLibrary.DrawingTools
             graph.DrawString(BottomRight, ItalicFont, TextBrush, Bounds, Format);
         }
 
+        protected bool ShowSeparator { get; set; }
         private void DrawSeparator(Graphics graph)
         {
+            if (!ShowSeparator)
+                return;
+
             int y = (Bounds.Top + Bounds.Bottom) / 2;
             graph.DrawLine(Pens.Black, Bounds.Left, y, Bounds.Right, y);
         }
-
 
         protected override ToolPersistence NewPersistence()
         {
@@ -52,6 +57,13 @@ namespace DesignerLibrary.DrawingTools
         protected override void OnSetPersistence()
         {
             base.OnSetPersistence();
+
+            OnFontChanged();
+        }
+
+        protected override void OnFontChanged()
+        {
+            base.OnFontChanged();
 
             ItalicFont = new Font(Font.FontFamily, Font.SizeInPoints, FontStyle.Italic, GraphicsUnit.Point);
         }

@@ -39,7 +39,7 @@ namespace DesignerLibrary.DrawingTools
         {
             base.OnSetPersistence();
 
-            ItalicFont = new Font(Font.FontFamily, Font.SizeInPoints, FontStyle.Italic, GraphicsUnit.Point);
+            OnFontChanged();
         }
 
         private Font ItalicFont { get; set; }
@@ -54,6 +54,13 @@ namespace DesignerLibrary.DrawingTools
                 IsDirty = true;
                 Invalidate();
             }
+        }
+
+        protected override void OnFontChanged()
+        {
+            base.OnFontChanged();
+
+            ItalicFont = new Font(Font.FontFamily, Font.SizeInPoints, FontStyle.Italic, GraphicsUnit.Point);
         }
 
         private new TextWithLabelToolPersistence Persistence

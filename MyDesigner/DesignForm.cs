@@ -26,10 +26,10 @@ namespace MyDesigner
             OnNew( this, EventArgs.Empty );
         }
 
-        void FireEvent_LoadModel(string pTitle, DesignerModel pModel)
+        void FireEvent_LoadModel(string path, DesignerModel model)
         {
             if (LoadModelEvent != null)
-                LoadModelEvent( this, new EventArgs<Tuple<string, DesignerModel>>( new Tuple<string, DesignerModel>( pTitle, pModel ) ) );
+                LoadModelEvent( this, new EventArgs<Tuple<string, DesignerModel>>( new Tuple<string, DesignerModel>( path, model ) ) );
         }
 
         void FireEvent_SaveModel()
@@ -40,19 +40,19 @@ namespace MyDesigner
 
         private void OnNew(object sender, EventArgs e)
         {
-            FireEvent_LoadModel( "New", new DesignerModel() );
+            FireEvent_LoadModel(null, new DesignerModel());
         }
 
         void OnOpen(object sender, EventArgs e)
         {
-            FileDialog lDialog = new OpenFileDialog();
-
-            lDialog.CheckFileExists = true;
-            if(lDialog.ShowDialog() == DialogResult.OK)
+            FileDialog dialog = new OpenFileDialog()
             {
-                string lTitle = System.IO.Path.GetFileName( lDialog.FileName );
+                CheckFileExists = true
+            };
 
-                FireEvent_LoadModel( lTitle, DesignerModel.FromFile( lDialog.FileName ) );
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FireEvent_LoadModel(dialog.FileName, DesignerModel.FromFile(dialog.FileName));
             }
         }
 

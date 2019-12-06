@@ -48,7 +48,7 @@ namespace DesignerLibrary.DrawingTools
             Format.LineAlignment = StringAlignment.Center;
 
             Font lFont = Font.FromLogFont(Persistence.LogFont);
-            _Font = new Font(lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point);
+            font = new Font(lFont.FontFamily, lFont.SizeInPoints, lFont.Style, GraphicsUnit.Point);
 
             TextBrush = new SolidBrush(TextColor);
         }
@@ -128,18 +128,23 @@ namespace DesignerLibrary.DrawingTools
             Text = value;
         }
 
-        private Font _Font;
+        private Font font;
         public Font Font
         {
-            get { return _Font; }
+            get { return font; }
             set
             {
-                _Font = value;
-                Persistence.SetLogFont(_Font);
+                font = value;
+                OnFontChanged();
+                Persistence.SetLogFont(font);
 
                 IsDirty = true;
                 Invalidate();
             }
+        }
+
+        protected virtual void OnFontChanged()
+        {
         }
 
         public StringAlignment Alignment

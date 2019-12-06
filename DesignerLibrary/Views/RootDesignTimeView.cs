@@ -126,35 +126,41 @@ namespace DesignerLibrary.Views
             {
                 DialogResult result = MessageBox.Show("Current Model has been changed, are you sure to save it?", "Warning", MessageBoxButtons.YesNoCancel);
 
-                if (result != DialogResult.Cancel)
+                if (result == DialogResult.Yes)
                 {
-                    if (result == DialogResult.Yes)
-                    {
-                        OnSaveModel(this, EventArgs.Empty);
-                    }
+                    OnSaveModel(this, EventArgs.Empty);
                 }
             }
 
             // clean up
             DesignView.Cleanup();
 
-            Title = args.Data.Item1;
+            CurrentPath = Title = args.Data.Item1;
             DesignView.Load(args.Data.Item2);
         }
 
-        private string Title { get; set; }
+        private string title { get; set; }
+        private string Title
+        {
+            get { return title ?? "new"; }
+            set { title = value; }
+        }
+        private string CurrentPath { get; set; }
 
         public void OnSaveModel(object sender, EventArgs args)
         {
-            FileDialog dialog = new SaveFileDialog();
-
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (string.IsNullOrEmpty(CurrentPath))
             {
-                DesignerModel model = new DesignerModel();
+                FileDialog dialog = new SaveFileDialog();
 
-                DesignView.Save(model);
-                model.SaveToFile(dialog.FileName);
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    CurrentPath = dialog.FileName;
             }
+
+            DesignerModel model = new DesignerModel();
+
+            DesignView.Save(model);
+            model.SaveToFile(CurrentPath);
         }
 
         public DesignerModel Model

@@ -39,10 +39,10 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setPenAsTransparentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
-            this.setPenAsTransparentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -118,6 +118,12 @@
             resources.ApplyResources(this.pasteToolStripMenuItem, "pasteToolStripMenuItem");
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
+            // setPenAsTransparentToolStripMenuItem
+            // 
+            this.setPenAsTransparentToolStripMenuItem.Name = "setPenAsTransparentToolStripMenuItem";
+            resources.ApplyResources(this.setPenAsTransparentToolStripMenuItem, "setPenAsTransparentToolStripMenuItem");
+            this.setPenAsTransparentToolStripMenuItem.Click += new System.EventHandler(this.togglePenTransparentToolStripMenuItem_Click);
+            // 
             // modeToolStripMenuItem
             // 
             this.modeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -135,12 +141,6 @@
             // 
             resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
             this.rootDesignTimeView1.Name = "rootDesignTimeView1";
-            // 
-            // setPenAsTransparentToolStripMenuItem
-            // 
-            this.setPenAsTransparentToolStripMenuItem.Name = "setPenAsTransparentToolStripMenuItem";
-            resources.ApplyResources(this.setPenAsTransparentToolStripMenuItem, "setPenAsTransparentToolStripMenuItem");
-            this.setPenAsTransparentToolStripMenuItem.Click += new System.EventHandler(this.setPenAsTransparentToolStripMenuItem_Click);
             // 
             // DesignForm
             // 

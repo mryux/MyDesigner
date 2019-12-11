@@ -103,9 +103,11 @@ namespace MyDesigner
 
         }
 
-        private void setPenAsTransparentToolStripMenuItem_Click(object sender, EventArgs e)
+        private bool PenAsTransparent { get; set; }
+        private void togglePenTransparentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rootDesignTimeView1.SetPenAsTransparent(true);
+            PenAsTransparent = !PenAsTransparent;
+            rootDesignTimeView1.SetPenAsTransparent(PenAsTransparent);
         }
     }
 }

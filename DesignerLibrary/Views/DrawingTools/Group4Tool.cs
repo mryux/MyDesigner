@@ -108,7 +108,7 @@ namespace DesignerLibrary.DrawingTools
 
             base.OnSetRuntimeValue(values[0]);
             
-            if (values.Length > 0)
+            if (values.Length > 1)
                 TopRight = values[1];
         }
     }

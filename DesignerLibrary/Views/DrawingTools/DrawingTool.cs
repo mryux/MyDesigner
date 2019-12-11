@@ -4,6 +4,7 @@ using DesignerLibrary.Converters;
 using DesignerLibrary.Helpers;
 using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,8 +17,11 @@ namespace DesignerLibrary.DrawingTools
 {
     abstract class DrawingTool : IComponent, ICustomTypeDescriptor, IDataErrorInfo
     {
+        protected readonly ILog cLog;
+
         protected DrawingTool()
         {
+            cLog = LogManager.GetLogger(GetType());
         }
 
         private ToolPersistence _Persistence = null;
@@ -473,6 +477,7 @@ namespace DesignerLibrary.DrawingTools
         {
             set
             {
+                cLog.Info("set runtime value:" + value);
                 OnSetRuntimeValue(value);
             }
         }

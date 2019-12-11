@@ -61,21 +61,21 @@ namespace DesignerLibrary.DrawingTools
         {
             base.OnDoubleClick(sender, args);
 
-            if (_TextBox == null)
-            {
-                _TextBox = new TextBox();
-                _TextBox.Multiline = true;
-                sender.Controls.Add(_TextBox);
-            }
-            else
-                _TextBox.Visible = true;
+            //if (_TextBox == null)
+            //{
+            //    _TextBox = new TextBox();
+            //    _TextBox.Multiline = true;
+            //    sender.Controls.Add(_TextBox);
+            //}
+            //else
+            //    _TextBox.Visible = true;
 
-            _TextBox.Font = Font;
-            _TextBox.ForeColor = TextColor;
-            if (FillColor != Color.Transparent)
-                _TextBox.BackColor = FillColor;
-            _TextBox.Bounds = GraphicsMapper.Instance.TransformRectangle(Bounds, CoordinateSpace.Device, CoordinateSpace.Page);
-            _TextBox.Focus();
+            //_TextBox.Font = Font;
+            //_TextBox.ForeColor = TextColor;
+            //if (FillColor != Color.Transparent)
+            //    _TextBox.BackColor = FillColor;
+            //_TextBox.Bounds = GraphicsMapper.Instance.TransformRectangle(Bounds, CoordinateSpace.Device, CoordinateSpace.Page);
+            //_TextBox.Focus();
         }
 
         protected override void OnLostSelection()

@@ -5,6 +5,7 @@ using DesignerLibrary.Models;
 using DesignerLibrary.Views.Rulers;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,6 +14,8 @@ namespace DesignerLibrary.Views
 {
     public interface IRuntimeView
     {
+        int Rotation { get; set; }
+
         void Load(DesignerModel model);
         void OnPrint(PrintPageEventArgs args);
         void OnDraw(PaintEventArgs args);
@@ -44,6 +47,8 @@ namespace DesignerLibrary.Views
             Load(model);
         }
 
+        public int Rotation { get; set; }
+
         private string[] RuntimeValues { get; set; }
         void IRuntimeView.SetValues(string[] values)
         {
@@ -72,6 +77,10 @@ namespace DesignerLibrary.Views
 
             BaseRuler.DrawHorzLine(graph, Pens.Black, 0, width, height);
             BaseRuler.DrawVertLine(graph, Pens.Black, width, 0, height);
+            Matrix rotate_at_center = new Matrix();
+
+            rotate_at_center.RotateAt(Rotation, new PointF(width / 2f, height / 2f));
+            graph.Transform = rotate_at_center;
 
             graph.TranslateTransform(-pt.X, -pt.Y);
         }

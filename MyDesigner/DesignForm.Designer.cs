@@ -43,6 +43,7 @@
             this.modeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runtimeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootDesignTimeView1 = new DesignerLibrary.Views.RootDesignTimeView();
+            this.allMoveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,7 +97,8 @@
             this.copyToolStripMenuItem,
             this.cutToolStripMenuItem,
             this.pasteToolStripMenuItem,
-            this.setPenAsTransparentToolStripMenuItem});
+            this.setPenAsTransparentToolStripMenuItem,
+            this.allMoveDownToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             resources.ApplyResources(this.editToolStripMenuItem, "editToolStripMenuItem");
             // 
@@ -142,6 +144,12 @@
             resources.ApplyResources(this.rootDesignTimeView1, "rootDesignTimeView1");
             this.rootDesignTimeView1.Name = "rootDesignTimeView1";
             // 
+            // allMoveDownToolStripMenuItem
+            // 
+            this.allMoveDownToolStripMenuItem.Name = "allMoveDownToolStripMenuItem";
+            resources.ApplyResources(this.allMoveDownToolStripMenuItem, "allMoveDownToolStripMenuItem");
+            this.allMoveDownToolStripMenuItem.Click += new System.EventHandler(this.allMoveDownToolStripMenuItem_Click);
+            // 
             // DesignForm
             // 
             resources.ApplyResources(this, "$this");
@@ -172,6 +180,7 @@
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setPenAsTransparentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allMoveDownToolStripMenuItem;
     }
 }
 

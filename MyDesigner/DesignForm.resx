@@ -175,6 +175,12 @@
   <data name="setPenAsTransparentToolStripMenuItem.Text" xml:space="preserve">
     <value>Toggle Pen transparent</value>
   </data>
+  <data name="allMoveDownToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>196, 22</value>
+  </data>
+  <data name="allMoveDownToolStripMenuItem.Text" xml:space="preserve">
+    <value>All MoveDown</value>
+  </data>
   <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 20</value>
   </data>
@@ -319,6 +325,12 @@
     <value>runtimeModeToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;runtimeModeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;allMoveDownToolStripMenuItem.Name" xml:space="preserve">
+    <value>allMoveDownToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;allMoveDownToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

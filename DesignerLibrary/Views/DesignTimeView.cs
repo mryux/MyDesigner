@@ -720,6 +720,16 @@ namespace DesignerLibrary.Views
             }
         }
 
+        public void MoveDown()
+        {
+            foreach (DrawingTool tool in DrawingTools)
+            {
+                Point pt = tool.Location;
+
+                tool.Location = new Point(pt.X, pt.Y + 5);
+            }
+        }
+
         private void InitializeComponent()
         {
             _deleteToolStripMenuItem = new ToolStripMenuItem()

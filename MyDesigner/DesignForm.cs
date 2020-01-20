@@ -23,6 +23,7 @@ namespace MyDesigner
             LoadModelEvent += rootDesignTimeView1.OnLoadModel;
             SaveModelEvent += rootDesignTimeView1.OnSaveModel;
 
+            PenAsTransparent = true;
             OnNew( this, EventArgs.Empty );
         }
 
@@ -108,6 +109,11 @@ namespace MyDesigner
         {
             PenAsTransparent = !PenAsTransparent;
             rootDesignTimeView1.SetPenAsTransparent(PenAsTransparent);
+        }
+
+        private void allMoveDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rootDesignTimeView1.MoveDown();
         }
     }
 }

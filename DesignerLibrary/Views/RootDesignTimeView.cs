@@ -184,6 +184,11 @@ namespace DesignerLibrary.Views
             DesignView.SetPenAsTransparent(transparent);
         }
 
+        public void MoveDown()
+        {
+            DesignView.MoveDown();
+        }
+
         private DesignTimeView DesignView
         {
             get { return DesignerPanel.Controls.OfType<DesignTimeView>().First(); }

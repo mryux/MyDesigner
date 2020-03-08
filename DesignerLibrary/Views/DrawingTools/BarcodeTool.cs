@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace DesignerLibrary.DrawingTools
@@ -20,6 +21,17 @@ namespace DesignerLibrary.DrawingTools
             Format.LineAlignment = StringAlignment.Far;
 
             //base.Pen.Color = SystemColors.
+            BarcodeInstance = new BarcodeLib.Barcode()
+            {
+                BackColor = Color.White,//图片背景颜色
+                ForeColor = Color.Black,//条码颜色
+                IncludeLabel = true,
+                Alignment = BarcodeLib.AlignmentPositions.CENTER,
+                LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER, //code的显示位置
+                ImageFormat = ImageFormat.Bmp, //图片格式
+                LabelFont = BarcodeLabelFont,
+                BarWidth = 2,
+            };
         }
 
         protected override ToolPersistence NewPersistence()
@@ -27,7 +39,8 @@ namespace DesignerLibrary.DrawingTools
             return new BarcodePersistence();
         }
 
-        private BarcodeLib.Barcode BarcodeInstance = new BarcodeLib.Barcode();
+        private static readonly Font BarcodeLabelFont = new Font("verdana", 9f);
+        private BarcodeLib.Barcode BarcodeInstance;
         private Image BarcodeImg;
 
         protected override void OnPaint(PaintEventArgs args)
@@ -38,10 +51,15 @@ namespace DesignerLibrary.DrawingTools
 
             if (BarcodeImg != null)
             {
-                graph.DrawImage(BarcodeImg, Bounds.Left, Bounds.Top);
+                //graph.DrawImage(BarcodeImg, Bounds.Left, Bounds.Top);
+
+                GraphicsUnit unit = GraphicsUnit.Display;
+                RectangleF rect = BarcodeImg.GetBounds(ref unit);
+
+                graph.DrawImage(BarcodeImg, Bounds, rect, unit);
             }
 
-            graph.DrawString(Barcode, SystemFonts.DefaultFont, Brushes.Black, Bounds, Format);
+            //graph.DrawString(Barcode, SystemFonts.DefaultFont, Brushes.Black, Bounds, Format);
         }
 
         private new BarcodePersistence Persistence
@@ -97,14 +115,17 @@ namespace DesignerLibrary.DrawingTools
             if (string.IsNullOrEmpty(Barcode))
                 return;
 
-            Size size = new Size(Bounds.Width, Bounds.Height - 40);
+            Size size = new Size(Bounds.Width, Bounds.Height);
             size = GraphicsMapper.Instance.TransformSize(size, CoordinateSpace.Device, CoordinateSpace.Page);
 
             if (size.Width > 100 && size.Height > 50)
             {
+                BarcodeInstance.Height = size.Height;
+                BarcodeInstance.Width = size.Width;
+
                 try
                 {
-                    BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode, size.Width, size.Height);
+                    BarcodeImg = BarcodeInstance.Encode(BarcodeLib.TYPE.CODE128, Barcode);
                 }
                 catch (Exception ex)
                 {

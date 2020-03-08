@@ -10,6 +10,8 @@
         eLineColor = 5,
         eFillColor = 6,
         eLineWidth = 7,
+        eLineStart = 8,
+        eLineEnd = 9,
         eFileLocation = 10,
 
         Label = 18,
@@ -49,6 +51,8 @@
         public static readonly string PenWidth = "PenWidth";
         public static readonly string FillColor = "FillColor";
         public static readonly string FileLocation = "FileLocation";
+        public static readonly string StartPos = "StartPos";
+        public static readonly string EndPos = "EndPos";
 
         public static readonly string LocationType = "LocationType";
         public static readonly string LogicalPoint = "LogicalPoint";

@@ -1,5 +1,11 @@
-﻿using DesignerLibrary.Persistence;
+﻿using DesignerLibrary.Attributes;
+using DesignerLibrary.Consts;
+using DesignerLibrary.Helpers;
+using DesignerLibrary.Persistence;
 using DesignerLibrary.Trackers;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -15,13 +21,21 @@ namespace DesignerLibrary.DrawingTools
         public Point StartPos
         {
             get { return (Persistence as LineToolPersistence).StartPos; }
-            set { (Persistence as LineToolPersistence).StartPos = value; }
+            set
+            {
+                (Persistence as LineToolPersistence).StartPos = value;
+                Invalidate();
+            }
         }
 
         public Point EndPos
         {
             get { return (Persistence as LineToolPersistence).EndPos; }
-            set { (Persistence as LineToolPersistence).EndPos = value; }
+            set
+            {
+                (Persistence as LineToolPersistence).EndPos = value;
+                Invalidate();
+            }
         }
 
         protected override ToolPersistence NewPersistence()
@@ -79,6 +93,31 @@ namespace DesignerLibrary.DrawingTools
         {
             OnResize( pPoint );
             return true;
+        }
+
+        protected override IList<PropertyDescriptor> GetPropertyDescriptors()
+        {
+            IList<PropertyDescriptor> descriptors = base.GetPropertyDescriptors();
+
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.StartPos,
+                new Attribute[]
+                {
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "StartPos" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eLineStart )
+                }));
+
+            descriptors.Add(new MyPropertyDescriptor(this, PropertyNames.EndPos,
+                new Attribute[]
+                {
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "EndPos" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eLineEnd )
+                }));
+
+            return descriptors;
         }
     }
 }

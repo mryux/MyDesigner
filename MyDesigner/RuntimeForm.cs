@@ -27,10 +27,11 @@ namespace MyDesigner
 
             View = RuntimeViewFactory.Instance.NewRuntimeView();
 
-            //string content = "Y|UPS|USPS First Class Package|LBX07941754426|LBX07021754493|LBX07331755403|LBX07132055837|LBX07132055838|step123";
-            string content = "FedEx|FedEx Ground(Over-Length)|9622001900008000288000794670978052|1|2|SKU1233,2|Item transport packaging image with SKU barcode-item inner packing image-Other type";
+            string content = "Y|UPS|USPS First Class Package|9622001900008000288000794670978052|9622001900008000288000794670978053|9622001900008000288000794670978054|9622001900008000288000794670978055|9622001900008000288000794670978056|step123";
+            //string content = "FedEx|FedEx Ground(Over-Length)|9622001900008000288000794670978052|SKU1231,2|SKU1233,2|SKU1232,2|SKU1234,2|SKU1235,2|";
             View.SetValues(content.Split('|'));
             View.Load(Model);
+            View.Rotation = 0;// 180;
 
             Control control = View as Control;
 
@@ -58,7 +59,7 @@ namespace MyDesigner
             // Create our page settings for the paper size selected
             PageSettings pageSettings = new PageSettings(printerSettings)
             {
-                Margins = new Margins(0, 0, 0, 0),
+                Margins = new Margins(100, 30, 0, 0),
                 Landscape = false,
                 PaperSize = new PaperSize("Custom", ViewConsts.Width, ViewConsts.Height),
             };

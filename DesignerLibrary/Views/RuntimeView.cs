@@ -15,6 +15,7 @@ namespace DesignerLibrary.Views
     public interface IRuntimeView
     {
         int Rotation { get; set; }
+        Point Offset { get; set; }
 
         void Load(DesignerModel model);
         void OnPrint(PrintPageEventArgs args);
@@ -48,6 +49,7 @@ namespace DesignerLibrary.Views
         }
 
         public int Rotation { get; set; }
+        public Point Offset { get; set; }
 
         private string[] RuntimeValues { get; set; }
         void IRuntimeView.SetValues(string[] values)
@@ -65,6 +67,20 @@ namespace DesignerLibrary.Views
             OnPaint(args);
         }
 
+        protected override void OnLoadModel(DesignerModel model)
+        {
+            base.OnLoadModel(model);
+
+            DrawingTools.All(tool =>
+            {
+                Point pt = tool.Location;
+
+                pt.Offset(Offset);
+                tool.Location = pt;
+                return true;
+            });
+        }
+
         protected override void PrePaint(PaintEventArgs args)
         {
             base.PrePaint(args);
@@ -75,8 +91,10 @@ namespace DesignerLibrary.Views
             int width = GraphicsMapper.Instance.TransformInt(ViewConsts.Width);
             int height = GraphicsMapper.Instance.TransformInt(ViewConsts.Height);
 
+#if DEBUG
             BaseRuler.DrawHorzLine(graph, Pens.Black, 0, width, height);
             BaseRuler.DrawVertLine(graph, Pens.Black, width, 0, height);
+#endif
             Matrix rotate_at_center = new Matrix();
 
             rotate_at_center.RotateAt(Rotation, new PointF(width / 2f, height / 2f));

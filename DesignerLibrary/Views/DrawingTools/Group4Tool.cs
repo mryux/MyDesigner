@@ -39,6 +39,7 @@ namespace DesignerLibrary.DrawingTools
                 return;
 
             base.DrawDownArea(graph);
+            DrawSeparator(graph, Bounds.Width);
 
             Format.Alignment = StringAlignment.Near;
             Format.LineAlignment = StringAlignment.Far;

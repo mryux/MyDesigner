@@ -19,7 +19,6 @@ namespace DesignerLibrary.DrawingTools
             Clear(graph);
 
             DrawUpArea(graph);
-            DrawSeparator(graph);
             DrawDownArea(graph);
         }
 
@@ -37,16 +36,20 @@ namespace DesignerLibrary.DrawingTools
             Format.Alignment = AlignRight ? StringAlignment.Far : StringAlignment.Near;
             Format.LineAlignment = StringAlignment.Far;
             graph.DrawString(BottomRight, ItalicFont, TextBrush, Bounds, Format);
+
+            int upLength = (int)graph.MeasureString(Text, Font, Bounds.Width, Format).Width;
+            int downLength = (int)graph.MeasureString(BottomRight, ItalicFont, Bounds.Width, Format).Width;
+            DrawSeparator(graph, Math.Max(upLength, downLength));
         }
 
         protected bool ShowSeparator { get; set; }
-        private void DrawSeparator(Graphics graph)
+        protected void DrawSeparator(Graphics graph, int len)
         {
             if (!ShowSeparator)
                 return;
 
             int y = (Bounds.Top + Bounds.Bottom) / 2;
-            graph.DrawLine(Pens.Black, Bounds.Left, y, Bounds.Right, y);
+            graph.DrawLine(Pens.Black, Bounds.Right - len, y, Bounds.Right, y);
         }
 
         protected override ToolPersistence NewPersistence()

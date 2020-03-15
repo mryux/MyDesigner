@@ -25,7 +25,7 @@ namespace DesignerLibrary.DrawingTools
             {
                 BackColor = Color.White,//图片背景颜色
                 ForeColor = Color.Black,//条码颜色
-                IncludeLabel = true,
+                IncludeLabel = false,
                 Alignment = BarcodeLib.AlignmentPositions.CENTER,
                 LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER, //code的显示位置
                 ImageFormat = ImageFormat.Bmp, //图片格式
@@ -39,9 +39,10 @@ namespace DesignerLibrary.DrawingTools
             return new BarcodePersistence();
         }
 
-        private static readonly Font BarcodeLabelFont = new Font("verdana", 9f);
+        private static readonly Font BarcodeLabelFont = new Font("verdana", 8f);
         private BarcodeLib.Barcode BarcodeInstance;
         private Image BarcodeImg;
+        private int LabelHeight = 0;
 
         protected override void OnPaint(PaintEventArgs args)
         {
@@ -51,15 +52,19 @@ namespace DesignerLibrary.DrawingTools
 
             if (BarcodeImg != null)
             {
-                //graph.DrawImage(BarcodeImg, Bounds.Left, Bounds.Top);
+                if (LabelHeight == 0)
+                {
+                    LabelHeight = (int)graph.MeasureString(Barcode, BarcodeLabelFont, Bounds.Width, Format).Height;
+                }
 
                 GraphicsUnit unit = GraphicsUnit.Display;
                 RectangleF rect = BarcodeImg.GetBounds(ref unit);
+                RectangleF targetRect = new RectangleF(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height - LabelHeight);
 
-                graph.DrawImage(BarcodeImg, Bounds, rect, unit);
+                graph.DrawImage(BarcodeImg, targetRect, rect, unit);
             }
 
-            //graph.DrawString(Barcode, SystemFonts.DefaultFont, Brushes.Black, Bounds, Format);
+            graph.DrawString(Barcode, BarcodeLabelFont, Brushes.Black, Bounds, Format);
         }
 
         private new BarcodePersistence Persistence

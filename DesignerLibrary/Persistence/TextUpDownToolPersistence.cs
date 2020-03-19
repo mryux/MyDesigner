@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace DesignerLibrary.Persistence
 {
@@ -18,13 +17,5 @@ namespace DesignerLibrary.Persistence
         public string BottomRight { get; set; }
 
         public bool AlignRight { get; set; }
-
-        protected override void OnDeserialize(BinaryReader reader)
-        {
-            base.OnDeserialize(reader);
-
-            BottomRight = reader.ReadString();
-            AlignRight = reader.ReadBoolean();
-        }
     }
 }

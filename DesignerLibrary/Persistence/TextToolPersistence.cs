@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 
@@ -19,24 +18,6 @@ namespace DesignerLibrary.Persistence
             Alignment = StringAlignment.Near;
             TextColor = Color.Black;
             SetLogFont(new Font(FontFamily.GenericSerif, 10.0f));
-        }
-
-        protected override void OnDeserialize(BinaryReader reader)
-        {
-            base.OnDeserialize(reader);
-
-            PenColor = Color.Transparent;
-            Text = ReadString(reader);
-
-            // logfont value (made by c++) in legacy SitePlan is different from the value made by C#.
-            LOGFONT_Unicode lLogFont = Read<LOGFONT_Ansi>(reader).ToUnicode();
-            Font lFont = Font.FromLogFont(lLogFont);
-
-            lFont = new Font(lFont.FontFamily, lFont.Size, lFont.Style, GraphicsUnit.Point);
-            SetLogFont(lFont);
-
-            Alignment = (StringAlignment)Read<int>(reader);
-            int lIsUserDefinedSize = Read<int>(reader);
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]

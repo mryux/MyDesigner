@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 
 namespace DesignerLibrary.Persistence
 {
@@ -11,24 +10,6 @@ namespace DesignerLibrary.Persistence
         {
             StartAngle = 180.0f;
             SweepAngle = 180.0f;
-        }
-
-        protected override void OnDeserialize(BinaryReader pReader)
-        {
-            base.OnDeserialize( pReader );
-
-            Point lStartPoint = ReadPoint( pReader );
-            Point lEndPoint = ReadPoint( pReader );
-            Rectangle lRect = ReadRectangle( pReader );
-
-            Point lCenter = lRect.Location;
-            lCenter.Offset( lRect.Width / 2, lRect.Height / 2 );
-
-            int lStartPtAngle = Angle360Round( lStartPoint, lCenter );
-            int lEndPtAngle = Angle360Round( lEndPoint, lCenter );
-
-            SweepAngle = ((lStartPtAngle - lEndPtAngle) + 360) % 360;
-            StartAngle = lEndPtAngle;
         }
 
         const double Rad2Deg = 180.0 / Math.PI;

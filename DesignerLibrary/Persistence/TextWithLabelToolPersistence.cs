@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace DesignerLibrary.Persistence
+﻿namespace DesignerLibrary.Persistence
 {
     public class TextWithLabelToolPersistence : TextToolPersistence
     {
@@ -10,12 +8,5 @@ namespace DesignerLibrary.Persistence
         }
 
         public string Label { get; set; }
-
-        protected override void OnDeserialize(BinaryReader reader)
-        {
-            base.OnDeserialize(reader);
-
-            Label = reader.ReadString();
-        }
     }
 }

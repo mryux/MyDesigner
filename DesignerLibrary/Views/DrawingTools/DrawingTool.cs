@@ -75,6 +75,17 @@ namespace DesignerLibrary.DrawingTools
             }
         }
 
+        public bool Visible
+        {
+            get { return _Persistence.Visible; }
+            set
+            {
+                _Persistence.Visible = value;
+                IsDirty = true;
+                // it's a runtime value, no need to invalidate here.
+            }
+        }
+
         public LineWidth PenWidth
         {
             get { return _Persistence.PenWidth; }
@@ -449,6 +460,15 @@ namespace DesignerLibrary.DrawingTools
                     new LocalizedCategoryAttribute( "Appearance" ),
                     new LocalizedDisplayNameAttribute( "Name" ),
                     new PropertyOrderAttribute( (int)Consts.PropertyOrder.eName ),
+                }));
+
+            ret.Add(new MyPropertyDescriptor(this, PropertyNames.Visible,
+                new Attribute[]
+                {
+                    CustomVisibleAttribute.Yes,
+                    new LocalizedCategoryAttribute( "Appearance" ),
+                    new LocalizedDisplayNameAttribute( "Visible" ),
+                    new PropertyOrderAttribute( (int)Consts.PropertyOrder.eVisible ),
                 }));
 
             ret.Add(new MyPropertyDescriptor(this, PropertyNames.PenColor,

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace DesignerLibrary.Persistence
+﻿namespace DesignerLibrary.Persistence
 {
     public class Group4ToolPersistence : TextUpDownToolPersistence
     {
@@ -11,13 +9,5 @@ namespace DesignerLibrary.Persistence
 
         public string BottomLeft { get; set; }
         public string TopRight { get; set; }
-
-        protected override void OnDeserialize(BinaryReader reader)
-        {
-            base.OnDeserialize(reader);
-
-            BottomLeft = reader.ReadString();
-            TopRight = reader.ReadString();
-        }
     }
 }

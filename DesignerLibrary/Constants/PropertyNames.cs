@@ -13,6 +13,7 @@
         eLineStart = 8,
         eLineEnd = 9,
         eFileLocation = 10,
+        eVisible = 11,
 
         Label = 18,
         Text = 19,
@@ -45,6 +46,7 @@
 
         public static readonly string Id = "Id";
         public static readonly string Name = "Name";
+        public static readonly string Visible = "Visible";
         public static readonly string Location = "Location";
         public static readonly string Bounds = "Bounds";
         public static readonly string PenColor = "PenColor";

@@ -49,7 +49,10 @@ namespace DesignerLibrary.DrawingTools
                 return;
 
             int y = (Bounds.Top + Bounds.Bottom) / 2;
-            graph.DrawLine(Pens.Black, Bounds.Right - len, y, Bounds.Right, y);
+            if (AlignRight)
+                graph.DrawLine(Pens.Black, Bounds.Right - len, y, Bounds.Right, y);
+            else
+                graph.DrawLine(Pens.Black, Bounds.Left, y, Bounds.Left + len, y);
         }
 
         protected override ToolPersistence NewPersistence()
